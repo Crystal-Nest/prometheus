@@ -1,0 +1,22 @@
+plugins {
+  id "org.sonarqube" version "4.4.1.3373"
+  id "com.hypherionmc.modutils.modpublisher" version "2.1.4" apply false
+  id "net.neoforged.moddev" version "0.1.110" apply false
+  id "fabric-loom" version "1.7-SNAPSHOT" apply false
+}
+
+sonar {
+  properties {
+    property "sonar.projectKey", "Crystal-Nest_$mod_id_kebab"
+    property "sonar.organization", "crystal-nest"
+    property "sonar.projectVersion", mod_version
+    property "sonar.host.url", "https://sonarcloud.io"
+    property "sonar.qualitygate.wait", "true"
+  }
+}
+
+tasks.register("publishAll") {
+  group = "publishing"
+  description = "Publish all loader specific versions to all platforms"
+  dependsOn subprojects.publishLoader
+}
