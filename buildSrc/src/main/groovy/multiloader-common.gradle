@@ -59,7 +59,6 @@ repositories {
 
 if (name != "fabric") {
   dependencies {
-    // Use $minecraft_version instead of writing the version manually whenever possible.
     implementation "it.crystalnest:cobweb-$name:$minecraft_version-$cobweb_version"
   }
 }
@@ -200,7 +199,7 @@ publisher {
   setArtifact(jar)
   setDisableMalwareScanner(true) // Disable the built in Fractureizer scanner.
   setDisableEmptyJarCheck(true) // Disable check for valid mod metadata entry in artifact, which could possibly mean that the jar is empty.
-  setModrinthID(mod_id_kebab)
+  setModrinthID("$mod_id_kebab-api")
   setCurseID(curseforge_id)
   if (!noPublish) {
     setLoaders(loader)

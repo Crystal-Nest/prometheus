@@ -1,0 +1,6 @@
+{
+  "prometheus:fire_source_tags": "Prometheus fireth sources",
+  "prometheus_dynamic_fire_source_tags": "Marks fireth sources with the c'rrect tag",
+  "prometheus:campfire_tags": "Prometheus campfires",
+  "prometheus_dynamic_campfire_tags": "Marks campfires with the c'rrect tag"
+}
