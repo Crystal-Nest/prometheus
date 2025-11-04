@@ -1,0 +1,6 @@
+{
+  "prometheus:fire_source_tags": "Fuentes de fuego de Prometheus",
+  "prometheus_dynamic_fire_source_tags": "Asigna a las fuentes de fuego la etiqueta correcta",
+  "prometheus:campfire_tags": "Campfires de Prometheus",
+  "prometheus_dynamic_campfire_tags": "Asigna a las hogueras la etiqueta correcta"
+}
