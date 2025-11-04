@@ -57,13 +57,7 @@ public final class Fire {
       Builder builder = FireManager.fireBuilder(buffer.readResourceLocation())
         .setDamage(buffer.readFloat())
         .setInvertHealAndHarm(buffer.readBoolean())
-        .removeComponent(Component.CAMPFIRE_ITEM)
-        .removeComponent(Component.LANTERN_BLOCK)
-        .removeComponent(Component.LANTERN_ITEM)
-        .removeComponent(Component.TORCH_BLOCK)
-        .removeComponent(Component.TORCH_ITEM)
-        .removeComponent(Component.WALL_TORCH_BLOCK)
-        .removeComponent(Component.FLAME_PARTICLE);
+        .removeComponents(Component.CAMPFIRE_ITEM, Component.LANTERN_BLOCK, Component.LANTERN_ITEM, Component.TORCH_BLOCK, Component.TORCH_ITEM, Component.WALL_TORCH_BLOCK, Component.FLAME_PARTICLE);
       if (buffer.readBoolean()) {
         builder.setComponent(Component.SOURCE_BLOCK, buffer.readResourceLocation());
       } else {
@@ -664,7 +658,6 @@ public final class Fire {
      * @param id {@link ResourceLocation}.
      * @return this Builder to either set other properties or {@link #build()}.
      */
-    @SuppressWarnings("UnusedReturnValue")
     public Builder setComponent(Component<?, ?> component, ResourceLocation id) {
       this.components.put(component, id);
       return this;
@@ -678,6 +671,19 @@ public final class Fire {
      */
     public Builder removeComponent(Component<?, ?> component) {
       this.components.remove(component);
+      return this;
+    }
+
+    /**
+     * Removes the specified {@link Component}s.
+     *
+     * @param components components.
+     * @return this Builder to either set other properties or {@link #build()}.
+     */
+    public Builder removeComponents(Component<?, ?>... components) {
+      for (Component<?, ?> component : components) {
+        this.components.remove(component);
+      }
       return this;
     }
 
