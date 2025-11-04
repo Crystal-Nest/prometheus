@@ -51,6 +51,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -176,8 +177,8 @@ public final class FireManager {
   public static synchronized Fire registerFire(Fire fire) {
     Fire previous = FIRES.computeIfAbsent(fire.getFireType(), key -> {
       // Need to manually set the fire type for blocks registered via data packs.
-      Fire.Component.SOURCE_BLOCK.getOptionalValue(fire).ifPresent(block -> ((FireTypeChanger) block).setFireType(key));
-      Fire.Component.CAMPFIRE_BLOCK.getOptionalValue(fire).ifPresent(block -> ((FireTypeChanger) block).setFireType(key));
+      Fire.Component.SOURCE_BLOCK.getOptionalValue(fire).ifPresent(setTypeOrWarn(key));
+      Fire.Component.CAMPFIRE_BLOCK.getOptionalValue(fire).ifPresent(setTypeOrWarn(key));
       return fire;
     });
     if (previous != fire) {
@@ -186,6 +187,22 @@ public final class FireManager {
       return null;
     }
     return fire;
+  }
+
+  /**
+   *
+   *
+   * @param key
+   * @return
+   */
+  private static @NotNull Consumer<Block> setTypeOrWarn(ResourceLocation key) {
+    return block -> {
+      if (block instanceof FireTypeChanger fireTypeChanger) {
+        fireTypeChanger.setFireType(key);
+      } else {
+        Constants.LOGGER.warn("Could not set Fire Type [{}] for source block [{}]\nThings might not work as expected!", key, block);
+      }
+    };
   }
 
   /**

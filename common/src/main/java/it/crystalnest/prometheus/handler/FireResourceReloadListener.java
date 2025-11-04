@@ -163,33 +163,34 @@ public abstract class FireResourceReloadListener extends SimpleJsonResourceReloa
    */
   private static void registerFire(JsonObject jsonFire, String mod, String jsonIdentifier) {
     ResourceLocation fireType = ResourceLocation.fromNamespaceAndPath(mod, parse(jsonIdentifier, "fire", jsonFire, JsonElement::getAsString));
+    String fireTypeString = fireType.toString();
     Fire.Builder builder = FireManager.fireBuilder(fireType)
-      .setDamage(parse(fireType.toString(), "damage", jsonFire, JsonElement::getAsFloat, Fire.Builder.DEFAULT_DAMAGE))
-      .setInvertHealAndHarm(parse(fireType.toString(), "invertHealAndHarm", jsonFire, JsonElement::getAsBoolean, Fire.Builder.DEFAULT_INVERT_HEAL_AND_HARM))
-      .removeComponent(Fire.Component.CAMPFIRE_ITEM)
-      .removeComponent(Fire.Component.LANTERN_BLOCK)
-      .removeComponent(Fire.Component.LANTERN_ITEM)
-      .removeComponent(Fire.Component.TORCH_BLOCK)
-      .removeComponent(Fire.Component.TORCH_ITEM)
-      .removeComponent(Fire.Component.WALL_TORCH_BLOCK)
-      .removeComponent(Fire.Component.FLAME_PARTICLE);
-    if (jsonFire.get(SOURCE_FIELD_NAME) != null && jsonFire.get(SOURCE_FIELD_NAME).isJsonNull()) {
-      builder.removeComponent(Fire.Component.SOURCE_BLOCK);
-    } else {
-      String source = parse(fireType.toString(), SOURCE_FIELD_NAME, jsonFire, JsonElement::getAsString, null);
-      if (source != null && ResourceLocation.tryParse(source) != null) {
-        builder.setComponent(Fire.Component.SOURCE_BLOCK, ResourceLocation.parse(source));
-      }
-    }
-    if (jsonFire.get(CAMPFIRE_FIELD_NAME) != null && jsonFire.get(CAMPFIRE_FIELD_NAME).isJsonNull()) {
-      builder.removeComponent(Fire.Component.CAMPFIRE_BLOCK);
-    } else {
-      String campfire = parse(fireType.toString(), CAMPFIRE_FIELD_NAME, jsonFire, JsonElement::getAsString, null);
-      if (campfire != null && ResourceLocation.tryParse(campfire) != null) {
-        builder.setComponent(Fire.Component.CAMPFIRE_BLOCK, ResourceLocation.parse(campfire));
-      }
-    }
+      .setDamage(parse(fireTypeString, "damage", jsonFire, JsonElement::getAsFloat, Fire.Builder.DEFAULT_DAMAGE))
+      .setInvertHealAndHarm(parse(fireTypeString, "invertHealAndHarm", jsonFire, JsonElement::getAsBoolean, Fire.Builder.DEFAULT_INVERT_HEAL_AND_HARM))
+      .removeComponents(Fire.Component.CAMPFIRE_ITEM, Fire.Component.LANTERN_BLOCK, Fire.Component.LANTERN_ITEM, Fire.Component.TORCH_BLOCK, Fire.Component.TORCH_ITEM, Fire.Component.WALL_TORCH_BLOCK, Fire.Component.FLAME_PARTICLE);
+    removeOrSet(fireTypeString, builder, jsonFire, SOURCE_FIELD_NAME, Fire.Component.SOURCE_BLOCK);
+    removeOrSet(fireTypeString, builder, jsonFire, CAMPFIRE_FIELD_NAME, Fire.Component.CAMPFIRE_BLOCK);
     registerFire(fireType, builder.build());
+  }
+
+  /**
+   * Either removes the specified component or sets its value to the provided reference.
+   *
+   * @param fireType Fire Type.
+   * @param builder {@link Fire.Builder}.
+   * @param data {@link JsonObject} with data to parse.
+   * @param field field to parse.
+   * @param component {@link Fire.Component} to set.
+   */
+  private static void removeOrSet(String fireType, Fire.Builder builder, JsonObject data, String field, Fire.Component<?, ?> component) {
+    if (data.get(field) != null && data.get(field).getAsString().equals("remove")) {
+      builder.removeComponent(component);
+    } else {
+      String value = parse(fireType, field, data, JsonElement::getAsString, null);
+      if (value != null && ResourceLocation.tryParse(value) != null) {
+        builder.setComponent(component, ResourceLocation.parse(value));
+      }
+    }
   }
 
   @Override
