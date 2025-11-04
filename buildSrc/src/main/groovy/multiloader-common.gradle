@@ -55,10 +55,6 @@ repositories {
       includeGroup "it.crystalnest"
     }
   }
-  maven {
-    name = "Fuzs Mod Resources"
-    url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
-  }
 }
 
 if (name != "fabric") {
@@ -126,7 +122,6 @@ processResources {
     "neoforge_version"             : neoforge_version,
     "neoforge_loader_version_range": neoforge_loader_version_range,
     "cobweb_version"               : cobweb_version,
-    "fcap_version"                 : fcap_version,
   ]
   filesMatching(["pack.mcmeta", "fabric.mod.json", "META-INF/neoforge.mods.toml", "*.mixins.json"]) {
     expand expandProps
@@ -175,7 +170,7 @@ publishing {
         licenses {
           license {
             name = license
-            url = "https://spdx.org/licenses/${license}.html"
+            url = "https://github.com/Crystal-Nest/.github/blob/main/LICENSE"
           }
         }
         developers {
@@ -209,7 +204,7 @@ publisher {
   if (!noPublish) {
     setLoaders(loader)
   }
-  setGameVersions(minecraft_version)
+  setGameVersions(minecraft_version, "1.21.1")
   setDisplayName("[$loader - $minecraft_version] $mod_title v$mod_version")
   setJavaVersions([JavaVersion.VERSION_21]) // Remember to update this to match java_version gradle property.
   setCurseEnvironment("both") // "server", "client" or "both".
@@ -228,7 +223,6 @@ publisher {
     switch (loader) {
       case "Fabric":
         required "fabric-api"
-        required "forge-config-api-port"
         break
       case "NeoForge":
         break
@@ -239,7 +233,6 @@ publisher {
     switch (loader) {
       case "Fabric":
         required "fabric-api"
-        required "forge-config-api-port-fabric"
         break
       case "NeoForge":
         break
