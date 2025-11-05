@@ -6,7 +6,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.crystalnest.prometheus.api.Fire;
 import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.api.block.entity.CustomCampfireBlockEntity;
-import it.crystalnest.prometheus.api.block.entity.DynamicBlockEntityType;
 import it.crystalnest.prometheus.api.type.FireTyped;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
@@ -45,34 +44,40 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
   /**
    * @param fireType fire type.
    * @param spawnParticles whether to spawn crackling particles.
-   */
-  public CustomCampfireBlock(ResourceLocation fireType, boolean spawnParticles) {
-    this(
-      fireType,
-      spawnParticles,
-      Properties.of().mapColor(MapColor.PODZOL).instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).noOcclusion().ignitedByLava()
-    );
-  }
-
-  /**
-   * Use the {@link CustomCampfireBlock#CustomCampfireBlock(ResourceLocation, boolean) other constructor} if your campfire should behave similarly to the Vanilla ones (suggested).
-   *
-   * @param fireType fire type.
-   * @param spawnParticles whether to spawn crackling particles.
    * @param properties block properties.
    */
   public CustomCampfireBlock(ResourceLocation fireType, boolean spawnParticles, Properties properties) {
-    super(spawnParticles, Math.round(FireManager.getProperty(fireType, Fire::getDamage)), properties.lightLevel(state -> state.getValue(BlockStateProperties.LIT) ? FireManager.getProperty(fireType, Fire::getLight) : 0));
+    this(fireType, spawnParticles, true, properties);
+  }
+
+  /**
+   * @param fireType fire type.
+   * @param spawnParticles whether to spawn crackling particles.
+   * @param addDefaultProperties whether to add default block properties.
+   * @param properties block properties.
+   */
+  public CustomCampfireBlock(ResourceLocation fireType, boolean spawnParticles, boolean addDefaultProperties, Properties properties) {
+    super(spawnParticles, Math.round(FireManager.getProperty(fireType, Fire::getDamage)), (addDefaultProperties ? addDefaultProperties(properties) : properties).lightLevel(state -> state.getValue(BlockStateProperties.LIT) ? FireManager.light(fireType) : 0));
     this.fireType = fireType;
   }
 
   /**
-   * Return the {@link DynamicBlockEntityType} for the custom campfire block entity.<br>
-   * Override to change it with a more specific one if you registered a different {@link DynamicBlockEntityType} for a subclass of {@link CustomCampfireBlockEntity}.
+   * Adds the default properties.
    *
-   * @return {@link DynamicBlockEntityType}.
+   * @param properties initial properties.
+   * @return combination of initial and default properties.
    */
-  protected DynamicBlockEntityType<CustomCampfireBlockEntity> getBlockEntityType() {
+  private static Properties addDefaultProperties(Properties properties) {
+    return properties.mapColor(MapColor.PODZOL).instrument(NoteBlockInstrument.BASS).strength(2).sound(SoundType.WOOD).noOcclusion().ignitedByLava();
+  }
+
+  /**
+   * Return the {@link BlockEntityType} for the custom campfire block entity.<br>
+   * Override to change it with a more specific one if you registered a different {@link BlockEntityType} for a subclass of {@link CustomCampfireBlockEntity}.
+   *
+   * @return {@link BlockEntityType}.
+   */
+  protected BlockEntityType<CustomCampfireBlockEntity> getBlockEntityType() {
     return FireManager.CUSTOM_CAMPFIRE_ENTITY_TYPE.get();
   }
 

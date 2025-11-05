@@ -57,7 +57,7 @@ Once your custom fire is registered with Prometheus API, you will automatically 
 
 - 📚 **New enchantments: Custom Fire Aspect & Custom Flame.**  
   Similar to Fire Aspect and Flame enchantments, but applying your fire instead!  
-  Enchantments are optional and can be configured via datapack. See [Data Driven Enchantments](https://github.com/Crystal-Nest/soul-fire-d/wiki/Server-resources#data-driven-enchantments) to know more.
+  Enchantments are optional and can be configured via datapack. See [Data Driven Enchantments](https://github.com/Crystal-Nest/prometheus/wiki/Server-resources#data-driven-enchantments) to know more.
 
 ## 🤝 **Compatibilities**
 

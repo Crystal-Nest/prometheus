@@ -1,6 +1,5 @@
 package it.crystalnest.prometheus.api.block;
 
-import it.crystalnest.prometheus.api.Fire;
 import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.api.type.FireTyped;
 import net.minecraft.core.BlockPos;
@@ -33,28 +32,40 @@ public class CustomTorchBlock extends TorchBlock implements FireTyped {
   /**
    * @param fireType fire type.
    * @param type particle type.
+   * @param properties block properties.
    */
-  public CustomTorchBlock(ResourceLocation fireType, Supplier<SimpleParticleType> type) {
-    this(fireType, type, Properties.of().noCollission().instabreak().sound(SoundType.WOOD).pushReaction(PushReaction.DESTROY));
+  public CustomTorchBlock(ResourceLocation fireType, Supplier<SimpleParticleType> type, Properties properties) {
+    this(fireType, type, true, properties);
   }
 
   /**
    * @param fireType fire type.
    * @param type particle type.
+   * @param addDefaultProperties whether to add default block properties.
    * @param properties block properties.
    */
-  public CustomTorchBlock(ResourceLocation fireType, Supplier<SimpleParticleType> type, Properties properties) {
+  public CustomTorchBlock(ResourceLocation fireType, Supplier<SimpleParticleType> type, boolean addDefaultProperties, Properties properties) {
     // noinspection DataFlowIssue
-    super(null, properties.lightLevel(state -> FireManager.getProperty(fireType, Fire::getLight)));
+    super(null, (addDefaultProperties ? addDefaultProperties(properties) : properties).lightLevel(state -> FireManager.light(fireType)));
     this.fireType = fireType;
     this.type = type;
+  }
+
+  /**
+   * Adds the default properties.
+   *
+   * @param properties initial properties.
+   * @return combination of initial and default properties.
+   */
+  private static Properties addDefaultProperties(Properties properties) {
+    return properties.noCollission().instabreak().sound(SoundType.WOOD).pushReaction(PushReaction.DESTROY);
   }
 
   @Override
   public void animateTick(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull RandomSource random) {
     // noinspection ConstantValue
-    if (this.flameParticle == null) {
-      this.flameParticle = type.get();
+    if (flameParticle == null) {
+      flameParticle = type.get();
     }
     super.animateTick(state, level, pos, random);
   }
