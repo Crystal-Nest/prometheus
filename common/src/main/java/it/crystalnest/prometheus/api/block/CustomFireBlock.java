@@ -25,7 +25,6 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import org.jetbrains.annotations.NotNull;
 
@@ -65,24 +64,33 @@ public class CustomFireBlock extends BaseFireBlock implements FireTyped {
   /**
    * @param fireType fire type.
    * @param base {@link CustomFireBlock#base}.
-   * @param color light color.
-   */
-  public CustomFireBlock(ResourceLocation fireType, TagKey<Block> base, MapColor color) {
-    this(fireType, base, Properties.of().mapColor(color).replaceable().noCollission().instabreak().sound(SoundType.WOOL).pushReaction(PushReaction.DESTROY));
-  }
-
-  /**
-   * Use the {@link CustomFireBlock#CustomFireBlock(ResourceLocation, TagKey, MapColor) other constructor} if your fire should behave similarly to the Vanilla ones (suggested).
-   *
-   * @param fireType fire type.
-   * @param base {@link CustomFireBlock#base}.
    * @param properties block properties.
    */
   public CustomFireBlock(ResourceLocation fireType, TagKey<Block> base, Properties properties) {
-    super(properties.lightLevel(state -> FireManager.getProperty(fireType, Fire::getLight)), FireManager.getProperty(fireType, Fire::getDamage));
+    this(fireType, base, true, properties);
+  }
+
+  /**
+   * @param fireType fire type.
+   * @param base {@link CustomFireBlock#base}.
+   * @param addDefaultProperties whether to add default block properties.
+   * @param properties block properties.
+   */
+  public CustomFireBlock(ResourceLocation fireType, TagKey<Block> base, boolean addDefaultProperties, Properties properties) {
+    super((addDefaultProperties ? addDefaultProperties(properties) : properties).lightLevel(state -> FireManager.light(fireType)), FireManager.getProperty(fireType, Fire::getDamage));
     registerDefaultState(stateDefinition.any().setValue(AGE, 0));
     this.fireType = fireType;
     this.base = base;
+  }
+
+  /**
+   * Adds the default properties.
+   *
+   * @param properties initial properties.
+   * @return combination of initial and default properties.
+   */
+  private static Properties addDefaultProperties(Properties properties) {
+    return properties.replaceable().noCollission().instabreak().sound(SoundType.WOOL).pushReaction(PushReaction.DESTROY);
   }
 
   @Override
