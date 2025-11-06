@@ -195,7 +195,7 @@ public final class FireManager {
       if (block instanceof FireTypeChanger fireTypeChanger) {
         fireTypeChanger.setFireType(fireType);
       } else {
-        Constants.LOGGER.warn("Could not set Fire Type [{}] for source block [{}]\nThings might not work as expected!", fireType, block);
+        Constants.LOGGER.warn("Could not set Fire Type [{}] for block [{}]\nThings might not work as expected!\nYou can ignore this warning if this was intended", fireType, block);
       }
     };
   }
