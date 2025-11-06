@@ -664,6 +664,27 @@ public final class Fire {
     }
 
     /**
+     * Sets the default value for all {@link Component}s.<br>
+     * It's strongly recommended that you use all the default values for each component.
+     *
+     * @return this Builder to either set other properties or {@link #build()}.
+     */
+    public Builder setDefaultComponents() {
+      components = new HashMap<>(Map.ofEntries(
+        Component.SOURCE_BLOCK.getEntry(modId, fireId),
+        Component.CAMPFIRE_BLOCK.getEntry(modId, fireId),
+        Component.CAMPFIRE_ITEM.getEntry(modId, fireId),
+        Component.LANTERN_BLOCK.getEntry(modId, fireId),
+        Component.LANTERN_ITEM.getEntry(modId, fireId),
+        Component.TORCH_BLOCK.getEntry(modId, fireId),
+        Component.TORCH_ITEM.getEntry(modId, fireId),
+        Component.WALL_TORCH_BLOCK.getEntry(modId, fireId),
+        Component.FLAME_PARTICLE.getEntry(modId, fireId)
+      ));
+      return this;
+    }
+
+    /**
      * Removes the specified {@link Component}.
      *
      * @param component component.
@@ -730,17 +751,7 @@ public final class Fire {
       inFireGetter = DEFAULT_IN_FIRE_GETTER;
       onFireGetter = DEFAULT_ON_FIRE_GETTER;
       behavior = DEFAULT_BEHAVIOR;
-      components = new HashMap<>(Map.ofEntries(
-        Component.SOURCE_BLOCK.getEntry(modId, fireId),
-        Component.CAMPFIRE_BLOCK.getEntry(modId, fireId),
-        Component.CAMPFIRE_ITEM.getEntry(modId, fireId),
-        Component.LANTERN_BLOCK.getEntry(modId, fireId),
-        Component.LANTERN_ITEM.getEntry(modId, fireId),
-        Component.TORCH_BLOCK.getEntry(modId, fireId),
-        Component.TORCH_ITEM.getEntry(modId, fireId),
-        Component.WALL_TORCH_BLOCK.getEntry(modId, fireId),
-        Component.FLAME_PARTICLE.getEntry(modId, fireId)
-      ));
+      components = new HashMap<>();
       return this;
     }
 
