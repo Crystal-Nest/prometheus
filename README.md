@@ -36,24 +36,23 @@ Learn how to integrate custom fire types and utilize the provided API through de
 Once your custom fire is registered with Prometheus API, you will automatically benefit from all these features and more!
 
 - 🔹 **Custom Fire overlay**  
-  ![Overlay]()  
+  ![Overlay](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/prometheus/overlay.gif)  
   *Want a slimmer version? Check out [Slim Fire](https://modrinth.com/resourcepack/slim-fire)!*
 
 - ⚔️ **Custom Fire damage**  
   Entities catching custom fires burn with the correct color and take the appropriate amount of damage per second!  
-  ![Damage]()
+  ![Damage](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/prometheus/damage.gif)
 
 - ⚙️ **Custom Fire properties**  
   You can set the light level, whether rain douses your fire, and associate your torches, campfires, lanterns, and more!  
-  ![Properties]()
 
 - 🎯 **Custom Fire mechanics**  
   For instance, but not limited to, zombies and arrows burning from custom fires set their targets on the correct kind of fire!  
-  ![Mechanics]()
+  ![Arrows](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/prometheus/arrows.gif)
 
 - 💡 **Custom Fire effect**  
   You can set any custom effect for your fire, applied everytime an entity takes damage from your fire!  
-  ![Effect]()
+  ![Effect](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/prometheus/behavior.gif)
 
 - 📚 **New enchantments: Custom Fire Aspect & Custom Flame.**  
   Similar to Fire Aspect and Flame enchantments, but applying your fire instead!  
