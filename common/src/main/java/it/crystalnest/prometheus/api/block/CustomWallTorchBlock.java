@@ -48,7 +48,13 @@ public class CustomWallTorchBlock extends WallTorchBlock implements FireTyped {
    */
   public CustomWallTorchBlock(ResourceLocation fireType, Supplier<SimpleParticleType> type, boolean addDefaultProperties, Properties properties) {
     // noinspection DataFlowIssue
-    super(null, (addDefaultProperties ? addDefaultProperties(properties) : properties).lightLevel(state -> FireManager.light(fireType)).dropsLike(getTorchBlock(fireType)));
+    super(
+      null,
+      (addDefaultProperties ? addDefaultProperties(properties) : properties)
+        .lightLevel(state -> FireManager.light(fireType))
+        .overrideLootTable(getTorchBlock(fireType).getLootTable())
+        .overrideDescription(getTorchBlock(fireType).getDescriptionId())
+    );
     this.fireType = fireType;
     this.type = type;
   }

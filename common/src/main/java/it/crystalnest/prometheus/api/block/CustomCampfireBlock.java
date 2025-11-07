@@ -9,6 +9,11 @@ import it.crystalnest.prometheus.api.block.entity.CustomCampfireBlockEntity;
 import it.crystalnest.prometheus.api.type.FireTyped;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeManager;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -92,13 +97,15 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
   }
 
   /**
-   * Return the {@link CampfireBlockEntity#cookTick(Level, BlockPos, BlockState, CampfireBlockEntity)} override for the custom campfire block entity.<br>
+   * Return the {@link CampfireBlockEntity#cookTick(ServerLevel, BlockPos, BlockState, CampfireBlockEntity, RecipeManager.CachedCheck)} override for the custom campfire block entity.<br>
    * Override to change it with a more specific one if you subclass {@link CustomCampfireBlockEntity}.
+   * The input {@link Level} for the returned {@link BlockEntityTicker} can be safely cast into a {@link ServerLevel} as this method will only be called with a previous check.
    *
-   * @return {@link CampfireBlockEntity#cookTick(Level, BlockPos, BlockState, CampfireBlockEntity)} custom override.
+   * @param cachedCheck {@link RecipeManager.CachedCheck} for fast retrieval of recipes.
+   * @return {@link CampfireBlockEntity#cookTick(ServerLevel, BlockPos, BlockState, CampfireBlockEntity, RecipeManager.CachedCheck)} custom override.
    */
-  protected BlockEntityTicker<CampfireBlockEntity> cookTick() {
-    return CustomCampfireBlockEntity::cookTick;
+  protected <T extends Recipe<SingleRecipeInput>> BlockEntityTicker<CampfireBlockEntity> cookTick(RecipeManager.CachedCheck<SingleRecipeInput, T> cachedCheck) {
+    return (level, pos, state, blockEntity) -> CustomCampfireBlockEntity.cookTickGeneric((ServerLevel) level, pos, state, blockEntity, cachedCheck);
   }
 
   /**
@@ -109,6 +116,16 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
    */
   protected BlockEntityTicker<CampfireBlockEntity> cooldownTick() {
     return CustomCampfireBlockEntity::cooldownTick;
+  }
+
+  /**
+   * Returns the {@link RecipeType#CAMPFIRE_COOKING}.<br>
+   * Override to change it with a different recipe type that better suits your needs.
+   *
+   * @return cooking recipe type.
+   */
+  protected RecipeType<? extends Recipe<SingleRecipeInput>> recipeType() {
+    return RecipeType.CAMPFIRE_COOKING;
   }
 
   @NotNull
@@ -147,7 +164,7 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
     if (level.isClientSide) {
       return state.getValue(LIT) ? createTickerHelper(blockEntityType, customBlockEntityType, particleTick()) : null;
     } else {
-      return state.getValue(LIT) ? createTickerHelper(blockEntityType, customBlockEntityType, cookTick()) : createTickerHelper(blockEntityType, customBlockEntityType, cooldownTick());
+      return state.getValue(LIT) ? createTickerHelper(blockEntityType, customBlockEntityType, cookTick(RecipeManager.createCheck(recipeType()))) : createTickerHelper(blockEntityType, customBlockEntityType, cooldownTick());
     }
   }
 

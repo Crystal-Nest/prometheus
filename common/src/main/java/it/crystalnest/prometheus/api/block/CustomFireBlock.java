@@ -15,8 +15,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -100,7 +100,7 @@ public class CustomFireBlock extends BaseFireBlock implements FireTyped {
 
   @NotNull
   @Override
-  public BlockState updateShape(@NotNull BlockState state, @NotNull Direction direction, @NotNull BlockState state2, @NotNull LevelAccessor level, @NotNull BlockPos pos, @NotNull BlockPos pos2) {
+  protected BlockState updateShape(@NotNull BlockState state, @NotNull LevelReader level, @NotNull ScheduledTickAccess scheduledTickAccess, @NotNull BlockPos pos, @NotNull Direction direction, @NotNull BlockPos neighborPos, @NotNull BlockState neighborState, @NotNull RandomSource random) {
     return canSurvive(state, level, pos) ? getStateWithAge(level, pos, state.getValue(AGE)) : Blocks.AIR.defaultBlockState();
   }
 
@@ -162,14 +162,14 @@ public class CustomFireBlock extends BaseFireBlock implements FireTyped {
   }
 
   /**
-   * Copied from {@link FireBlock#getStateWithAge(LevelAccessor, BlockPos, int)}.
+   * Copied from {@link FireBlock#getStateWithAge(LevelReader, BlockPos, int)}.
    *
    * @param level level.
    * @param pos position.
    * @param age {@link CustomFireBlock#AGE} value.
    * @return correct block state.
    */
-  protected BlockState getStateWithAge(LevelAccessor level, BlockPos pos, int age) {
+  protected BlockState getStateWithAge(LevelReader level, BlockPos pos, int age) {
     BlockState state = getState(level, pos);
     return state.hasProperty(AGE) ? state.setValue(AGE, age) : state;
   }
