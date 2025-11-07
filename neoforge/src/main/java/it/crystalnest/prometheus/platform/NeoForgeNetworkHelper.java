@@ -23,7 +23,7 @@ public final class NeoForgeNetworkHelper implements NetworkHelper {
    * @param event {@link RegisterPayloadHandlersEvent}.
    */
   private static void registerPackets(RegisterPayloadHandlersEvent event) {
-    PayloadRegistrar registrar = event.registrar("1.21-4.0");
+    PayloadRegistrar registrar = event.registrar("1.21-1.0");
     registrar.playToClient(RegisterFirePacket.TYPE, RegisterFirePacket.CODEC, (packet, context) -> FirePacketHandler.handle(packet));
     registrar.playToClient(UnregisterFirePacket.TYPE, UnregisterFirePacket.CODEC, (packet, context) -> FirePacketHandler.handle(packet));
   }

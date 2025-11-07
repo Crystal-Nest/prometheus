@@ -9,7 +9,11 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Nothing new.
 
-## [1.0.0] - 2025/11/06
+## [v1.0.0] - 2025/11/06
+
+- Port to 1.21.6/1.21.7/1.21.8.
+
+## [v1.0.0] - 2025/11/06
 
 - Ported Soul Fire'd API.
 - Updated 1.21/1.21.1 to match 1.21.3+ interface.
@@ -18,4 +22,4 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 [Unreleased]: https://github.com/crystal-nest/prometheus
 [README]: https://github.com/crystal-nest/prometheus#readme
 
-[1.0.0]: https://github.com/crystal-nest/prometheus/releases?q=1.0.0
+[v1.0.0]: https://github.com/crystal-nest/prometheus/releases?q=1.0.0
