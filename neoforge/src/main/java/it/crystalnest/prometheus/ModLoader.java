@@ -1,7 +1,13 @@
 package it.crystalnest.prometheus;
 
+import it.crystalnest.prometheus.attachment.AttachmentRegistry;
+import it.crystalnest.prometheus.handler.FireResourceReloadListener;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -23,6 +29,8 @@ public final class ModLoader {
   public ModLoader(IEventBus bus) {
     ModLoader.bus = bus;
     CommonModLoader.init();
+    AttachmentRegistry.register(bus);
+    registerResourceLoader();
   }
 
   /**
@@ -32,5 +40,13 @@ public final class ModLoader {
    */
   public static IEventBus getBus() {
     return bus;
+  }
+
+  /**
+   * Registers the resource loader for DDFs.
+   */
+  private void registerResourceLoader() {
+    NeoForge.EVENT_BUS.addListener((AddServerReloadListenersEvent event) -> event.addListener(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, Constants.DDFIRES), new FireResourceReloadListener()));
+    NeoForge.EVENT_BUS.addListener((OnDatapackSyncEvent event) -> FireResourceReloadListener.handle(event.getPlayer()));
   }
 }

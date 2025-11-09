@@ -161,7 +161,7 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
   @Override
   public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> blockEntityType) {
     BlockEntityType<CustomCampfireBlockEntity> customBlockEntityType = getBlockEntityType();
-    if (level.isClientSide) {
+    if (level.isClientSide()) {
       return state.getValue(LIT) ? createTickerHelper(blockEntityType, customBlockEntityType, particleTick()) : null;
     } else {
       return state.getValue(LIT) ? createTickerHelper(blockEntityType, customBlockEntityType, cookTick(RecipeManager.createCheck(recipeType()))) : createTickerHelper(blockEntityType, customBlockEntityType, cooldownTick());

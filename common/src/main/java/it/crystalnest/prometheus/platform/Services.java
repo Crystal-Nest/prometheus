@@ -1,6 +1,7 @@
 package it.crystalnest.prometheus.platform;
 
 import it.crystalnest.prometheus.Constants;
+import it.crystalnest.prometheus.platform.services.AttachmentHelper;
 import it.crystalnest.prometheus.platform.services.NetworkHelper;
 import it.crystalnest.prometheus.platform.services.PlatformHelper;
 
@@ -20,6 +21,11 @@ public final class Services {
    * Provides networking handling.
    */
   public static final NetworkHelper NETWORK = load(NetworkHelper.class);
+
+  /**
+   * Provides access to entity data attachments.
+   */
+  public static final AttachmentHelper ATTACHMENT = load(AttachmentHelper.class);
 
   private Services() {}
 

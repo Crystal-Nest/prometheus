@@ -90,7 +90,7 @@ public class CustomFireBlock extends BaseFireBlock implements FireTyped {
    * @return combination of initial and default properties.
    */
   private static Properties addDefaultProperties(Properties properties) {
-    return properties.replaceable().noCollission().instabreak().sound(SoundType.WOOL).pushReaction(PushReaction.DESTROY);
+    return properties.replaceable().noCollision().instabreak().sound(SoundType.WOOL).pushReaction(PushReaction.DESTROY);
   }
 
   @Override

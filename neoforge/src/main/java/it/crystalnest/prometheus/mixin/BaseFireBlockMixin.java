@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(BaseFireBlock.class)
 public abstract class BaseFireBlockMixin implements FireTypeChanger {
   /**
-   * Wraps the call to {@link Entity#hurt(DamageSource, float)} inside the method {@link BaseFireBlock#entityInside(BlockState, Level, BlockPos, Entity, InsideBlockEffectApplier)}.<br>
+   * Wraps the call to {@link Entity#hurt(DamageSource, float)} inside the method {@link BaseFireBlock#entityInside(BlockState, Level, BlockPos, Entity, InsideBlockEffectApplier, boolean)}.<br>
    * Hurts the entity with the correct fire damage and {@link DamageSource}.
    *
    * @param instance {@link Entity} invoking (owning) the redirected method.

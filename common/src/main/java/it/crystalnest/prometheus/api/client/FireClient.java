@@ -2,7 +2,6 @@ package it.crystalnest.prometheus.api.client;
 
 import it.crystalnest.prometheus.api.FireManager;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.resources.ResourceLocation;
 
@@ -65,24 +64,6 @@ public final class FireClient {
    */
   public Material getMaterial1() {
     return material1;
-  }
-
-  /**
-   * Returns this sprite 0.
-   *
-   * @return this sprite 0.
-   */
-  public TextureAtlasSprite getSprite0() {
-    return material0.sprite();
-  }
-
-  /**
-   * Returns this sprite 1.
-   *
-   * @return this sprite 1.
-   */
-  public TextureAtlasSprite getSprite1() {
-    return material1.sprite();
   }
 
   @Override

@@ -23,18 +23,18 @@ import java.util.Optional;
 /**
  * Resource reload listener for syncing ddfires.
  */
-public class FireResourceReloadListener extends SimpleJsonResourceReloadListener<FireResourceReloadListener.DDFires> {
+public final class FireResourceReloadListener extends SimpleJsonResourceReloadListener<FireResourceReloadListener.DDFires> {
   /**
    * Current ddfires to unregister (previous registered ddfires).
    */
-  protected static final ArrayList<ResourceLocation> ddfiresUnregister = new ArrayList<>();
+  private static final ArrayList<ResourceLocation> ddfiresUnregister = new ArrayList<>();
 
   /**
    * Current registered ddfires.
    */
-  protected static final ArrayList<ResourceLocation> ddfiresRegister = new ArrayList<>();
+  private static final ArrayList<ResourceLocation> ddfiresRegister = new ArrayList<>();
 
-  protected FireResourceReloadListener() {
+  public FireResourceReloadListener() {
     super(DDFires.CODEC, FileToIdConverter.json("fires"));
   }
 
@@ -43,7 +43,7 @@ public class FireResourceReloadListener extends SimpleJsonResourceReloadListener
    *
    * @param player {@link ServerPlayer} to which the data is being sent.
    */
-  protected static void handle(@Nullable ServerPlayer player) {
+  public static void handle(@Nullable ServerPlayer player) {
     for (ResourceLocation fireType : ddfiresUnregister) {
       Services.NETWORK.sendToClient(player, fireType);
     }

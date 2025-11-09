@@ -3,6 +3,7 @@ package it.crystalnest.prometheus.api.client;
 import it.crystalnest.prometheus.Constants;
 import it.crystalnest.prometheus.api.Fire;
 import it.crystalnest.prometheus.api.FireManager;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
@@ -128,10 +129,7 @@ public final class FireClientManager {
    * @return the sprite 0 of the {@link FireClient}.
    */
   public static TextureAtlasSprite getSprite0(ResourceLocation fireType) {
-    if (FireManager.isRegisteredType(fireType) && FIRES.containsKey(fireType)) {
-      return FIRES.get(fireType).getSprite0();
-    }
-    return ModelBakery.FIRE_0.sprite();
+    return Minecraft.getInstance().getAtlasManager().get(FireManager.isRegisteredType(fireType) && FIRES.containsKey(fireType) ? FIRES.get(fireType).getMaterial0() : ModelBakery.FIRE_0);
   }
 
   /**
@@ -142,9 +140,6 @@ public final class FireClientManager {
    * @return the sprite 1 of the {@link FireClient} registered with the given {@code fireType}.
    */
   public static TextureAtlasSprite getSprite1(ResourceLocation fireType) {
-    if (FireManager.isRegisteredType(fireType) && FIRES.containsKey(fireType)) {
-      return FIRES.get(fireType).getSprite1();
-    }
-    return ModelBakery.FIRE_1.sprite();
+    return Minecraft.getInstance().getAtlasManager().get(FireManager.isRegisteredType(fireType) && FIRES.containsKey(fireType) ? FIRES.get(fireType).getMaterial1() : ModelBakery.FIRE_1);
   }
 }

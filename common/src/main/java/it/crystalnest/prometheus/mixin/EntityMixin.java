@@ -5,11 +5,9 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import it.crystalnest.prometheus.QuadriFunction;
 import it.crystalnest.prometheus.api.Fire;
 import it.crystalnest.prometheus.api.FireManager;
-import it.crystalnest.prometheus.api.type.FireTypeSynched;
+import it.crystalnest.prometheus.api.type.FireTypeChanger;
 import it.crystalnest.prometheus.api.type.FireTyped;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
+import it.crystalnest.prometheus.platform.Services;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
@@ -17,10 +15,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -29,20 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Injects into {@link Entity} to alter Fire behavior for consistency.
  */
 @Mixin(Entity.class)
-public abstract class EntityMixin implements FireTypeSynched {
-  /**
-   * {@link EntityDataAccessor} to synchronize the Fire Type across client and server.
-   */
-  @Unique
-  private static final EntityDataAccessor<String> DATA_FIRE_TYPE = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.STRING);
-
-  /**
-   * Shadowed {@link Entity#entityData}.
-   */
-  @Final
-  @Shadow
-  protected SynchedEntityData entityData;
-
+public abstract class EntityMixin implements FireTypeChanger {
   /**
    * Shadowed {@link Entity#level}.
    */
@@ -67,19 +50,14 @@ public abstract class EntityMixin implements FireTypeSynched {
 
   @Override
   public ResourceLocation getFireType() {
-    return ResourceLocation.tryParse(entityData.get(DATA_FIRE_TYPE));
+    return Services.ATTACHMENT.getFireType((Entity) (Object) this);
   }
 
   @Override
   public void setFireType(ResourceLocation fireType) {
     if (!this.fireImmune()) {
-      entityData.set(DATA_FIRE_TYPE, FireManager.ensure(fireType).toString());
+      Services.ATTACHMENT.setFireType((Entity) (Object) this, fireType);
     }
-  }
-
-  @Override
-  public EntityDataAccessor<String> fireTypeAccessor() {
-    return DATA_FIRE_TYPE;
   }
 
   /**
@@ -119,9 +97,10 @@ public abstract class EntityMixin implements FireTypeSynched {
    */
   @Inject(method = "setRemainingFireTicks", at = @At(value = "HEAD"))
   private void onSetRemainingFireTicks(int ticks, CallbackInfo ci) {
-    if (!level.isClientSide && ticks >= getRemainingFireTicks()) {
+    if (!level.isClientSide() && ticks >= getRemainingFireTicks()) {
       setFireType(FireManager.DEFAULT_FIRE_TYPE);
     }
+
   }
 
   /**
