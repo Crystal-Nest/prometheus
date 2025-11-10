@@ -13,8 +13,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -100,30 +98,5 @@ public abstract class EntityMixin implements FireTypeChanger {
     if (!level.isClientSide() && ticks >= getRemainingFireTicks()) {
       setFireType(FireManager.DEFAULT_FIRE_TYPE);
     }
-
-  }
-
-  /**
-   * Injects in the method {@link Entity#saveWithoutId(ValueOutput)} before the invocation of {@link Entity#addAdditionalSaveData(ValueOutput)}.<br>
-   * If valid, saves the current Fire Type in the given {@link ValueOutput}.
-   *
-   * @param output {@link ValueOutput}.
-   * @param ci {@link CallbackInfo}.
-   */
-  @Inject(method = "saveWithoutId", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;addAdditionalSaveData(Lnet/minecraft/world/level/storage/ValueOutput;)V"))
-  private void onSaveWithoutId(ValueOutput output, CallbackInfo ci) {
-    FireManager.writeTag(output, getFireType());
-  }
-
-  /**
-   * Injects in the method {@link Entity#load(ValueInput)} before the invocation of {@link Entity#readAdditionalSaveData(ValueInput)}.<br>
-   * Loads the Fire Type from the given {@link ValueInput}.
-   *
-   * @param input {@link ValueInput}.
-   * @param ci {@link CallbackInfo}.
-   */
-  @Inject(method = "load", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;readAdditionalSaveData(Lnet/minecraft/world/level/storage/ValueInput;)V"))
-  private void onLoad(ValueInput input, CallbackInfo ci) {
-    setFireType(FireManager.readTag(input));
   }
 }
