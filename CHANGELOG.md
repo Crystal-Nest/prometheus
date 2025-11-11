@@ -14,7 +14,7 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Port to 1.21.10.
 
-## [v1.0.0] - 2025/11/09
+## [v1.0.0] - 2025/11/10
 
 - Port to 1.21.10.
 
