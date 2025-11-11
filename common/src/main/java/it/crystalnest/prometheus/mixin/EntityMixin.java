@@ -35,6 +35,12 @@ public abstract class EntityMixin implements FireTypeSynched {
   private static final EntityDataAccessor<String> DATA_FIRE_TYPE = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.STRING);
 
   /**
+   * ID of the tag used to save fire type.
+   */
+  @Unique
+  private static final String FIRE_TYPE_TAG = "FireType";
+
+  /**
    * Shadowed {@link Entity#entityData}.
    */
   @Final
@@ -131,7 +137,7 @@ public abstract class EntityMixin implements FireTypeSynched {
    */
   @Inject(method = "saveWithoutId", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;addAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V"))
   private void onSaveWithoutId(CompoundTag tag, CallbackInfoReturnable<CompoundTag> cir) {
-    FireManager.writeTag(tag, getFireType());
+    tag.putString(FIRE_TYPE_TAG, FireManager.ensure(getFireType()).toString());
   }
 
   /**
@@ -143,6 +149,6 @@ public abstract class EntityMixin implements FireTypeSynched {
    */
   @Inject(method = "load", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V"))
   private void onLoad(CompoundTag tag, CallbackInfo ci) {
-    setFireType(FireManager.readTag(tag));
+    setFireType(FireManager.ensure(ResourceLocation.tryParse(tag.getString(FIRE_TYPE_TAG))));
   }
 }

@@ -24,16 +24,16 @@ import java.util.function.Function;
 /**
  * Resource reload listener for syncing ddfires.
  */
-public abstract class FireResourceReloadListener extends SimpleJsonResourceReloadListener {
+public class FireResourceReloadListener extends SimpleJsonResourceReloadListener {
   /**
    * Current ddfires to unregister (previous registered ddfires).
    */
-  protected static final ArrayList<ResourceLocation> ddfiresUnregister = new ArrayList<>();
+  private static final ArrayList<ResourceLocation> ddfiresUnregister = new ArrayList<>();
 
   /**
    * Current registered ddfires.
    */
-  protected static final ArrayList<ResourceLocation> ddfiresRegister = new ArrayList<>();
+  private static final ArrayList<ResourceLocation> ddfiresRegister = new ArrayList<>();
 
   /**
    * JSON field name for a Fire's source block.
@@ -45,7 +45,7 @@ public abstract class FireResourceReloadListener extends SimpleJsonResourceReloa
    */
   private static final String CAMPFIRE_FIELD_NAME = "campfire";
 
-  protected FireResourceReloadListener() {
+  public FireResourceReloadListener() {
     super(new Gson(), "fires");
   }
 
@@ -54,7 +54,7 @@ public abstract class FireResourceReloadListener extends SimpleJsonResourceReloa
    *
    * @param player {@link ServerPlayer} to which the data is being sent.
    */
-  protected static void handle(@Nullable ServerPlayer player) {
+  public static void handle(@Nullable ServerPlayer player) {
     for (ResourceLocation fireType : ddfiresUnregister) {
       Services.NETWORK.sendToClient(player, fireType);
     }

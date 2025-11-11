@@ -22,7 +22,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -59,11 +58,6 @@ import java.util.function.Supplier;
  * Static manager for registered Fires.
  */
 public final class FireManager {
-  /**
-   * ID of the tag used to save fire type.
-   */
-  public static final String FIRE_TYPE_TAG = "FireType";
-
   /**
    * Fire type of Vanilla Fire.
    */
@@ -180,6 +174,7 @@ public final class FireManager {
       Constants.LOGGER.error("Fire [{}] was already registered with the following value: {}", fireType, getFire(fireType));
       return null;
     }
+    Constants.LOGGER.debug("Successfully registered Fire [{}]", fire);
     return fire;
   }
 
@@ -797,27 +792,6 @@ public final class FireManager {
    */
   public static List<String> getModIds() {
     return FIRES.keySet().stream().map(ResourceLocation::getNamespace).toList();
-  }
-
-  /**
-   * Writes to the given {@link CompoundTag} the given {@code fireType}.<br>
-   * If the given {@code fireType} is not registered, {@link #DEFAULT_FIRE_TYPE} will be used instead.
-   *
-   * @param tag {@link CompoundTag} to write to.
-   * @param fireType fire type to save.
-   */
-  public static void writeTag(CompoundTag tag, @Nullable ResourceLocation fireType) {
-    tag.putString(FIRE_TYPE_TAG, ensure(fireType).toString());
-  }
-
-  /**
-   * Reads the fire type from the given {@link CompoundTag}.
-   *
-   * @param tag {@link CompoundTag} to read from.
-   * @return the fire type read from the given {@link CompoundTag}.
-   */
-  public static ResourceLocation readTag(CompoundTag tag) {
-    return ensure(ResourceLocation.tryParse(tag.getString(FIRE_TYPE_TAG)));
   }
 
   /**

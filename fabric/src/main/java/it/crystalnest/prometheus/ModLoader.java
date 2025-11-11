@@ -1,6 +1,7 @@
 package it.crystalnest.prometheus;
 
 import it.crystalnest.prometheus.handler.FabricFireResourceReloadListener;
+import it.crystalnest.prometheus.handler.FireResourceReloadListener;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -15,7 +16,14 @@ public final class ModLoader implements ModInitializer {
   @Override
   public void onInitialize() {
     CommonModLoader.init();
-    ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register(FabricFireResourceReloadListener::handle);
+    registerResourceLoader();
+  }
+
+  /**
+   * Registers the resource loader for DDFs.
+   */
+  private void registerResourceLoader() {
+    ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> FireResourceReloadListener.handle(player));
     ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new FabricFireResourceReloadListener());
   }
 }
