@@ -63,11 +63,6 @@ import java.util.function.Supplier;
  */
 public final class FireManager {
   /**
-   * ID of the tag used to save fire type.
-   */
-  public static final String FIRE_TYPE_TAG = "FireType";
-
-  /**
    * Fire type of Vanilla Fire.
    */
   public static final ResourceLocation DEFAULT_FIRE_TYPE = ResourceLocation.withDefaultNamespace("");
@@ -183,6 +178,7 @@ public final class FireManager {
       Constants.LOGGER.error("Fire [{}] was already registered with the following value: {}", fireType, getFire(fireType));
       return null;
     }
+    Constants.LOGGER.debug("Successfully registered Fire [{}]", fire);
     return fire;
   }
 
@@ -786,27 +782,6 @@ public final class FireManager {
    */
   public static List<String> getModIds() {
     return FIRES.keySet().stream().map(ResourceLocation::getNamespace).toList();
-  }
-
-  /**
-   * Writes to the given {@link ValueOutput} the given {@code fireType}.<br>
-   * If the given {@code fireType} is not registered, {@link #DEFAULT_FIRE_TYPE} will be used instead.
-   *
-   * @param output {@link ValueOutput} to write to.
-   * @param fireType fire type to save.
-   */
-  public static void writeTag(ValueOutput output, @Nullable ResourceLocation fireType) {
-    output.putString(FIRE_TYPE_TAG, ensure(fireType).toString());
-  }
-
-  /**
-   * Reads the fire type from the given {@link ValueInput}.
-   *
-   * @param input {@link ValueInput} to read from.
-   * @return the fire type read from the given {@link ValueInput}.
-   */
-  public static ResourceLocation readTag(ValueInput input) {
-    return ensure(ResourceLocation.tryParse(input.getStringOr(FIRE_TYPE_TAG, "")));
   }
 
   /**
