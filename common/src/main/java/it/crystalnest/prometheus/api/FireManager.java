@@ -183,6 +183,7 @@ public final class FireManager {
       Constants.LOGGER.error("Fire [{}] was already registered with the following value: {}", fireType, getFire(fireType));
       return null;
     }
+    Constants.LOGGER.debug("Successfully registered Fire [{}]", fire);
     return fire;
   }
 
