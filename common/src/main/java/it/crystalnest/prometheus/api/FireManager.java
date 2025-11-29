@@ -64,6 +64,11 @@ public final class FireManager {
   public static final ResourceLocation DEFAULT_FIRE_TYPE = ResourceLocation.withDefaultNamespace("");
 
   /**
+   * Fire type of Soul Fire.
+   */
+  public static final ResourceLocation SOUL_FIRE_TYPE = ResourceLocation.withDefaultNamespace("soul");
+
+  /**
    * Default {@link Fire} used as fallback to retrieve default properties.
    */
   @SuppressWarnings("DataFlowIssue")
