@@ -14,23 +14,23 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 - Added Soul Fire type into `FireManager`.
 - 1.21.10 only: added Copper Fire type into `FireManager`.
 
-## [v1.1.1] - 2025/11/17
+## [v1.1.1] - 2025/11/26
 
-- Fix crash on NeoForge.
+- Fixed [#6](https://github.com/Crystal-Nest/prometheus/issues/6), mod crashing on NeoForge when many mods are loaded.
 
 ## [v1.1.0] - 2025/11/11
 
-- Port to 1.21.10.
-- Fix [#2](https://github.com/Crystal-Nest/prometheus/issues/2), fire overlays not displaying correctly on Fabric.
+- Ported to 1.21.10.
+- Fixed [#2](https://github.com/Crystal-Nest/prometheus/issues/2), fire overlays not displaying correctly on Fabric.
 - Minor improvements to the API.
 
 ## [v1.0.0] - 2025/11/10
 
-- Port to 1.21.10.
+- Ported to 1.21.10.
 
 ## [v1.0.0] - 2025/11/08
 
-- Port to 1.21.6/1.21.7/1.21.8.
+- Ported to 1.21.6/1.21.7/1.21.8.
 
 ## [v1.0.0] - 2025/11/06
 
