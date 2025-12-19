@@ -31,7 +31,7 @@ public class CustomLanternBlock extends LanternBlock implements FireTyped {
    * @param properties block properties.
    */
   public CustomLanternBlock(ResourceLocation fireType, boolean addDefaultProperties, Properties properties) {
-    super((addDefaultProperties ? addDefaultProperties(properties) : properties).lightLevel(state -> FireManager.light(fireType)));
+    super((addDefaultProperties ? addDefaultProperties(properties) : properties).lightLevel(FireManager.lightLevel(fireType)));
     this.fireType = fireType;
   }
 

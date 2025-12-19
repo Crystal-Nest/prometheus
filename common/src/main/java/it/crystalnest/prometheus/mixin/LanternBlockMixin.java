@@ -1,19 +1,19 @@
-package it.crystalnest.prometheus.mixin.client;
+package it.crystalnest.prometheus.mixin;
 
 import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.api.type.FireTypeChanger;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.LanternBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 /**
- * Injects into {@link EntityRenderState} to alter Fire behavior for consistency.
+ * Injects into {@link LanternBlock} to alter Fire behavior for consistency.
  */
-@Mixin(EntityRenderState.class)
-public class EntityRenderStateMixin implements FireTypeChanger {
+@Mixin(LanternBlock.class)
+public abstract class LanternBlockMixin implements FireTypeChanger {
   /**
-   * Fire type.
+   * Fire Type.
    */
   @Unique
   private ResourceLocation fireType;

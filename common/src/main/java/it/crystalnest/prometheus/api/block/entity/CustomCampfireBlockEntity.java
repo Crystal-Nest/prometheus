@@ -61,6 +61,11 @@ public class CustomCampfireBlockEntity extends CampfireBlockEntity {
     }
   }
 
+  @Override
+  public boolean isValidBlockState(@NotNull BlockState state) {
+    return getType().isValid(state);
+  }
+
   @NotNull
   @Override
   public BlockEntityType<?> getType() {

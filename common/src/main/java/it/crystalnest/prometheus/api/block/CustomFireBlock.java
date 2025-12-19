@@ -77,7 +77,7 @@ public class CustomFireBlock extends BaseFireBlock implements FireTyped {
    * @param properties block properties.
    */
   public CustomFireBlock(ResourceLocation fireType, TagKey<Block> base, boolean addDefaultProperties, Properties properties) {
-    super((addDefaultProperties ? addDefaultProperties(properties) : properties).lightLevel(state -> FireManager.light(fireType)), FireManager.getProperty(fireType, Fire::getDamage));
+    super((addDefaultProperties ? addDefaultProperties(properties) : properties).lightLevel(FireManager.lightLevel(fireType)), FireManager.getProperty(fireType, Fire::getDamage));
     registerDefaultState(stateDefinition.any().setValue(AGE, 0));
     this.fireType = fireType;
     this.base = base;
@@ -106,7 +106,8 @@ public class CustomFireBlock extends BaseFireBlock implements FireTyped {
 
   @Override
   public boolean canSurvive(@NotNull BlockState state, @NotNull LevelReader level, @NotNull BlockPos pos) {
-    return canSurvive(level.getBlockState(pos.below()));
+    BlockPos below = pos.below();
+    return canSurvive(level.getBlockState(below)) && level.getBlockState(below).isFaceSturdy(level, below, Direction.UP);
   }
 
   /**

@@ -9,6 +9,21 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Nothing new.
 
+## [v1.2.0] - 2025/12/19
+
+- Fixed `CustomCampfireBlockEntity`, preventing crashes when placing campfires.
+- Fixed `CustomFireBlock` to "survive" only when on a sturdy block face.
+- Fire Components can now support multiple values.
+- Added lantern, torch, and wall torch fields in DDFs.
+- DDFs fields `source`, `campfire`, `lantern`, `torch`, and `wallTorch` now accept either a string or a list of strings, as long as every string is a valid `ResourceLocation`.
+- `LanternBlock` and `TorchBlock` now implement `FireTypeChanger`.
+- Most implementations of `FireTypeChanger` now `ensure` their fire type is valid before returning it in `getFireType()`.
+- Methods for fire-related game objects registration have now been moved to the new `FireRegistrar` class, and new methods have been added to support multiple-valued Fire Components.
+- Methods for fire-related game objects registration in `FireManager` have been deprecated, their logic is delegated to `FireRegistrar`, and have been marked for removal.
+- New methods have been added to `Fire`, `Fire.Builder`, and `FireManager` to support multiple-valued Fire Components.
+- Added new constructor to `CustomWallTorchBlock` to support multiple-valued Fire Components.
+- JavaDoc has been updated for all the above changes, along with the [Wiki](https://github.com/Crystal-Nest/prometheus/wiki).
+
 ## [v1.1.2] - 2025/11/29
 
 - Added Soul Fire type into `FireManager`.
@@ -41,6 +56,7 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 [Unreleased]: https://github.com/crystal-nest/prometheus
 [README]: https://github.com/crystal-nest/prometheus#readme
 
+[v1.2.0]: https://github.com/crystal-nest/prometheus/releases?q=1.2.0
 [v1.1.2]: https://github.com/crystal-nest/prometheus/releases?q=1.1.2
 [v1.1.1]: https://github.com/crystal-nest/prometheus/releases?q=1.1.1
 [v1.1.0]: https://github.com/crystal-nest/prometheus/releases?q=1.1.0
