@@ -58,6 +58,6 @@ public abstract class BaseFireBlockCommonMixin implements FireTypeChanger {
 
   @Override
   public void setFireType(ResourceLocation fireType) {
-    this.fireType = fireType;
+    this.fireType = FireManager.ensure(fireType);
   }
 }

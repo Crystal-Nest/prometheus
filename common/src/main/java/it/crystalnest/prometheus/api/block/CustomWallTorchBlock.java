@@ -51,9 +51,28 @@ public class CustomWallTorchBlock extends WallTorchBlock implements FireTyped {
     super(
       null,
       (addDefaultProperties ? addDefaultProperties(properties) : properties)
-        .lightLevel(state -> FireManager.light(fireType))
+        .lightLevel(FireManager.lightLevel(fireType))
         .overrideLootTable(getTorchBlock(fireType).getLootTable())
         .overrideDescription(getTorchBlock(fireType).getDescriptionId())
+    );
+    this.fireType = fireType;
+    this.type = type;
+  }
+
+  /**
+   * @param fireType fire type.
+   * @param type particle type.
+   * @param addDefaultProperties whether to add default block properties.
+   * @param properties block properties.
+   */
+  public CustomWallTorchBlock(ResourceLocation fireType, Supplier<SimpleParticleType> type, String torchId, boolean addDefaultProperties, Properties properties) {
+    // noinspection DataFlowIssue
+    super(
+      null,
+      (addDefaultProperties ? addDefaultProperties(properties) : properties)
+        .lightLevel(FireManager.lightLevel(fireType))
+        .overrideLootTable(getTorchBlock(fireType, torchId).getLootTable())
+        .overrideDescription(getTorchBlock(fireType, torchId).getDescriptionId())
     );
     this.fireType = fireType;
     this.type = type;
@@ -70,7 +89,8 @@ public class CustomWallTorchBlock extends WallTorchBlock implements FireTyped {
   }
 
   /**
-   * Returns the required {@link Fire.Component#TORCH_BLOCK}.
+   * Returns the required {@link Fire.Component#TORCH_BLOCK}.<br>
+   * Use {@link #getTorchBlock(ResourceLocation, String)} to select a specific torch out of the (possibly) many ones associated with this fire.
    *
    * @param fireType fire type.
    * @return related {@link Fire.Component#TORCH_BLOCK}.
@@ -79,12 +99,20 @@ public class CustomWallTorchBlock extends WallTorchBlock implements FireTyped {
     return FireManager.getRequiredComponent(fireType, Fire.Component.TORCH_BLOCK);
   }
 
+  /**
+   * Returns the required {@link Fire.Component#TORCH_BLOCK}.
+   *
+   * @param fireType fire type.
+   * @param torchId block ID of the corresponding torch block.
+   * @return related {@link Fire.Component#TORCH_BLOCK}.
+   */
+  public static Block getTorchBlock(ResourceLocation fireType, String torchId) {
+    return FireManager.getRequiredComponent(fireType, Fire.Component.TORCH_BLOCK, torchId);
+  }
+
   @Override
   public void animateTick(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull RandomSource random) {
-    // noinspection ConstantValue
-    if (flameParticle == null) {
-      flameParticle = type.get();
-    }
+    flameParticle = type.get();
     super.animateTick(state, level, pos, random);
   }
 

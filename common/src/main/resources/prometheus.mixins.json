@@ -9,7 +9,9 @@
     "BaseFireBlockCommonMixin",
     "CampfireBlockMixin",
     "EntityMixin",
+    "LanternBlockMixin",
     "SynchedEntityDataBuilderMixin",
+    "TorchBlockMixin",
     "ZombieMixin"
   ],
   "client": [

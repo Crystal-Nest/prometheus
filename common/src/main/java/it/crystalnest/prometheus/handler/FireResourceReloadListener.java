@@ -1,5 +1,6 @@
 package it.crystalnest.prometheus.handler;
 
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.crystalnest.prometheus.Constants;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * Resource reload listener for syncing ddfires.
@@ -89,9 +91,12 @@ public class FireResourceReloadListener extends SimpleJsonResourceReloadListener
           Fire.Builder builder = FireManager.fireBuilder(fireType)
             .setDamage(fire.damage.orElse(Fire.Builder.DEFAULT_DAMAGE))
             .setInvertHealAndHarm(fire.invertHealAndHarm.orElse(Fire.Builder.DEFAULT_INVERT_HEAL_AND_HARM))
-            .removeComponents(Fire.Component.CAMPFIRE_ITEM, Fire.Component.LANTERN_BLOCK, Fire.Component.LANTERN_ITEM, Fire.Component.TORCH_BLOCK, Fire.Component.TORCH_ITEM, Fire.Component.WALL_TORCH_BLOCK, Fire.Component.FLAME_PARTICLE);
-          removeOrSet(builder, fire.source, Fire.Component.SOURCE_BLOCK);
-          removeOrSet(builder, fire.campfire, Fire.Component.CAMPFIRE_BLOCK);
+            .removeComponents(Fire.Component.CAMPFIRE_ITEM, Fire.Component.LANTERN_ITEM, Fire.Component.TORCH_ITEM, Fire.Component.FLAME_PARTICLE);
+          removeOrSet(builder, fire.sources, Fire.Component.SOURCE_BLOCK);
+          removeOrSet(builder, fire.campfires, Fire.Component.CAMPFIRE_BLOCK);
+          removeOrSet(builder, fire.lanterns, Fire.Component.LANTERN_BLOCK);
+          removeOrSet(builder, fire.torches, Fire.Component.TORCH_BLOCK);
+          removeOrSet(builder, fire.wallTorches, Fire.Component.WALL_TORCH_BLOCK);
           registerFire(fireType, builder.build());
         }
       } else {
@@ -104,17 +109,17 @@ public class FireResourceReloadListener extends SimpleJsonResourceReloadListener
    * Either removes the specified component or sets its value to the provided reference.
    *
    * @param builder {@link Fire.Builder}.
-   * @param reference component optional value.
+   * @param references component optional value.
    * @param component {@link Fire.Component} to set.
    */
-  private void removeOrSet(Fire.Builder builder, Optional<ResourceLocation> reference, Fire.Component<?, ?> component) {
-    if (reference.isPresent()) {
-      if ((reference.get().getNamespace().equalsIgnoreCase(ResourceLocation.DEFAULT_NAMESPACE) || reference.get().getNamespace().equalsIgnoreCase(Constants.MOD_ID)) && reference.get().getPath().equalsIgnoreCase("remove")) {
+  private void removeOrSet(Fire.Builder builder, Optional<List<ResourceLocation>> references, Fire.Component<?, ?> component) {
+    references.ifPresent(list -> {
+      if (list.isEmpty() || (list.getFirst().getPath().equalsIgnoreCase("remove") && (list.getFirst().getNamespace().equalsIgnoreCase(ResourceLocation.DEFAULT_NAMESPACE) || list.getFirst().getNamespace().equalsIgnoreCase(Constants.MOD_ID)))) {
         builder.removeComponent(component);
       } else {
-        builder.setComponent(component, reference.get());
+        builder.setComponent(component, list.toArray(ResourceLocation[]::new));
       }
-    }
+    });
   }
 
   /**
@@ -123,10 +128,22 @@ public class FireResourceReloadListener extends SimpleJsonResourceReloadListener
    * @param fire fire id.
    * @param damage {@link Fire#invertHealAndHarm}.
    * @param invertHealAndHarm {@link Fire#invertHealAndHarm}.
-   * @param source {@link Fire.Component#SOURCE_BLOCK}.
-   * @param campfire {@link Fire.Component#CAMPFIRE_BLOCK}.
+   * @param sources {@link Fire.Component#SOURCE_BLOCK}.
+   * @param campfires {@link Fire.Component#CAMPFIRE_BLOCK}.
+   * @param lanterns {@link Fire.Component#LANTERN_BLOCK}.
+   * @param torches {@link Fire.Component#TORCH_BLOCK}.
+   * @param wallTorches {@link Fire.Component#WALL_TORCH_BLOCK}.
    */
-  protected record DDFire(String fire, Optional<Float> damage, Optional<Boolean> invertHealAndHarm, Optional<ResourceLocation> source, Optional<ResourceLocation> campfire) {
+  protected record DDFire(
+    String fire,
+    Optional<Float> damage,
+    Optional<Boolean> invertHealAndHarm,
+    Optional<List<ResourceLocation>> sources,
+    Optional<List<ResourceLocation>> campfires,
+    Optional<List<ResourceLocation>> lanterns,
+    Optional<List<ResourceLocation>> torches,
+    Optional<List<ResourceLocation>> wallTorches
+  ) {
     /**
      * Codec.
      */
@@ -134,8 +151,11 @@ public class FireResourceReloadListener extends SimpleJsonResourceReloadListener
       Codec.STRING.fieldOf("fire").forGetter(ddFire -> ddFire.fire),
       Codec.FLOAT.optionalFieldOf("damage").forGetter(ddFire -> ddFire.damage),
       Codec.BOOL.optionalFieldOf("invertHealAndHarm").forGetter(ddFire -> ddFire.invertHealAndHarm),
-      ResourceLocation.CODEC.optionalFieldOf("source").forGetter(ddFire -> ddFire.source),
-      ResourceLocation.CODEC.optionalFieldOf("campfire").forGetter(ddFire -> ddFire.campfire)
+      Codec.either(ResourceLocation.CODEC.listOf(), ResourceLocation.CODEC).xmap(field -> field.map(Function.identity(), List::of), Either::left).optionalFieldOf("source").forGetter(ddFire -> ddFire.sources),
+      Codec.either(ResourceLocation.CODEC.listOf(), ResourceLocation.CODEC).xmap(field -> field.map(Function.identity(), List::of), Either::left).optionalFieldOf("campfire").forGetter(ddFire -> ddFire.campfires),
+      Codec.either(ResourceLocation.CODEC.listOf(), ResourceLocation.CODEC).xmap(field -> field.map(Function.identity(), List::of), Either::left).optionalFieldOf("lantern").forGetter(ddFire -> ddFire.lanterns),
+      Codec.either(ResourceLocation.CODEC.listOf(), ResourceLocation.CODEC).xmap(field -> field.map(Function.identity(), List::of), Either::left).optionalFieldOf("torch").forGetter(ddFire -> ddFire.torches),
+      Codec.either(ResourceLocation.CODEC.listOf(), ResourceLocation.CODEC).xmap(field -> field.map(Function.identity(), List::of), Either::left).optionalFieldOf("wallTorch").forGetter(ddFire -> ddFire.wallTorches)
     ).apply(instance, DDFire::new));
   }
 

@@ -46,7 +46,7 @@ public class CustomTorchBlock extends TorchBlock implements FireTyped {
    */
   public CustomTorchBlock(ResourceLocation fireType, Supplier<SimpleParticleType> type, boolean addDefaultProperties, Properties properties) {
     // noinspection DataFlowIssue
-    super(null, (addDefaultProperties ? addDefaultProperties(properties) : properties).lightLevel(state -> FireManager.light(fireType)));
+    super(null, (addDefaultProperties ? addDefaultProperties(properties) : properties).lightLevel(FireManager.lightLevel(fireType)));
     this.fireType = fireType;
     this.type = type;
   }
@@ -63,10 +63,7 @@ public class CustomTorchBlock extends TorchBlock implements FireTyped {
 
   @Override
   public void animateTick(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull RandomSource random) {
-    // noinspection ConstantValue
-    if (flameParticle == null) {
-      flameParticle = type.get();
-    }
+    flameParticle = type.get();
     super.animateTick(state, level, pos, random);
   }
 

@@ -1,10 +1,7 @@
 package it.crystalnest.prometheus.api;
 
 import it.crystalnest.cobweb.api.block.entity.DynamicBlockEntityType;
-import it.crystalnest.cobweb.api.pack.dynamic.DynamicDataPack;
-import it.crystalnest.cobweb.api.pack.dynamic.DynamicTagBuilder;
 import it.crystalnest.cobweb.api.registry.CobwebEntry;
-import it.crystalnest.cobweb.api.registry.CobwebRegister;
 import it.crystalnest.cobweb.api.registry.CobwebRegistry;
 import it.crystalnest.prometheus.Constants;
 import it.crystalnest.prometheus.QuadriFunction;
@@ -17,7 +14,6 @@ import it.crystalnest.prometheus.api.block.entity.CustomCampfireBlockEntity;
 import it.crystalnest.prometheus.api.type.FireTypeChanger;
 import it.crystalnest.prometheus.api.type.FireTyped;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -25,7 +21,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -36,6 +31,7 @@ import net.minecraft.world.item.StandingAndWallBlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import org.apache.commons.lang3.function.TriFunction;
 import org.apache.commons.lang3.tuple.Pair;
@@ -48,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -55,6 +52,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 
 /**
  * Static manager for registered Fires.
@@ -85,32 +83,14 @@ public final class FireManager {
     Fire.Builder.DEFAULT_ON_FIRE_GETTER,
     Fire.Builder.DEFAULT_BEHAVIOR,
     Map.ofEntries(
-      Map.entry(Fire.Component.SOURCE_BLOCK, BuiltInRegistries.BLOCK.getKey(Blocks.FIRE)),
-      Map.entry(Fire.Component.CAMPFIRE_BLOCK, BuiltInRegistries.BLOCK.getKey(Blocks.CAMPFIRE)),
-      Map.entry(Fire.Component.LANTERN_BLOCK, BuiltInRegistries.BLOCK.getKey(Blocks.LANTERN)),
-      Map.entry(Fire.Component.TORCH_BLOCK, BuiltInRegistries.BLOCK.getKey(Blocks.TORCH)),
-      Map.entry(Fire.Component.WALL_TORCH_BLOCK, BuiltInRegistries.BLOCK.getKey(Blocks.WALL_TORCH)),
-      Map.entry(Fire.Component.FLAME_PARTICLE, BuiltInRegistries.PARTICLE_TYPE.getKey(ParticleTypes.FLAME))
+      Map.entry(Fire.Component.SOURCE_BLOCK, List.of(BuiltInRegistries.BLOCK.getKey(Blocks.FIRE))),
+      Map.entry(Fire.Component.CAMPFIRE_BLOCK, List.of(BuiltInRegistries.BLOCK.getKey(Blocks.CAMPFIRE))),
+      Map.entry(Fire.Component.LANTERN_BLOCK, List.of(BuiltInRegistries.BLOCK.getKey(Blocks.LANTERN))),
+      Map.entry(Fire.Component.TORCH_BLOCK, List.of(BuiltInRegistries.BLOCK.getKey(Blocks.TORCH))),
+      Map.entry(Fire.Component.WALL_TORCH_BLOCK, List.of(BuiltInRegistries.BLOCK.getKey(Blocks.WALL_TORCH))),
+      Map.entry(Fire.Component.FLAME_PARTICLE, List.of(BuiltInRegistries.PARTICLE_TYPE.getKey(ParticleTypes.FLAME)))
     )
   );
-
-  /**
-   * Default {@link DynamicBlockEntityType} for custom campfires.
-   */
-  public static final CobwebEntry<DynamicBlockEntityType<CustomCampfireBlockEntity>> CUSTOM_CAMPFIRE_ENTITY_TYPE = CobwebRegistry.of(Registries.BLOCK_ENTITY_TYPE, Constants.MOD_ID).register(
-    "custom_campfire",
-    () -> DynamicBlockEntityType.of(CustomCampfireBlockEntity::new, state -> FireManager.getComponentList(Fire.Component.CAMPFIRE_BLOCK).stream().filter(CustomCampfireBlock.class::isInstance).toList().contains(state.getBlock()))
-  );
-
-  /**
-   * Dynamic data pack to automatically add {@link BlockTags#FIRE} to fire source block.
-   */
-  private static final DynamicDataPack FIRE_SOURCE_TAGS = DynamicDataPack.named(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "fire_source_tags"));
-
-  /**
-   * Dynamic data pack to automatically add {@link BlockTags#CAMPFIRES} to campfire block.
-   */
-  private static final DynamicDataPack CAMPFIRE_TAGS = DynamicDataPack.named(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "campfire_tags"));
 
   /**
    * {@link ConcurrentHashMap} of all registered {@link Fire Fires}.
@@ -118,27 +98,49 @@ public final class FireManager {
   private static final ConcurrentHashMap<ResourceLocation, Fire> FIRES = new ConcurrentHashMap<>();
 
   /**
+   * Default {@link DynamicBlockEntityType} for custom campfires.
+   *
+   * @deprecated Deprecated access, use {@link #getCustomCampfireEntityType()} instead.<br>Will become private in a future version.<br><b>DO NOT EVER CHANGE ITS VALUE!</b>
+   */
+  @ApiStatus.Internal
+  @Deprecated(forRemoval = true, since = "1.2.0")
+  public static CobwebEntry<DynamicBlockEntityType<CustomCampfireBlockEntity>> CUSTOM_CAMPFIRE_ENTITY_TYPE;
+
+  /**
+   * Default {@link DynamicBlockEntityType} for custom campfires.<br>
+   * Access only <b>during or after</b> mod initialization.
+   *
+   * @return default {@link DynamicBlockEntityType} for custom campfires.
+   */
+  public static CobwebEntry<DynamicBlockEntityType<CustomCampfireBlockEntity>> getCustomCampfireEntityType() {
+    return CUSTOM_CAMPFIRE_ENTITY_TYPE;
+  }
+
+  /**
    * Whether this class has already been loaded.
    */
   private static boolean LOADED = false;
 
+  private FireManager() {}
+
   /**
    * Loads this class.<br>
    * <strong>Internal usage, do not call elsewhere!</strong>
+   *
    * @throws IllegalStateException if called more than once.
    */
   @ApiStatus.Internal
   public static synchronized void load() {
-    if (LOADED) throw new IllegalStateException("FireManager was already loaded");
+    if (LOADED) {
+      throw new IllegalStateException("FireManager was already loaded");
+    }
     LOADED = true;
+    CUSTOM_CAMPFIRE_ENTITY_TYPE = CobwebRegistry.of(Registries.BLOCK_ENTITY_TYPE, Constants.MOD_ID).register(
+      "custom_campfire",
+      () -> DynamicBlockEntityType.of(CustomCampfireBlockEntity::new, state -> FireManager.getComponentList(Fire.Component.CAMPFIRE_BLOCK).stream().filter(CustomCampfireBlock.class::isInstance).toList().contains(state.getBlock()))
+    );
+    FireRegistrar.load();
   }
-
-  static {
-    FIRE_SOURCE_TAGS.register();
-    CAMPFIRE_TAGS.register();
-  }
-
-  private FireManager() {}
 
   /**
    * Returns a new {@link Fire.Builder}.
@@ -172,8 +174,11 @@ public final class FireManager {
   public static synchronized Fire registerFire(Fire fire) {
     Fire previous = FIRES.computeIfAbsent(fire.getFireType(), key -> {
       // Need to manually set the fire type for blocks registered via data packs.
-      Fire.Component.SOURCE_BLOCK.getOptionalValue(fire).ifPresent(setTypeOrWarn(key));
-      Fire.Component.CAMPFIRE_BLOCK.getOptionalValue(fire).ifPresent(setTypeOrWarn(key));
+      Fire.Component.SOURCE_BLOCK.getOptionalValues(fire).forEach(setTypeOrWarn(key));
+      Fire.Component.CAMPFIRE_BLOCK.getOptionalValues(fire).forEach(setTypeOrWarn(key));
+      Fire.Component.LANTERN_BLOCK.getOptionalValues(fire).forEach(setTypeOrWarn(key));
+      Fire.Component.TORCH_BLOCK.getOptionalValues(fire).forEach(setTypeOrWarn(key));
+      Fire.Component.WALL_TORCH_BLOCK.getOptionalValues(fire).forEach(setTypeOrWarn(key));
       return fire;
     });
     if (previous != fire) {
@@ -192,14 +197,14 @@ public final class FireManager {
    * @param fireType fire type.
    * @return lambda to set the block's fire type if possible.
    */
-  private static @NotNull Consumer<Block> setTypeOrWarn(ResourceLocation fireType) {
-    return block -> {
+  private static @NotNull Consumer<Optional<Block>> setTypeOrWarn(ResourceLocation fireType) {
+    return value -> value.ifPresent(block -> {
       if (block instanceof FireTypeChanger fireTypeChanger) {
         fireTypeChanger.setFireType(fireType);
       } else {
         Constants.LOGGER.warn("Could not set Fire Type [{}] for block [{}]\nThings might not work as expected!\nYou can ignore this warning if this was intended", fireType, block);
       }
-    };
+    });
   }
 
   /**
@@ -242,21 +247,22 @@ public final class FireManager {
   /**
    * Registers the source block for the specified fire from the given constructor.
    *
+   * @deprecated use {@link FireRegistrar#registerFireSource(ResourceLocation, MapColor, BiFunction)} instead.
    * @param fireType fire type.
    * @param color light color.
    * @param constructor {@link CustomFireBlock} constructor.
    * @param <T> source block type.
    * @return {@link CobwebEntry} for the source block.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends CustomFireBlock> CobwebEntry<T> registerFireSource(ResourceLocation fireType, MapColor color, BiFunction<ResourceLocation, BlockBehaviour.Properties, T> constructor) {
-    CobwebEntry<T> source = CobwebRegistry.ofBlocks(fireMod(fireType)).registerBlock(FireManager.getComponentPath(fireType, Fire.Component.SOURCE_BLOCK), properties -> constructor.apply(fireType, properties.mapColor(color)));
-    FIRE_SOURCE_TAGS.add(() -> DynamicTagBuilder.of(Registries.BLOCK, BlockTags.FIRE).addElement(source.get()));
-    return source;
+    return FireRegistrar.registerFireSource(fireType, color, constructor);
   }
 
   /**
    * Registers the source block for the specified fire from the given constructor.
    *
+   * @deprecated use {@link FireRegistrar#registerFireSource(ResourceLocation, TagKey, MapColor, TriFunction)} instead.
    * @param fireType fire type.
    * @param base {@link CustomFireBlock#base}.
    * @param color light color.
@@ -264,72 +270,81 @@ public final class FireManager {
    * @param <T> source block type.
    * @return {@link CobwebEntry} for the source block.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends CustomFireBlock> CobwebEntry<T> registerFireSource(ResourceLocation fireType, TagKey<Block> base, MapColor color, TriFunction<ResourceLocation, TagKey<Block>, BlockBehaviour.Properties, T> constructor) {
-    return registerFireSource(fireType, color, (type, properties) -> constructor.apply(type, base, properties));
+    return FireRegistrar.registerFireSource(fireType, base, color, constructor);
   }
 
   /**
    * Registers the source block for the specified fire from the given constructor.
    *
+   * @deprecated use {@link FireRegistrar#registerCampfire(ResourceLocation, BiFunction)} instead.
    * @param fireType fire type.
    * @param constructor {@link CustomCampfireBlock} constructor.
    * @param <T> campfire block type.
    * @return {@link CobwebEntry} for the campfire block.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends CustomCampfireBlock> CobwebEntry<T> registerCampfire(ResourceLocation fireType, BiFunction<ResourceLocation, BlockBehaviour.Properties, T> constructor) {
-    CobwebEntry<T> campfire = CobwebRegistry.ofBlocks(fireMod(fireType)).registerBlock(FireManager.getComponentPath(fireType, Fire.Component.CAMPFIRE_BLOCK), properties -> constructor.apply(fireType, properties));
-    FIRE_SOURCE_TAGS.add(() -> DynamicTagBuilder.of(Registries.BLOCK, BlockTags.CAMPFIRES).addElement(campfire.get()));
-    return campfire;
+    return FireRegistrar.registerCampfire(fireType, constructor);
   }
 
   /**
    * Registers the source block for the specified fire from the given constructor.
    *
+   * @deprecated use {@link FireRegistrar#registerCampfire(ResourceLocation, boolean, TriFunction)} instead.
    * @param fireType fire type.
    * @param spawnParticles whether to spawn crackling particles.
    * @param constructor {@link CustomCampfireBlock} constructor.
    * @param <T> campfire block type.
    * @return {@link CobwebEntry} for the campfire block.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends CustomCampfireBlock> CobwebEntry<T> registerCampfire(ResourceLocation fireType, boolean spawnParticles, TriFunction<ResourceLocation, Boolean, BlockBehaviour.Properties, T> constructor) {
-    return registerCampfire(fireType, (type, properties) -> constructor.apply(type, spawnParticles, properties));
+    return FireRegistrar.registerCampfire(fireType, spawnParticles, constructor);
   }
 
   /**
    * Registers the campfire item for the specified fire from the given constructor.<br>
    * Must be called <strong>after</strong> {@link #registerCampfire}.
    *
+   * @deprecated use {@link FireRegistrar#registerCampfireItem(ResourceLocation, BiFunction)} instead.
    * @param fireType fire type.
    * @param constructor {@link BlockItem} constructor.
    * @param <T> item type.
    * @return {@link CobwebEntry} for the campfire item.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends BlockItem> CobwebEntry<T> registerCampfireItem(ResourceLocation fireType, BiFunction<Block, Item.Properties, T> constructor) {
-    return registerCampfireItem(fireType, constructor, new Item.Properties());
+    return FireRegistrar.registerCampfireItem(fireType, constructor);
   }
 
   /**
    * Registers the campfire item for the specified fire from the given constructor.<br>
    * Must be called <strong>after</strong> {@link #registerCampfire}.
    *
+   * @deprecated use {@link FireRegistrar#registerCampfireItem(ResourceLocation, BiFunction, Item.Properties)} instead.
    * @param fireType fire type.
    * @param constructor {@link BlockItem} constructor.
    * @param properties item properties.
    * @param <T> item type.
    * @return {@link CobwebEntry} for the campfire item.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends BlockItem> CobwebEntry<T> registerCampfireItem(ResourceLocation fireType, BiFunction<Block, Item.Properties, T> constructor, Item.Properties properties) {
-    return CobwebRegistry.ofItems(fireMod(fireType)).registerBlockItemLike(FireManager.getComponentPath(fireType, Fire.Component.CAMPFIRE_ITEM), () -> FireManager.getRequiredComponent(fireType, Fire.Component.CAMPFIRE_BLOCK), properties, constructor);
+    return FireRegistrar.registerCampfireItem(fireType, constructor, properties);
   }
 
   /**
    * Registers the particle type for the specified fire.
    *
+   * @deprecated use {@link FireRegistrar#registerParticle(ResourceLocation)} instead.
    * @param fireType fire type.
    * @return {@link CobwebEntry} for the particle type.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static CobwebEntry<SimpleParticleType> registerParticle(ResourceLocation fireType) {
-    return registerParticle(fireType, () -> new SimpleParticleType(false));
+    return FireRegistrar.registerParticle(fireType);
   }
 
   /**
@@ -337,13 +352,15 @@ public final class FireManager {
    * Make sure your particle implements {@link ParticleOptions} if you are going to register a custom torch too.<br>
    * If it's not a subclass of {@link SimpleParticleType}, you also need to register a {@link ParticleProvider} for your particle.
    *
+   * @deprecated use {@link FireRegistrar#registerParticle(ResourceLocation, Supplier)} instead.
    * @param fireType fire type.
    * @param supplier {@link SimpleParticleType} supplier.
    * @param <T> particle type.
    * @return {@link CobwebEntry} for the particle type.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends SimpleParticleType> CobwebEntry<T> registerParticle(ResourceLocation fireType, Supplier<T> supplier) {
-    return CobwebRegistry.of(Registries.PARTICLE_TYPE, fireMod(fireType)).register(FireManager.getComponentPath(fireType, Fire.Component.FLAME_PARTICLE), supplier);
+    return FireRegistrar.registerParticle(fireType, supplier);
   }
 
   /**
@@ -351,11 +368,13 @@ public final class FireManager {
    * Must be called <strong>after</strong> {@link #registerParticle}.<br>
    * Make sure your registered particle implements {@link ParticleOptions}.
    *
+   * @deprecated use {@link FireRegistrar#registerTorch(ResourceLocation)} instead.
    * @param fireType fire type.
    * @return pair of {@link CobwebEntry}s for the torch and wall torch blocks.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static Pair<CobwebEntry<CustomTorchBlock>, CobwebEntry<CustomWallTorchBlock>> registerTorch(ResourceLocation fireType) {
-    return registerTorch(fireType, CustomTorchBlock::new, CustomWallTorchBlock::new);
+    return FireRegistrar.registerTorch(fireType);
   }
 
   /**
@@ -363,6 +382,7 @@ public final class FireManager {
    * Must be called <strong>after</strong> {@link #registerParticle}.<br>
    * Make sure your registered particle implements {@link ParticleOptions}.
    *
+   * @deprecated use {@link FireRegistrar#registerTorch(ResourceLocation, TriFunction, TriFunction)} instead.
    * @param fireType fire type.
    * @param torchSupplier {@link CustomTorchBlock} constructor.
    * @param wallTorchSupplier {@link CustomWallTorchBlock} constructor.
@@ -370,119 +390,127 @@ public final class FireManager {
    * @param <W> wall torch block type.
    * @return pair of {@link CobwebEntry}s for torch and wall torch blocks.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends CustomTorchBlock, W extends CustomWallTorchBlock> Pair<CobwebEntry<T>, CobwebEntry<W>> registerTorch(
     ResourceLocation fireType,
     TriFunction<ResourceLocation, Supplier<SimpleParticleType>, BlockBehaviour.Properties, T> torchSupplier,
     TriFunction<ResourceLocation, Supplier<SimpleParticleType>, BlockBehaviour.Properties, W> wallTorchSupplier
   ) {
-    CobwebRegister.Blocks blocks = CobwebRegistry.ofBlocks(fireMod(fireType));
-    return Pair.of(
-      blocks.registerBlock(FireManager.getComponentPath(fireType, Fire.Component.TORCH_BLOCK), properties -> torchSupplier.apply(fireType, () -> getRequiredComponent(fireType, Fire.Component.FLAME_PARTICLE), properties)),
-      blocks.registerBlock(FireManager.getComponentPath(fireType, Fire.Component.WALL_TORCH_BLOCK), properties -> wallTorchSupplier.apply(fireType, () -> getRequiredComponent(fireType, Fire.Component.FLAME_PARTICLE), properties))
-    );
+    return FireRegistrar.registerTorch(fireType, torchSupplier, wallTorchSupplier);
   }
 
   /**
    * Registers the torch item for the specified fire.<br>
    * Must be called <strong>after</strong> {@link #registerTorch}.
    *
+   * @deprecated use {@link FireRegistrar#registerTorchItem(ResourceLocation)} instead.
    * @param fireType fire type.
    * @return {@link CobwebEntry} for the torch item.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static CobwebEntry<StandingAndWallBlockItem> registerTorchItem(ResourceLocation fireType) {
-    return registerTorchItem(fireType, (torch, wallTorch, properties) -> new StandingAndWallBlockItem(torch, wallTorch, Direction.DOWN, properties));
+    return FireRegistrar.registerTorchItem(fireType);
   }
 
   /**
    * Registers the torch item for the specified fire from the given constructor.<br>
    * Must be called <strong>after</strong> {@link #registerTorch}.
    *
+   * @deprecated use {@link FireRegistrar#registerTorchItem(ResourceLocation, TriFunction)} instead.
    * @param fireType fire type.
    * @param constructor {@link StandingAndWallBlockItem} constructor.
    * @param <T> torch item type.
    * @return {@link CobwebEntry} for the torch item.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends StandingAndWallBlockItem> CobwebEntry<T> registerTorchItem(ResourceLocation fireType, TriFunction<Block, Block, Item.Properties, T> constructor) {
-    return registerTorchItem(fireType, constructor, new Item.Properties());
+    return FireRegistrar.registerTorchItem(fireType, constructor);
   }
 
   /**
    * Registers the torch item for the specified fire from the given constructor and properties.<br>
    * Must be called <strong>after</strong> {@link #registerTorch}.
    *
+   * @deprecated use {@link FireRegistrar#registerTorchItem(ResourceLocation, TriFunction, Item.Properties)} instead.
    * @param fireType fire type.
    * @param constructor {@link StandingAndWallBlockItem} constructor.
    * @param properties item properties.
    * @param <T> torch item type.
    * @return {@link CobwebEntry} for the torch item.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends StandingAndWallBlockItem> CobwebEntry<T> registerTorchItem(ResourceLocation fireType, TriFunction<Block, Block, Item.Properties, T> constructor, Item.Properties properties) {
-    return CobwebRegistry.ofItems(fireMod(fireType)).registerBlockItemLike(
-      FireManager.getComponentPath(fireType, Fire.Component.TORCH_ITEM),
-      () -> FireManager.getRequiredComponent(fireType, Fire.Component.TORCH_BLOCK),
-      properties,
-      (torch, props) -> constructor.apply(torch, FireManager.getRequiredComponent(fireType, Fire.Component.WALL_TORCH_BLOCK), props)
-    );
+    return FireRegistrar.registerTorchItem(fireType, constructor, properties);
   }
 
   /**
    * Registers the lantern block for the specified fire.
    *
+   * @deprecated use {@link FireRegistrar#registerLantern(ResourceLocation)} instead.
    * @param fireType fire type.
    * @return {@link CobwebEntry} for the lantern block.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static CobwebEntry<CustomLanternBlock> registerLantern(ResourceLocation fireType) {
-    return registerLantern(fireType, CustomLanternBlock::new);
+    return FireRegistrar.registerLantern(fireType);
   }
 
   /**
    * Registers the lantern block for the specified fire from the given constructor.
    *
+   * @deprecated use {@link FireRegistrar#registerLantern(ResourceLocation, BiFunction)} instead.
    * @param fireType fire type.
    * @param constructor {@link CustomLanternBlock} constructor.
    * @param <T> lantern block type.
    * @return {@link CobwebEntry} for the lantern block.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends CustomLanternBlock> CobwebEntry<T> registerLantern(ResourceLocation fireType, BiFunction<ResourceLocation, BlockBehaviour.Properties, T> constructor) {
-    return CobwebRegistry.ofBlocks(fireMod(fireType)).registerBlock(FireManager.getComponentPath(fireType, Fire.Component.LANTERN_BLOCK), properties -> constructor.apply(fireType, properties));
+    return FireRegistrar.registerLantern(fireType, constructor);
   }
 
   /**
    * Registers the lantern item for the specified fire.<br>
    * Must be called <strong>after</strong> {@link #registerLantern}.
    *
+   * @deprecated use {@link FireRegistrar#registerLanternItem(ResourceLocation)} instead.
    * @param fireType fire type.
    * @return {@link CobwebEntry} for the lantern block.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static CobwebEntry<BlockItem> registerLanternItem(ResourceLocation fireType) {
-    return registerLanternItem(fireType, BlockItem::new);
+    return FireRegistrar.registerLanternItem(fireType);
   }
 
   /**
    * Registers the lantern item for the specified fire from the given constructor.<br>
    * Must be called <strong>after</strong> {@link #registerLantern}.
    *
+   * @deprecated use {@link FireRegistrar#registerLanternItem(ResourceLocation, BiFunction)} instead.
    * @param fireType fire type.
    * @param constructor {@link BlockItem} constructor.
    * @param <T> item type.
    * @return {@link CobwebEntry} for the lantern item.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends BlockItem> CobwebEntry<T> registerLanternItem(ResourceLocation fireType, BiFunction<Block, Item.Properties, T> constructor) {
-    return registerLanternItem(fireType, constructor, new Item.Properties());
+    return FireRegistrar.registerLanternItem(fireType, constructor);
   }
 
   /**
    * Registers the lantern item for the specified fire from the given constructor.<br>
    * Must be called <strong>after</strong> {@link #registerLantern}.
    *
+   * @deprecated use {@link FireRegistrar#registerLanternItem(ResourceLocation, BiFunction, Item.Properties)} instead.
    * @param fireType fire type.
    * @param constructor {@link BlockItem} constructor.
    * @param properties item properties.
    * @param <T> item type.
    * @return {@link CobwebEntry} for the lantern item.
    */
+  @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends BlockItem> CobwebEntry<T> registerLanternItem(ResourceLocation fireType, BiFunction<Block, Item.Properties, T> constructor, Item.Properties properties) {
-    return CobwebRegistry.ofItems(fireMod(fireType)).registerBlockItemLike(FireManager.getComponentPath(fireType, Fire.Component.LANTERN_ITEM), () -> FireManager.getRequiredComponent(fireType, Fire.Component.LANTERN_BLOCK), properties, constructor);
+    return FireRegistrar.registerLanternItem(fireType, constructor, properties);
   }
 
   /**
@@ -531,6 +559,18 @@ public final class FireManager {
   }
 
   /**
+   * Returns the list of the specified property from all the registered fires.<br>
+   * This list will have as many elements as there are registered fires.
+   *
+   * @param getter property getter.
+   * @param <T> property type.
+   * @return property list.
+   */
+  public static <T> List<T> getPropertyList(Function<Fire, T> getter) {
+    return FIRES.values().stream().map(getter).toList();
+  }
+
+  /**
    * Returns the specified damage source retrieved from the {@link Fire} damage source getter.
    *
    * @param entity entity.
@@ -544,7 +584,8 @@ public final class FireManager {
 
   /**
    * Returns the specified component of the specified fire.<br>
-   * Defaults to the component of the {@link #DEFAULT_FIRE} if the specified fire is not registered.
+   * Defaults to the component of the {@link #DEFAULT_FIRE} if the specified fire is not registered.<br>
+   * There might be multiple values for the same component; to retrieve them all use {@link #getComponentIds(ResourceLocation, Fire.Component)} instead.
    *
    * @param fireType fire type.
    * @param component component.
@@ -556,8 +597,22 @@ public final class FireManager {
   }
 
   /**
+   * Returns the specified component of the specified fire.<br>
+   * Defaults to the component of the {@link #DEFAULT_FIRE} if the specified fire is not registered.
+   *
+   * @param fireType fire type.
+   * @param component component.
+   * @return component {@link ResourceLocation}.
+   */
+  @Nullable
+  public static List<ResourceLocation> getComponentIds(ResourceLocation fireType, Fire.Component<?, ?> component) {
+    return getFire(fireType).getComponentList(component);
+  }
+
+  /**
    * Returns the specified component value of the specified fire.<br>
-   * Defaults to the component value of the {@link #DEFAULT_FIRE} if the specified fire is not registered.
+   * Defaults to the component value of the {@link #DEFAULT_FIRE} if the specified fire is not registered.<br>
+   * There might be multiple values for the same component; to retrieve them all use {@link #getComponentList(ResourceLocation, Fire.Component)} instead.
    *
    * @param fireType fire type.
    * @param component component.
@@ -571,18 +626,6 @@ public final class FireManager {
   }
 
   /**
-   * Returns the path of the component {@link ResourceLocation}.
-   *
-   * @param fireType fire type.
-   * @param component component.
-   * @return component {@link ResourceLocation} path.
-   */
-  @NotNull
-  private static String getComponentPath(ResourceLocation fireType, Fire.Component<?, ?> component) {
-    return Objects.requireNonNull(getComponentId(fireType, component)).getPath();
-  }
-
-  /**
    * Returns the specified component value of the specified fire.<br>
    * Defaults to the component value of the {@link #DEFAULT_FIRE} if the specified fire is not registered.
    *
@@ -591,6 +634,48 @@ public final class FireManager {
    * @param <R> component registry.
    * @param <T> component value type.
    * @return component value.
+   */
+  @Nullable
+  public static <R, T extends R> List<T> getComponentList(ResourceLocation fireType, Fire.Component<R, T> component) {
+    List<ResourceLocation> list = getComponentIds(fireType, component);
+    return list == null ? null : list.stream().map(component::getValue).toList();
+  }
+
+  /**
+   * Returns the path of the component {@link ResourceLocation}.<br>
+   * There might be multiple values for the same component; to retrieve them all use {@link #getComponentPaths(ResourceLocation, Fire.Component)} instead.
+   *
+   * @param fireType fire type.
+   * @param component component.
+   * @return component {@link ResourceLocation} path.
+   */
+  @NotNull
+  static String getComponentPath(ResourceLocation fireType, Fire.Component<?, ?> component) {
+    return Objects.requireNonNull(getComponentId(fireType, component)).getPath();
+  }
+
+  /**
+   * Returns the path of the component {@link ResourceLocation}.
+   *
+   * @param fireType fire type.
+   * @param component component.
+   * @return component {@link ResourceLocation} path.
+   */
+  @NotNull
+  private static List<String> getComponentPaths(ResourceLocation fireType, Fire.Component<?, ?> component) {
+    return Objects.requireNonNull(getComponentIds(fireType, component)).stream().map(ResourceLocation::getPath).toList();
+  }
+
+  /**
+   * Returns the specified component value of the specified fire.<br>
+   * Defaults to the component value of the {@link #DEFAULT_FIRE} if the specified fire is not registered.<br>
+   * There might be multiple values for the same component; to retrieve them all use {@link #getRequiredComponentList(ResourceLocation, Fire.Component)} instead.
+   *
+   * @param fireType fire type.
+   * @param component component.
+   * @return component value.
+   * @param <R> component registry.
+   * @param <T> component value type.
    * @throws NullPointerException if the specified fire is registered but doesn't have the specified component.
    */
   @NotNull
@@ -599,20 +684,44 @@ public final class FireManager {
   }
 
   /**
-   * Returns the list of the specified property from all the registered fires.<br>
-   * This list will have as many elements as there are registered fires.
+   * Returns the specified component value of the specified fire.
+   * Unlike {@link #getRequiredComponent(ResourceLocation, Fire.Component)}, the parameter {@code id} of this overload allows to specify which of the (possibly) many values for this component to select.<br>
+   * Defaults to the component value of the {@link #DEFAULT_FIRE} if the specified fire is not registered.<br>
+   * There might be multiple values for the same component; to retrieve them all use {@link #getRequiredComponentList(ResourceLocation, Fire.Component)} instead.
    *
-   * @param getter property getter.
-   * @param <T> property type.
-   * @return property list.
+   * @param fireType fire type.
+   * @param component component.
+   * @param id ID to specify which component value to select.
+   * @return component value.
+   * @param <R> component registry.
+   * @param <T> component value type.
+   * @throws NullPointerException if the specified fire is registered but doesn't have the specified component.
    */
-  public static <T> List<T> getPropertyList(Function<Fire, T> getter) {
-    return FIRES.values().stream().map(getter).toList();
+  @NotNull
+  public static <R, T extends R> T getRequiredComponent(ResourceLocation fireType, Fire.Component<R, T> component, String id) throws NullPointerException {
+    return Objects.requireNonNull(component.getValue(Objects.requireNonNull(getComponentIds(fireType, component)).stream().filter(path -> path.getPath().equals(id)).findFirst().orElseThrow()));
+  }
+
+  /**
+   * Returns the specified component value of the specified fire.<br>
+   * Defaults to the component value of the {@link #DEFAULT_FIRE} if the specified fire is not registered.
+   *
+   * @param fireType fire type.
+   * @param component component.
+   * @return component value.
+   * @param <R> component registry.
+   * @param <T> component value type.
+   * @throws NullPointerException if the specified fire is registered but doesn't have the specified component.
+   */
+  @NotNull
+  public static <R, T extends R> List<T> getRequiredComponentList(ResourceLocation fireType, Fire.Component<R, T> component) throws NullPointerException {
+    return Objects.requireNonNull(getComponentIds(fireType, component)).stream().map(component::getValue).toList();
   }
 
   /**
    * Returns the list of the specified component IDs from all the registered fires.<br>
-   * This list won't necessarily have as many elements as there are registered fires because fires without the specified component are filtered out.
+   * This list won't necessarily have as many elements as there are registered fires because fires without the specified component are filtered out.<br>
+   * There might be multiple values for each component; to retrieve them all use {@link #getComponentIdsList(Fire.Component)} instead.
    *
    * @param component component.
    * @return component ID list.
@@ -622,8 +731,20 @@ public final class FireManager {
   }
 
   /**
-   * Returns the list of the specified component values from all the registered fires.<br>
+   * Returns the list of the specified component IDs from all the registered fires.<br>
    * This list won't necessarily have as many elements as there are registered fires because fires without the specified component are filtered out.
+   *
+   * @param component component.
+   * @return component ID list.
+   */
+  public static List<List<ResourceLocation>> getComponentIdsList(Fire.Component<?, ?> component) {
+    return FIRES.values().stream().map(fire -> fire.getComponentList(component)).filter(l -> !(l == null || l.isEmpty())).toList();
+  }
+
+  /**
+   * Returns the list of the specified component values from all the registered fires.<br>
+   * This list won't necessarily have as many elements as there are registered fires because fires without the specified component are filtered out.<br>
+   * There might be multiple values for each component; to retrieve them all use {@link #getComponentListList(Fire.Component)} instead.
    *
    * @param component component.
    * @param <R> component registry.
@@ -632,6 +753,19 @@ public final class FireManager {
    */
   public static <R, T extends R> List<T> getComponentList(Fire.Component<R, T> component) {
     return FIRES.values().stream().map(component::getValue).filter(Objects::nonNull).toList();
+  }
+
+  /**
+   * Returns the list of the specified component values from all the registered fires.<br>
+   * This list won't necessarily have as many elements as there are registered fires because fires without the specified component are filtered out.
+   *
+   * @param component component.
+   * @return component value list.
+   * @param <R> component registry.
+   * @param <T> component value type.
+   */
+  public static <R, T extends R> List<List<T>> getComponentListList(Fire.Component<R, T> component) {
+    return FIRES.values().stream().map(component::getValues).filter(l -> !(l == null || l.isEmpty())).toList();
   }
 
   /**
@@ -652,7 +786,7 @@ public final class FireManager {
    * @return whether the given values represent a valid fire type.
    */
   public static boolean isValidType(@Nullable ResourceLocation fireType) {
-    return fireType != null && Strings.isNotBlank(fireMod(fireType)) && Strings.isNotBlank(fireType.getPath());
+    return fireType != null && Strings.isNotBlank(fireType.getNamespace()) && Strings.isNotBlank(fireType.getPath());
   }
 
   /**
@@ -713,7 +847,7 @@ public final class FireManager {
    * @return whether the given mod ID is a valid, loaded and registered mod ID.
    */
   public static boolean isRegisteredModId(@Nullable String modId) {
-    return isValidModId(modId) && FIRES.keySet().stream().anyMatch(fireType -> fireMod(fireType).equals(modId));
+    return isValidModId(modId) && FIRES.keySet().stream().anyMatch(fireType -> fireType.getNamespace().equals(modId));
   }
 
   /**
@@ -908,16 +1042,6 @@ public final class FireManager {
   }
 
   /**
-   * Returns the namespace (mod ID) of the given fire type.
-   *
-   * @param fireType fire type.
-   * @return fire mod ID.
-   */
-  private static String fireMod(ResourceLocation fireType) {
-    return fireType.getNamespace();
-  }
-
-  /**
    * Shorthand for getting the {@link Fire#light} property of the specified fire.
    *
    * @param fireType fire type.
@@ -925,5 +1049,15 @@ public final class FireManager {
    */
   public static int light(ResourceLocation fireType) {
     return FireManager.getProperty(fireType, Fire::getLight);
+  }
+
+  /**
+   * Shorthand for getting the {@link Fire#light} property of the specified fire, ready for {@link BlockBehaviour.Properties#lightLevel(ToIntFunction)}.
+   *
+   * @param fireType fire type.
+   * @return fire light property.
+   */
+  public static ToIntFunction<BlockState> lightLevel(ResourceLocation fireType) {
+    return state -> FireManager.light(fireType);
   }
 }

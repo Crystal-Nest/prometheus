@@ -1,4 +1,5 @@
 package it.crystalnest.prometheus;
+
 import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.api.enchantment.EnchantmentRegistry;
 import it.crystalnest.prometheus.platform.Services;
