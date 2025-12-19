@@ -83,7 +83,7 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
    * @return {@link BlockEntityType}.
    */
   protected BlockEntityType<CustomCampfireBlockEntity> getBlockEntityType() {
-    return FireManager.CUSTOM_CAMPFIRE_ENTITY_TYPE.get();
+    return FireManager.getCustomCampfireEntityType().get();
   }
 
   /**

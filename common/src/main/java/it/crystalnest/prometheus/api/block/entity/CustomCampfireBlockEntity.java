@@ -69,6 +69,6 @@ public class CustomCampfireBlockEntity extends CampfireBlockEntity {
   @NotNull
   @Override
   public BlockEntityType<?> getType() {
-    return FireManager.CUSTOM_CAMPFIRE_ENTITY_TYPE.get();
+    return FireManager.getCustomCampfireEntityType().get();
   }
 }
