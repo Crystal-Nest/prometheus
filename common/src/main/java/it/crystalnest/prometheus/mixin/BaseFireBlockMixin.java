@@ -50,7 +50,7 @@ public abstract class BaseFireBlockMixin implements FireTypeChanger {
    * @param pos position.
    */
   @ModifyReturnValue(method = "getState", at = @At(value = "RETURN"))
-  private static BlockState onGetState(BlockState original, BlockGetter level, BlockPos pos) {
+  private static BlockState modifyGetState(BlockState original, BlockGetter level, BlockPos pos) {
     return FireManager.getComponentList(Fire.Component.SOURCE_BLOCK).stream().filter(source -> canSurvive(source, level.getBlockState(pos.below()))).findFirst().map(Block::defaultBlockState).orElse(original);
   }
 

@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -36,14 +37,29 @@ public class FireResourceReloadListener extends SimpleJsonResourceReloadListener
   private static final ArrayList<ResourceLocation> ddfiresRegister = new ArrayList<>();
 
   /**
-   * JSON field name for a Fire's source block.
+   * JSON field name for the source block Fire Component.
    */
   private static final String SOURCE_FIELD_NAME = "source";
 
   /**
-   * JSON field name for a Fire's campfire block.
+   * JSON field name for the campfire block Fire Component.
    */
   private static final String CAMPFIRE_FIELD_NAME = "campfire";
+
+  /**
+   * JSON field name for the lantern block Fire Component.
+   */
+  private static final String LANTERN_FIELD_NAME = "campfire";
+
+  /**
+   * JSON field name for the torch block Fire Component.
+   */
+  private static final String TORCH_FIELD_NAME = "campfire";
+
+  /**
+   * JSON field name for the wall torch block Fire Component.
+   */
+  private static final String WALL_TORCH_FIELD_NAME = "campfire";
 
   public FireResourceReloadListener() {
     super(new Gson(), "fires");
@@ -167,9 +183,12 @@ public class FireResourceReloadListener extends SimpleJsonResourceReloadListener
     Fire.Builder builder = FireManager.fireBuilder(fireType)
       .setDamage(parse(fireTypeString, "damage", jsonFire, JsonElement::getAsFloat, Fire.Builder.DEFAULT_DAMAGE))
       .setInvertHealAndHarm(parse(fireTypeString, "invertHealAndHarm", jsonFire, JsonElement::getAsBoolean, Fire.Builder.DEFAULT_INVERT_HEAL_AND_HARM))
-      .removeComponents(Fire.Component.CAMPFIRE_ITEM, Fire.Component.LANTERN_BLOCK, Fire.Component.LANTERN_ITEM, Fire.Component.TORCH_BLOCK, Fire.Component.TORCH_ITEM, Fire.Component.WALL_TORCH_BLOCK, Fire.Component.FLAME_PARTICLE);
+      .removeComponents(Fire.Component.CAMPFIRE_ITEM, Fire.Component.LANTERN_ITEM, Fire.Component.TORCH_ITEM, Fire.Component.FLAME_PARTICLE);
     removeOrSet(fireTypeString, builder, jsonFire, SOURCE_FIELD_NAME, Fire.Component.SOURCE_BLOCK);
     removeOrSet(fireTypeString, builder, jsonFire, CAMPFIRE_FIELD_NAME, Fire.Component.CAMPFIRE_BLOCK);
+    removeOrSet(fireTypeString, builder, jsonFire, LANTERN_FIELD_NAME, Fire.Component.LANTERN_BLOCK);
+    removeOrSet(fireTypeString, builder, jsonFire, TORCH_FIELD_NAME, Fire.Component.TORCH_BLOCK);
+    removeOrSet(fireTypeString, builder, jsonFire, WALL_TORCH_FIELD_NAME, Fire.Component.WALL_TORCH_BLOCK);
     registerFire(fireType, builder.build());
   }
 
@@ -183,12 +202,13 @@ public class FireResourceReloadListener extends SimpleJsonResourceReloadListener
    * @param component {@link Fire.Component} to set.
    */
   private static void removeOrSet(String fireType, Fire.Builder builder, JsonObject data, String field, Fire.Component<?, ?> component) {
-    if (data.get(field) != null && data.get(field).getAsString().equals("remove")) {
-      builder.removeComponent(component);
-    } else {
-      String value = parse(fireType, field, data, JsonElement::getAsString, null);
-      if (value != null && ResourceLocation.tryParse(value) != null) {
-        builder.setComponent(component, ResourceLocation.parse(value));
+    if (data.has(field)) {
+      JsonElement element = data.get(field);
+      List<String> list = element.isJsonArray() ? element.getAsJsonArray().asList().stream().map(JsonElement::getAsString).toList() : List.of(element.getAsString());
+      if (list.isEmpty() || list.getFirst().equals("remove")) {
+        builder.removeComponent(component);
+      } else {
+        builder.setComponent(component, list.stream().map(ResourceLocation::parse).toArray(ResourceLocation[]::new));
       }
     }
   }

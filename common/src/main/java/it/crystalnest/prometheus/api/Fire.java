@@ -1,5 +1,6 @@
 package it.crystalnest.prometheus.api;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
@@ -19,7 +20,9 @@ import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -122,7 +125,7 @@ public final class Fire {
   /**
    * {@link ImmutableMap} of {@link Component}s associated with their IDs for this fire.
    */
-  private final ImmutableMap<Component<?, ?>, ResourceLocation> components;
+  private final ImmutableMap<Component<?, ?>, ImmutableList<ResourceLocation>> components;
 
   /**
    * @param fireType {@link #fireType}.
@@ -145,7 +148,7 @@ public final class Fire {
     Function<Entity, DamageSource> inFireGetter,
     Function<Entity, DamageSource> onFireGetter,
     Predicate<Entity> behavior,
-    Map<Component<?, ?>, ResourceLocation> components
+    Map<Component<?, ?>, List<ResourceLocation>> components
   ) {
     this.fireType = fireType;
     this.light = light;
@@ -156,7 +159,7 @@ public final class Fire {
     this.inFireGetter = inFireGetter;
     this.onFireGetter = onFireGetter;
     this.behavior = behavior;
-    this.components = ImmutableMap.copyOf(components);
+    this.components = components.entrySet().stream().collect(ImmutableMap.toImmutableMap(Map.Entry::getKey, entry -> ImmutableList.copyOf(entry.getValue())));
   }
 
   /**
@@ -244,14 +247,28 @@ public final class Fire {
   }
 
   /**
-   * Returns {@link ResourceLocation} associated with specified {@link Component}.<br>
-   * Might be {@code null} if this fire doesn't have the specified component.
+   * Returns {@link ResourceLocation} associated with specified {@link Component}.<p>
+   * Might be {@code null} if this fire doesn't have the specified component.<br>
+   * There might be multiple values for the same component; to retrieve them all use {@link #getComponentList(Component)} instead.
    *
    * @param component {@link Component}.
    * @return the {@link ResourceLocation} associated with specified {@link Component}.
    */
   @Nullable
   public ResourceLocation getComponent(Component<?, ?> component) {
+    ImmutableList<ResourceLocation> values = components.get(component);
+    return values == null || values.isEmpty() ? null : values.getFirst();
+  }
+
+  /**
+   * Returns all the {@link ResourceLocation}s associated with specified {@link Component}.<p>
+   * Might be {@code null} if this fire doesn't have the specified component.
+   *
+   * @param component {@link Component}.
+   * @return all the {@link ResourceLocation}s associated with specified {@link Component}.
+   */
+  @Nullable
+  public List<ResourceLocation> getComponentList(Component<?, ?> component) {
     return components.get(component);
   }
 
@@ -368,6 +385,19 @@ public final class Fire {
     }
 
     /**
+     * Returns the value associated to this component by retrieving the ID from the given {@link Fire}.<br>
+     * Might be {@code null} if no value was registered with the given ID.
+     *
+     * @param fire {@link Fire}.
+     * @return the value associated to this component.
+     */
+    @Nullable
+    List<T> getValues(Fire fire) {
+      List<ResourceLocation> list = fire.getComponentList(this);
+      return list == null ? null : list.stream().map(this::getValue).toList();
+    }
+
+    /**
      * Returns the value associated to this component.
      *
      * @param id value ID.
@@ -389,14 +419,25 @@ public final class Fire {
     }
 
     /**
+     * Returns the value associated to this component by retrieving the ID from the given {@link Fire}.
+     *
+     * @param fire {@link Fire}.
+     * @return the value associated to this component.
+     */
+    List<Optional<T>> getOptionalValues(Fire fire) {
+      List<ResourceLocation> list = fire.getComponentList(this);
+      return list == null ? List.of() : list.stream().map(this::getOptionalValue).toList();
+    }
+
+    /**
      * Returns the default {@link Map#entry(Object, Object) Map.entry} for this component from the given {@code modId} and {@code fireId}.
      *
      * @param modId mod ID.
      * @param fireId fire ID.
      * @return the default {@link Map#entry(Object, Object) Map.entry} for this component.
      */
-    Map.Entry<Component<R, T>, ResourceLocation> getEntry(String modId, String fireId) {
-      return Map.entry(this, ResourceLocation.fromNamespaceAndPath(modId, fireId + suffix));
+    Map.Entry<Component<R, T>, List<ResourceLocation>> getEntry(String modId, String fireId) {
+      return Map.entry(this, List.of(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(modId, fireId + suffix)));
     }
   }
 
@@ -511,7 +552,7 @@ public final class Fire {
      * {@link Fire} instance {@link Fire#components components}.<br>
      * Optional, defaults to a map with every component, each associated to the default {@link ResourceLocation} made by {@link #modId} and {@link #fireId} with the component default {@link Component#suffix suffix}.
      */
-    private Map<Component<?, ?>, ResourceLocation> components;
+    private Map<Component<?, ?>, List<ResourceLocation>> components;
 
     /**
      * @param modId {@link #modId}.
@@ -659,7 +700,33 @@ public final class Fire {
      * @return this Builder to either set other properties or {@link #build()}.
      */
     public Builder setComponent(Component<?, ?> component, ResourceLocation id) {
-      this.components.put(component, id);
+      this.components.put(component, new ArrayList<>(List.of(id)));
+      return this;
+    }
+
+    /**
+     * Sets the specified {@link Component}.<br>
+     * It's strongly recommended that you use all the default values for each component. Use this only when you have multiple values for a single component.
+     *
+     * @param component component.
+     * @param ids {@link ResourceLocation}s.
+     * @return this Builder to either set other properties or {@link #build()}.
+     */
+    public Builder setComponent(Component<?, ?> component, ResourceLocation... ids) {
+      this.components.put(component, new ArrayList<>(List.of(ids)));
+      return this;
+    }
+
+    /**
+     * Adds the given ids to the specified {@link Component}.<br>
+     * It's strongly recommended that you use all the default values for each component. Use this only when you have multiple values for a single component.
+     *
+     * @param component component.
+     * @param ids {@link ResourceLocation}s.
+     * @return this Builder to either set other properties or {@link #build()}.
+     */
+    public Builder addToComponent(Component<?, ?> component, ResourceLocation... ids) {
+      this.components.computeIfAbsent(component, k -> new ArrayList<>()).addAll(List.of(ids));
       return this;
     }
 
