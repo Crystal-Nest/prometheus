@@ -75,6 +75,36 @@ public final class FireRegistrar {
   private FireRegistrar() {}
 
   /**
+   * Registers the default values for every specified fire component.<p>
+   * <b>Note</b>:
+   * <ul>
+   *   <li>Order is important: first particle, then blocks, than items.</li>
+   *   <li>Do not specify the same component more than once.</li>
+   *   <li>Specify only one of {@link Fire.Component#TORCH_BLOCK} or {@link Fire.Component#WALL_TORCH_BLOCK}: they share the same default registration method.</li>
+   * </ul>
+   *
+   * @param fireType fire type.
+   * @param components ordered list of components.
+   */
+  public static void registerDefaultFireComponents(ResourceLocation fireType, Fire.Component<?, ?>... components) {
+    for (Fire.Component<?, ?> component : components) {
+      component.register(fireType);
+    }
+  }
+
+  /**
+   * Registers the source block for the specified fire.<p>
+   *
+   * Use the {@link #registerFireSource(ResourceLocation, String, MapColor, BiFunction)} overload if you need to register more than one fire source block for your fire.
+   *
+   * @param fireType fire type.
+   * @return {@link CobwebEntry} for the source block.
+   */
+  public static CobwebEntry<CustomFireBlock> registerFireSource(ResourceLocation fireType) {
+    return registerFireSource(fireType, MapColor.FIRE, CustomFireBlock::new);
+  }
+
+  /**
    * Registers the source block for the specified fire from the given constructor.<p>
    *
    * Use the {@link #registerFireSource(ResourceLocation, String, MapColor, BiFunction)} overload if you need to register more than one fire source block for your fire.
@@ -158,7 +188,19 @@ public final class FireRegistrar {
   }
 
   /**
-   * Registers the source block for the specified fire from the given constructor.<p>
+   * Registers the campfire block for the specified fire.<p>
+   *
+   * Use the {@link #registerCampfire(ResourceLocation, String, boolean, TriFunction)} overload if you need to register more than one campfire for your fire.
+   *
+   * @param fireType fire type.
+   * @return {@link CobwebEntry} for the campfire block.
+   */
+  public static CobwebEntry<CustomCampfireBlock> registerCampfire(ResourceLocation fireType) {
+    return registerCampfire(fireType, false, CustomCampfireBlock::new);
+  }
+
+  /**
+   * Registers the campfire block for the specified fire from the given constructor.<p>
    *
    * Use the {@link #registerCampfire(ResourceLocation, String, boolean, TriFunction)} overload if you need to register more than one campfire for your fire.
    *
@@ -173,7 +215,7 @@ public final class FireRegistrar {
   }
 
   /**
-   * Registers the source block for the specified fire from the given constructor.<p>
+   * Registers the campfire block for the specified fire from the given constructor.<p>
    *
    * Use the {@link #registerCampfire(ResourceLocation, String, BiFunction)} overload if you need to register more than one campfire for your fire.
    *
@@ -187,7 +229,7 @@ public final class FireRegistrar {
   }
 
   /**
-   * Registers the source block for the specified fire from the given constructor.<p>
+   * Registers the campfire block for the specified fire from the given constructor.<p>
    *
    * Use one of the other {@code registerCampfire} overloads if you intend to register just one campfire for your fire.<br>
    * Instead, if you intend to register more than one, use the {@code blockId} parameter of this overload to specify the ID of the campfire.
@@ -204,7 +246,7 @@ public final class FireRegistrar {
   }
 
   /**
-   * Registers the source block for the specified fire from the given constructor.<p>
+   * Registers the campfire block for the specified fire from the given constructor.<p>
    *
    * Use one of the other {@code registerCampfire} overloads if you intend to register just one campfire for your fire.<br>
    * Instead, if you intend to register more than one, use the {@code blockId} parameter of this overload to specify the ID of the campfire.
