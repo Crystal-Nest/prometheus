@@ -9,7 +9,7 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Nothing new.
 
-## [v1.2.0] - 2025/12/19
+## [v1.2.0] - 2025/12/20
 
 - Fixed `CustomCampfireBlockEntity`, preventing crashes when placing campfires.
 - Fixed `CustomFireBlock` to "survive" only when on a sturdy block face.
