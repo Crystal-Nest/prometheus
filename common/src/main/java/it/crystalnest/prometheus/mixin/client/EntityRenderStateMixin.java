@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Unique;
  * Injects into {@link EntityRenderState} to alter Fire behavior for consistency.
  */
 @Mixin(EntityRenderState.class)
-public class EntityRenderStateMixin implements FireTypeChanger {
+public abstract class EntityRenderStateMixin implements FireTypeChanger {
   /**
    * Fire type.
    */

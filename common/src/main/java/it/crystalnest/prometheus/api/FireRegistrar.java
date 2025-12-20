@@ -56,6 +56,8 @@ public final class FireRegistrar {
    */
   private static boolean LOADED = false;
 
+  private FireRegistrar() {}
+
   /**
    * Loads this class.<br>
    * <strong>Internal usage, do not call elsewhere!</strong>
@@ -71,8 +73,6 @@ public final class FireRegistrar {
     FIRE_SOURCE_TAGS.register();
     CAMPFIRE_TAGS.register();
   }
-
-  private FireRegistrar() {}
 
   /**
    * Registers the default values for every specified fire component.<p>
@@ -94,7 +94,7 @@ public final class FireRegistrar {
 
   /**
    * Registers the source block for the specified fire.<p>
-   *
+   * <p>
    * Use the {@link #registerFireSource(Identifier, String, MapColor, BiFunction)} overload if you need to register more than one fire source block for your fire.
    *
    * @param fireType fire type.
@@ -106,7 +106,7 @@ public final class FireRegistrar {
 
   /**
    * Registers the source block for the specified fire from the given constructor.<p>
-   *
+   * <p>
    * Use the {@link #registerFireSource(Identifier, String, MapColor, BiFunction)} overload if you need to register more than one fire source block for your fire.
    *
    * @param fireType fire type.
@@ -121,7 +121,7 @@ public final class FireRegistrar {
 
   /**
    * Registers the source block for the specified fire from the given constructor.<p>
-   *
+   * <p>
    * Use the {@link #registerFireSource(Identifier, String, TagKey, MapColor, TriFunction)} overload if you need to register more than one fire source block for your fire.
    *
    * @param fireType fire type.
@@ -137,7 +137,7 @@ public final class FireRegistrar {
 
   /**
    * Registers the source block for the specified fire from the given constructor.<p>
-   *
+   * <p>
    * Use the {@link #registerFireSource(Identifier, String, MapColor, BiFunction)} overload if you need to register more than one fire source block for your fire.
    *
    * @param fireType fire type.
@@ -152,7 +152,7 @@ public final class FireRegistrar {
 
   /**
    * Registers the source block for the specified fire from the given constructor.<p>
-   *
+   * <p>
    * Use one of the other {@code registerFireSource} overloads if you intend to register just one fire source block for your fire.<br>
    * Instead, if you intend to register more than one, use the {@code blockId} parameter of this overload to specify the ID of the fire source.
    *
@@ -170,7 +170,7 @@ public final class FireRegistrar {
 
   /**
    * Registers the source block for the specified fire from the given constructor.<p>
-   *
+   * <p>
    * Use one of the other {@code registerFireSource} overloads if you intend to register just one fire source block for your fire.<br>
    * Instead, if you intend to register more than one, use the {@code blockId} parameter of this overload to specify the ID of the fire source.
    *
@@ -189,7 +189,7 @@ public final class FireRegistrar {
 
   /**
    * Registers the campfire block for the specified fire.<p>
-   *
+   * <p>
    * Use the {@link #registerCampfire(Identifier, String, boolean, TriFunction)} overload if you need to register more than one campfire for your fire.
    *
    * @param fireType fire type.
@@ -201,7 +201,7 @@ public final class FireRegistrar {
 
   /**
    * Registers the campfire block for the specified fire from the given constructor.<p>
-   *
+   * <p>
    * Use the {@link #registerCampfire(Identifier, String, boolean, TriFunction)} overload if you need to register more than one campfire for your fire.
    *
    * @param fireType fire type.
@@ -216,7 +216,7 @@ public final class FireRegistrar {
 
   /**
    * Registers the campfire block for the specified fire from the given constructor.<p>
-   *
+   * <p>
    * Use the {@link #registerCampfire(Identifier, String, BiFunction)} overload if you need to register more than one campfire for your fire.
    *
    * @param fireType fire type.
@@ -230,7 +230,7 @@ public final class FireRegistrar {
 
   /**
    * Registers the campfire block for the specified fire from the given constructor.<p>
-   *
+   * <p>
    * Use one of the other {@code registerCampfire} overloads if you intend to register just one campfire for your fire.<br>
    * Instead, if you intend to register more than one, use the {@code blockId} parameter of this overload to specify the ID of the campfire.
    *
@@ -247,7 +247,7 @@ public final class FireRegistrar {
 
   /**
    * Registers the campfire block for the specified fire from the given constructor.<p>
-   *
+   * <p>
    * Use one of the other {@code registerCampfire} overloads if you intend to register just one campfire for your fire.<br>
    * Instead, if you intend to register more than one, use the {@code blockId} parameter of this overload to specify the ID of the campfire.
    *
@@ -266,7 +266,7 @@ public final class FireRegistrar {
   /**
    * Registers the campfire item for the specified fire.<br>
    * Must be called <strong>after</strong> {@code registerCampfire}.<p>
-   *
+   * <p>
    * Use the {@link #registerCampfireItem(Identifier, String, String, BiFunction, Item.Properties)} overload if you need to register more than one campfire for your fire.
    *
    * @param fireType fire type.
@@ -279,7 +279,7 @@ public final class FireRegistrar {
   /**
    * Registers the campfire item for the specified fire from the given constructor.<br>
    * Must be called <strong>after</strong> {@code registerCampfire}.<p>
-   *
+   * <p>
    * Use the {@link #registerCampfireItem(Identifier, String, String, BiFunction, Item.Properties)} overload if you need to register more than one campfire for your fire.
    *
    * @param fireType fire type.
@@ -294,7 +294,7 @@ public final class FireRegistrar {
   /**
    * Registers the campfire item for the specified fire from the given constructor.<br>
    * Must be called <strong>after</strong> {@code registerCampfire}.<p>
-   *
+   * <p>
    * Use the {@link #registerCampfireItem(Identifier, String, String, BiFunction, Item.Properties)} overload if you need to register more than one campfire for your fire.
    *
    * @param fireType fire type.
@@ -310,7 +310,7 @@ public final class FireRegistrar {
   /**
    * Registers the campfire item for the specified fire from the given constructor.<br>
    * Must be called <strong>after</strong> {@code registerCampfire}.<p>
-   *
+   * <p>
    * Use one of the other {@code registerCampfireItem} overloads if you intend to register just one campfire for your fire.<br>
    * Instead, if you intend to register more than one, use the {@code itemId} and {@code blockId} parameters of this overload to specify the ID of the campfire.
    *
@@ -323,12 +323,17 @@ public final class FireRegistrar {
    * @return {@link CobwebEntry} for the campfire item.
    */
   public static <T extends BlockItem> CobwebEntry<T> registerCampfireItem(Identifier fireType, String itemId, String blockId, BiFunction<Block, Item.Properties, T> constructor, Item.Properties properties) {
-    return CobwebRegistry.ofItems(fireMod(fireType)).registerBlockItemLike(itemId, () -> FireManager.getRequiredComponent(fireType, Fire.Component.CAMPFIRE_BLOCK, blockId), properties.component(DataComponents.CONTAINER, ItemContainerContents.EMPTY), constructor);
+    return CobwebRegistry.ofItems(fireMod(fireType)).registerBlockItemLike(
+      itemId,
+      () -> FireManager.getRequiredComponent(fireType, Fire.Component.CAMPFIRE_BLOCK, blockId),
+      properties.component(DataComponents.CONTAINER, ItemContainerContents.EMPTY),
+      constructor
+    );
   }
 
   /**
    * Registers the particle type for the specified fire.<p>
-   *
+   * <p>
    * Use the {@link #registerParticle(Identifier, String, Supplier)} overload if you need to register more than one flame particle for your fire.
    *
    * @param fireType fire type.
@@ -342,7 +347,7 @@ public final class FireRegistrar {
    * Registers the particle type for the specified fire from the given supplier.<br>
    * Make sure your particle implements {@link ParticleOptions} if you are going to register a custom torch too.<br>
    * If it's not a subclass of {@link SimpleParticleType}, you also need to register a {@link ParticleProvider} for your particle.<p>
-   *
+   * <p>
    * Use the {@link #registerParticle(Identifier, String, Supplier)} overload if you need to register more than one flame particle for your fire.
    *
    * @param fireType fire type.
@@ -358,7 +363,7 @@ public final class FireRegistrar {
    * Registers the particle type for the specified fire from the given supplier.<br>
    * Make sure your particle implements {@link ParticleOptions} if you are going to register a custom torch too.<br>
    * If it's not a subclass of {@link SimpleParticleType}, you also need to register a {@link ParticleProvider} for your particle.<p>
-   *
+   * <p>
    * Use of the other {@code registerParticle} overloads if you intend to register just one flame particle for your fire.<br>
    * Instead, if you intend to register more than one, use the {@code particleId} parameter of this overload to specify the ID of the flame particle.
    *
@@ -375,7 +380,7 @@ public final class FireRegistrar {
    * Registers the pair of torch and wall torch blocks for the specified fire.<br>
    * Must be called <strong>after</strong> {@link #registerParticle}.<br>
    * Make sure your registered particle implements {@link ParticleOptions}.<p>
-   *
+   * <p>
    * Use the {@link #registerTorch(Identifier, String, String, String, TriFunction, QuadriFunction)} overload if you need to register more than one torch for your fire.
    *
    * @param fireType fire type.
@@ -389,7 +394,7 @@ public final class FireRegistrar {
    * Registers the pair of torch and wall torch blocks for the specified fire from the given constructors.<br>
    * Must be called <strong>after</strong> {@link #registerParticle}.<br>
    * Make sure your registered particle implements {@link ParticleOptions}.<p>
-   *
+   * <p>
    * Use the {@link #registerTorch(Identifier, String, String, String, TriFunction, QuadriFunction)} overload if you need to register more than one torch for your fire.
    *
    * @param fireType fire type.
@@ -418,7 +423,7 @@ public final class FireRegistrar {
    * Registers the pair of torch and wall torch blocks for the specified fire from the given constructors.<br>
    * Must be called <strong>after</strong> {@link #registerParticle}.<br>
    * Make sure your registered particle implements {@link ParticleOptions}.<p>
-   *
+   * <p>
    * Use of the other {@code registerTorch} overloads if you intend to register just one torch for your fire.<br>
    * Instead, if you intend to register more than one, use the {@code particleId}, {@code particleId}, and {@code particleId} parameters of this overload to specify the IDs of the torch and flame particle.
    *
@@ -448,7 +453,7 @@ public final class FireRegistrar {
   /**
    * Registers the torch item for the specified fire.<br>
    * Must be called <strong>after</strong> {@link #registerTorch}.<p>
-   *
+   * <p>
    * Use the {@link #registerTorchItem(Identifier, String, String, String, TriFunction, Item.Properties)} overload if you need to register more than one torch for your fire.
    *
    * @param fireType fire type.
@@ -461,7 +466,7 @@ public final class FireRegistrar {
   /**
    * Registers the torch item for the specified fire from the given constructor.<br>
    * Must be called <strong>after</strong> {@link #registerTorch}.<p>
-   *
+   * <p>
    * Use the {@link #registerTorchItem(Identifier, String, String, String, TriFunction, Item.Properties)} overload if you need to register more than one torch for your fire.
    *
    * @param fireType fire type.
@@ -476,7 +481,7 @@ public final class FireRegistrar {
   /**
    * Registers the torch item for the specified fire from the given constructor and properties.<br>
    * Must be called <strong>after</strong> {@link #registerTorch}.<p>
-   *
+   * <p>
    * Use the {@link #registerTorchItem(Identifier, String, String, String, TriFunction, Item.Properties)} overload if you need to register more than one torch for your fire.
    *
    * @param fireType fire type.
@@ -499,7 +504,7 @@ public final class FireRegistrar {
   /**
    * Registers the torch item for the specified fire from the given constructor and properties.<br>
    * Must be called <strong>after</strong> {@link #registerTorch}.<p>
-   *
+   * <p>
    * Use of the other {@code registerTorchItem} overloads if you intend to register just one torch for your fire.<br>
    * Instead, if you intend to register more than one, use the {@code itemId}, {@code torchId}, and {@code wallTorchId} parameters of this overload to specify the ID of the torch.
    *
@@ -523,7 +528,7 @@ public final class FireRegistrar {
 
   /**
    * Registers the lantern block for the specified fire.<p>
-   *
+   * <p>
    * Use the {@link #registerLantern(Identifier, String, BiFunction)} overload if you need to register more than one lantern for your fire.
    *
    * @param fireType fire type.
@@ -535,7 +540,7 @@ public final class FireRegistrar {
 
   /**
    * Registers the lantern block for the specified fire from the given constructor.<p>
-   *
+   * <p>
    * Use the {@link #registerLantern(Identifier, String, BiFunction)} overload if you need to register more than one lantern for your fire.
    *
    * @param fireType fire type.
@@ -549,7 +554,7 @@ public final class FireRegistrar {
 
   /**
    * Registers the lantern block for the specified fire from the given constructor.<p>
-   *
+   * <p>
    * Use of the other {@code registerLantern} overloads if you intend to register just one lantern for your fire.<br>
    * Instead, if you intend to register more than one, use the {@code blockId} parameter of this overload to specify the ID of the lantern.
    *
@@ -566,7 +571,7 @@ public final class FireRegistrar {
   /**
    * Registers the lantern item for the specified fire.<br>
    * Must be called <strong>after</strong> {@link #registerLantern}.<p>
-   *
+   * <p>
    * Use the {@link #registerLanternItem(Identifier, String, String, BiFunction, Item.Properties)} overload if you need to register more than one lantern for your fire.
    *
    * @param fireType fire type.
@@ -579,13 +584,13 @@ public final class FireRegistrar {
   /**
    * Registers the lantern item for the specified fire from the given constructor.<br>
    * Must be called <strong>after</strong> {@link #registerLantern}.<p>
-   *
+   * <p>
    * Use the {@link #registerLanternItem(Identifier, String, String, BiFunction, Item.Properties)} overload if you need to register more than one lantern for your fire.
    *
    * @param fireType fire type.
    * @param constructor {@link BlockItem} constructor.
-   * @return {@link CobwebEntry} for the lantern item.
    * @param <T> item type.
+   * @return {@link CobwebEntry} for the lantern item.
    */
   public static <T extends BlockItem> CobwebEntry<T> registerLanternItem(Identifier fireType, BiFunction<Block, Item.Properties, T> constructor) {
     return registerLanternItem(fireType, constructor, new Item.Properties());
@@ -594,14 +599,14 @@ public final class FireRegistrar {
   /**
    * Registers the lantern item for the specified fire from the given constructor.<br>
    * Must be called <strong>after</strong> {@link #registerLantern}.<p>
-   *
+   * <p>
    * Use the {@link #registerLanternItem(Identifier, String, String, BiFunction, Item.Properties)} overload if you need to register more than one lantern for your fire.
    *
    * @param fireType fire type.
    * @param constructor {@link BlockItem} constructor.
    * @param properties item properties.
-   * @return {@link CobwebEntry} for the lantern item.
    * @param <T> item type.
+   * @return {@link CobwebEntry} for the lantern item.
    */
   public static <T extends BlockItem> CobwebEntry<T> registerLanternItem(Identifier fireType, BiFunction<Block, Item.Properties, T> constructor, Item.Properties properties) {
     return registerLanternItem(fireType, FireManager.getComponentPath(fireType, Fire.Component.LANTERN_ITEM), FireManager.getComponentPath(fireType, Fire.Component.LANTERN_BLOCK), constructor, properties);
@@ -610,7 +615,7 @@ public final class FireRegistrar {
   /**
    * Registers the lantern item for the specified fire from the given constructor.<br>
    * Must be called <strong>after</strong> {@link #registerLantern}.<p>
-   *
+   * <p>
    * Use of the other {@code registerLanternItem} overloads if you intend to register just one lantern for your fire.<br>
    * Instead, if you intend to register more than one, use the {@code itemId} and {@code blockId} parameters of this overload to specify the ID of the lantern.
    *
@@ -619,8 +624,8 @@ public final class FireRegistrar {
    * @param blockId block ID of the corresponding lantern block.
    * @param constructor {@link BlockItem} constructor.
    * @param properties item properties.
-   * @return {@link CobwebEntry} for the lantern item.
    * @param <T> item type.
+   * @return {@link CobwebEntry} for the lantern item.
    */
   public static <T extends BlockItem> CobwebEntry<T> registerLanternItem(Identifier fireType, String itemId, String blockId, BiFunction<Block, Item.Properties, T> constructor, Item.Properties properties) {
     return CobwebRegistry.ofItems(fireMod(fireType)).registerBlockItemLike(itemId, () -> FireManager.getRequiredComponent(fireType, Fire.Component.LANTERN_BLOCK, blockId), properties, constructor);
@@ -628,7 +633,7 @@ public final class FireRegistrar {
 
   /**
    * Registers the fire charge item for the specified fire.<p>
-   *
+   * <p>
    * Use the {@link #registerFireCharge(Identifier, String, Function)} overload if you need to register more than one fire charge for your fire.
    *
    * @param fireType fire type.
@@ -640,13 +645,13 @@ public final class FireRegistrar {
 
   /**
    * Registers the fire charge item for the specified fire from the given constructor.<p>
-   *
+   * <p>
    * Use the {@link #registerFireCharge(Identifier, String, Function)} overload if you need to register more than one fire charge for your fire.
    *
    * @param fireType fire type.
    * @param constructor {@link FireChargeItem} constructor.
-   * @return {@link CobwebEntry} for the fire charge item.
    * @param <T> item type.
+   * @return {@link CobwebEntry} for the fire charge item.
    */
   public static <T extends FireChargeItem> CobwebEntry<T> registerFireCharge(Identifier fireType, Function<Item.Properties, T> constructor) {
     return registerFireCharge(fireType, FireManager.getComponentPath(fireType, Fire.Component.FIRE_CHARGE_ITEM), constructor);
@@ -654,15 +659,15 @@ public final class FireRegistrar {
 
   /**
    * Registers the fire charge item for the specified fire from the given constructor.<p>
-   *
+   * <p>
    * Use of the other {@code registerLanternItem} overloads if you intend to register just one fire charge for your fire.<br>
    * Instead, if you intend to register more than one, use the {@code itemId} parameter of this overload to specify the ID of the fire charge.
    *
    * @param fireType fire type.
    * @param itemId item ID.
    * @param constructor {@link FireChargeItem} constructor.
-   * @return {@link CobwebEntry} for the fire charge item.
    * @param <T> item type.
+   * @return {@link CobwebEntry} for the fire charge item.
    */
   public static <T extends FireChargeItem> CobwebEntry<T> registerFireCharge(Identifier fireType, String itemId, Function<Item.Properties, T> constructor) {
     return CobwebRegistry.ofItems(fireMod(fireType)).registerItem(itemId, constructor);

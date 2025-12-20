@@ -97,7 +97,7 @@ public final class FireManager {
    * Default {@link DynamicBlockEntityType} for custom campfires.
    */
   @ApiStatus.Internal
-  private static CobwebEntry<DynamicBlockEntityType<@NotNull CustomCampfireBlockEntity>> CUSTOM_CAMPFIRE_ENTITY_TYPE;
+  private static CobwebEntry<DynamicBlockEntityType<@NotNull CustomCampfireBlockEntity>> customCampfireEntityType;
 
   /**
    * Whether this class has already been loaded.
@@ -113,7 +113,7 @@ public final class FireManager {
    * @return default {@link DynamicBlockEntityType} for custom campfires.
    */
   public static CobwebEntry<DynamicBlockEntityType<@NotNull CustomCampfireBlockEntity>> getCustomCampfireEntityType() {
-    return CUSTOM_CAMPFIRE_ENTITY_TYPE;
+    return customCampfireEntityType;
   }
 
   /**
@@ -128,7 +128,7 @@ public final class FireManager {
       throw new IllegalStateException("FireManager was already loaded");
     }
     LOADED = true;
-    CUSTOM_CAMPFIRE_ENTITY_TYPE = CobwebRegistry.of(Registries.BLOCK_ENTITY_TYPE, Constants.MOD_ID).register(
+    customCampfireEntityType = CobwebRegistry.of(Registries.BLOCK_ENTITY_TYPE, Constants.MOD_ID).register(
       "custom_campfire",
       () -> DynamicBlockEntityType.of(CustomCampfireBlockEntity::new, state -> FireManager.getComponentList(Fire.Component.CAMPFIRE_BLOCK).stream().filter(CustomCampfireBlock.class::isInstance).toList().contains(state.getBlock()))
     );

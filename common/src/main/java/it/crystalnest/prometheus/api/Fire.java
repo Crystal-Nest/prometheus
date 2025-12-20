@@ -460,7 +460,7 @@ public final class Fire {
      * @return the default {@link Map#entry(Object, Object) Map.entry} for this component.
      */
     Map.Entry<Component<R, T>, List<Identifier>> getEntry(String modId, String fireId) {
-      return Map.entry(this, List.of(net.minecraft.resources.Identifier.fromNamespaceAndPath(modId, fireId + suffix)));
+      return Map.entry(this, List.of(Identifier.fromNamespaceAndPath(modId, fireId + suffix)));
     }
   }
 

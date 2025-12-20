@@ -30,7 +30,7 @@ public final class ModLoader implements ModInitializer {
   /**
    * Registers the resource loader for DDFs.
    */
-  private void registerResourceLoader() {
+  private static void registerResourceLoader() {
     ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> FireResourceReloadListener.handle(player));
     ResourceLoader.get(PackType.SERVER_DATA).registerReloader(Identifier.fromNamespaceAndPath(Constants.MOD_ID, Constants.DDFIRES), new FireResourceReloadListener());
   }
