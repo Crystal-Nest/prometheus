@@ -11,7 +11,7 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 ## [v1.2.1] - 2025/12/20
 
-- 1.21.6 only: Fix crash when spawning fire charge entities.
+- 1.21.6+ only: Fix crash when spawning fire charge entities.
 
 ## [v1.2.0] - 2025/12/20
 
