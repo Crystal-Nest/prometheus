@@ -6,10 +6,13 @@
   "compatibilityLevel": "JAVA_${java_version}",
   "mixins": [
     "AbstractArrowMixin",
+    "AbstractHurtingProjectileMixin",
     "BaseFireBlockCommonMixin",
     "CampfireBlockMixin",
     "EntityMixin",
+    "FireChargeItemMixin",
     "LanternBlockMixin",
+    "SmallFireballMixin",
     "TorchBlockMixin",
     "ZombieMixin"
   ],

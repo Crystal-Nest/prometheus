@@ -18,11 +18,16 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 - DDFs fields `source`, `campfire`, `lantern`, `torch`, and `wallTorch` now accept either a string or a list of strings, as long as every string is a valid `ResourceLocation`.
 - `LanternBlock` and `TorchBlock` now implement `FireTypeChanger`.
 - Most implementations of `FireTypeChanger` now `ensure` their fire type is valid before returning it in `getFireType()`.
-- Methods for fire-related game objects registration have now been moved to the new `FireRegistrar` class, and new methods have been added to support multiple-valued Fire Components.
+- Methods for fire-related game objects registration have now been moved to the new `FireRegistrar` class.
+- Added new methods for fire-related game objects registration in `FireRegistrar` to support multiple-valued Fire Components.
+- Added new methods for fire-related game objects registration in `FireRegistrar` to register multiple fire components in one call.
 - Methods for fire-related game objects registration in `FireManager` have been deprecated, their logic is delegated to `FireRegistrar`, and have been marked for removal.
 - New methods have been added to `Fire`, `Fire.Builder`, and `FireManager` to support multiple-valued Fire Components.
 - Added new constructor to `CustomWallTorchBlock` to support multiple-valued Fire Components.
 - JavaDoc has been updated for all the above changes, along with the [Wiki](https://github.com/Crystal-Nest/prometheus/wiki).
+- Fixed `CustomLanternBlocks` not being automatically registered to `CUTOUT` render type on Fabric.
+- Added new Fire Component: `Fire.Component#FIRE_CHARGE_ITEM` for fire charges.
+- Added new method `FireManager#getFireType(Fire.Component, Object)` to retrieve the fire type from a Fire.Component value (useful for fire components that don't implement `FireTyped`, like items).
 
 ## [v1.1.2] - 2025/11/29
 

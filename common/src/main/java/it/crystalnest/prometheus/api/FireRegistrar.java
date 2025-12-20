@@ -22,6 +22,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.FireChargeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.StandingAndWallBlockItem;
 import net.minecraft.world.item.component.ItemContainerContents;
@@ -33,6 +34,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -526,7 +528,7 @@ public final class FireRegistrar {
    * Use the {@link #registerLanternItem(ResourceLocation, String, String, BiFunction, Item.Properties)} overload if you need to register more than one lantern for your fire.
    *
    * @param fireType fire type.
-   * @return {@link CobwebEntry} for the lantern block.
+   * @return {@link CobwebEntry} for the lantern item.
    */
   public static CobwebEntry<BlockItem> registerLanternItem(ResourceLocation fireType) {
     return registerLanternItem(fireType, BlockItem::new);
@@ -540,8 +542,8 @@ public final class FireRegistrar {
    *
    * @param fireType fire type.
    * @param constructor {@link BlockItem} constructor.
-   * @param <T> item type.
    * @return {@link CobwebEntry} for the lantern item.
+   * @param <T> item type.
    */
   public static <T extends BlockItem> CobwebEntry<T> registerLanternItem(ResourceLocation fireType, BiFunction<Block, Item.Properties, T> constructor) {
     return registerLanternItem(fireType, constructor, new Item.Properties());
@@ -556,8 +558,8 @@ public final class FireRegistrar {
    * @param fireType fire type.
    * @param constructor {@link BlockItem} constructor.
    * @param properties item properties.
-   * @param <T> item type.
    * @return {@link CobwebEntry} for the lantern item.
+   * @param <T> item type.
    */
   public static <T extends BlockItem> CobwebEntry<T> registerLanternItem(ResourceLocation fireType, BiFunction<Block, Item.Properties, T> constructor, Item.Properties properties) {
     return registerLanternItem(fireType, FireManager.getComponentPath(fireType, Fire.Component.LANTERN_ITEM), FireManager.getComponentPath(fireType, Fire.Component.LANTERN_BLOCK), constructor, properties);
@@ -575,11 +577,53 @@ public final class FireRegistrar {
    * @param blockId block ID of the corresponding lantern block.
    * @param constructor {@link BlockItem} constructor.
    * @param properties item properties.
-   * @param <T> item type.
    * @return {@link CobwebEntry} for the lantern item.
+   * @param <T> item type.
    */
   public static <T extends BlockItem> CobwebEntry<T> registerLanternItem(ResourceLocation fireType, String itemId, String blockId, BiFunction<Block, Item.Properties, T> constructor, Item.Properties properties) {
     return CobwebRegistry.ofItems(fireMod(fireType)).registerBlockItemLike(itemId, () -> FireManager.getRequiredComponent(fireType, Fire.Component.LANTERN_BLOCK, blockId), properties, constructor);
+  }
+
+  /**
+   * Registers the fire charge item for the specified fire.<p>
+   *
+   * Use the {@link #registerFireCharge(ResourceLocation, String, Function)} overload if you need to register more than one fire charge for your fire.
+   *
+   * @param fireType fire type.
+   * @return {@link CobwebEntry} for the fire charge item.
+   */
+  public static CobwebEntry<FireChargeItem> registerFireCharge(ResourceLocation fireType) {
+    return registerFireCharge(fireType, FireChargeItem::new);
+  }
+
+  /**
+   * Registers the fire charge item for the specified fire from the given constructor.<p>
+   *
+   * Use the {@link #registerFireCharge(ResourceLocation, String, Function)} overload if you need to register more than one fire charge for your fire.
+   *
+   * @param fireType fire type.
+   * @param constructor {@link FireChargeItem} constructor.
+   * @return {@link CobwebEntry} for the fire charge item.
+   * @param <T> item type.
+   */
+  public static <T extends FireChargeItem> CobwebEntry<T> registerFireCharge(ResourceLocation fireType, Function<Item.Properties, T> constructor) {
+    return registerFireCharge(fireType, FireManager.getComponentPath(fireType, Fire.Component.FIRE_CHARGE_ITEM), constructor);
+  }
+
+  /**
+   * Registers the fire charge item for the specified fire from the given constructor.<p>
+   *
+   * Use of the other {@code registerLanternItem} overloads if you intend to register just one fire charge for your fire.<br>
+   * Instead, if you intend to register more than one, use the {@code itemId} parameter of this overload to specify the ID of the fire charge.
+   *
+   * @param fireType fire type.
+   * @param itemId item ID.
+   * @param constructor {@link FireChargeItem} constructor.
+   * @return {@link CobwebEntry} for the fire charge item.
+   * @param <T> item type.
+   */
+  public static <T extends FireChargeItem> CobwebEntry<T> registerFireCharge(ResourceLocation fireType, String itemId, Function<Item.Properties, T> constructor) {
+    return CobwebRegistry.ofItems(fireMod(fireType)).registerItem(itemId, constructor);
   }
 
   /**

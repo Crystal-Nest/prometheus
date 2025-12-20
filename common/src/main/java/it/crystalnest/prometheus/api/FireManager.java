@@ -27,6 +27,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.StandingAndWallBlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -90,10 +91,14 @@ public final class FireManager {
     Map.ofEntries(
       Map.entry(Fire.Component.SOURCE_BLOCK, List.of(BuiltInRegistries.BLOCK.getKey(Blocks.FIRE))),
       Map.entry(Fire.Component.CAMPFIRE_BLOCK, List.of(BuiltInRegistries.BLOCK.getKey(Blocks.CAMPFIRE))),
+      Map.entry(Fire.Component.CAMPFIRE_ITEM, List.of(BuiltInRegistries.ITEM.getKey(Items.CAMPFIRE))),
       Map.entry(Fire.Component.LANTERN_BLOCK, List.of(BuiltInRegistries.BLOCK.getKey(Blocks.LANTERN))),
+      Map.entry(Fire.Component.LANTERN_ITEM, List.of(BuiltInRegistries.ITEM.getKey(Items.LANTERN))),
       Map.entry(Fire.Component.TORCH_BLOCK, List.of(BuiltInRegistries.BLOCK.getKey(Blocks.TORCH))),
       Map.entry(Fire.Component.WALL_TORCH_BLOCK, List.of(BuiltInRegistries.BLOCK.getKey(Blocks.WALL_TORCH))),
-      Map.entry(Fire.Component.FLAME_PARTICLE, List.of(BuiltInRegistries.PARTICLE_TYPE.getKey(ParticleTypes.FLAME)))
+      Map.entry(Fire.Component.TORCH_ITEM, List.of(BuiltInRegistries.ITEM.getKey(Items.TORCH))),
+      Map.entry(Fire.Component.FLAME_PARTICLE, List.of(BuiltInRegistries.PARTICLE_TYPE.getKey(ParticleTypes.FLAME))),
+      Map.entry(Fire.Component.FIRE_CHARGE_ITEM, List.of(BuiltInRegistries.ITEM.getKey(Items.FIRE_CHARGE)))
     )
   );
 
@@ -112,6 +117,13 @@ public final class FireManager {
   public static CobwebEntry<DynamicBlockEntityType<CustomCampfireBlockEntity>> CUSTOM_CAMPFIRE_ENTITY_TYPE;
 
   /**
+   * Whether this class has already been loaded.
+   */
+  private static boolean LOADED = false;
+
+  private FireManager() {}
+
+  /**
    * Default {@link DynamicBlockEntityType} for custom campfires.<br>
    * Access only <b>during or after</b> mod initialization.
    *
@@ -120,13 +132,6 @@ public final class FireManager {
   public static CobwebEntry<DynamicBlockEntityType<CustomCampfireBlockEntity>> getCustomCampfireEntityType() {
     return CUSTOM_CAMPFIRE_ENTITY_TYPE;
   }
-
-  /**
-   * Whether this class has already been loaded.
-   */
-  private static boolean LOADED = false;
-
-  private FireManager() {}
 
   /**
    * Loads this class.<br>
@@ -252,12 +257,12 @@ public final class FireManager {
   /**
    * Registers the source block for the specified fire from the given constructor.
    *
-   * @deprecated use {@link FireRegistrar#registerFireSource(ResourceLocation, MapColor, BiFunction)} instead.
    * @param fireType fire type.
    * @param color light color.
    * @param constructor {@link CustomFireBlock} constructor.
    * @param <T> source block type.
    * @return {@link CobwebEntry} for the source block.
+   * @deprecated use {@link FireRegistrar#registerFireSource(ResourceLocation, MapColor, BiFunction)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends CustomFireBlock> CobwebEntry<T> registerFireSource(ResourceLocation fireType, MapColor color, BiFunction<ResourceLocation, BlockBehaviour.Properties, T> constructor) {
@@ -267,13 +272,13 @@ public final class FireManager {
   /**
    * Registers the source block for the specified fire from the given constructor.
    *
-   * @deprecated use {@link FireRegistrar#registerFireSource(ResourceLocation, TagKey, MapColor, TriFunction)} instead.
    * @param fireType fire type.
    * @param base {@link CustomFireBlock#base}.
    * @param color light color.
    * @param constructor {@link CustomFireBlock} constructor.
    * @param <T> source block type.
    * @return {@link CobwebEntry} for the source block.
+   * @deprecated use {@link FireRegistrar#registerFireSource(ResourceLocation, TagKey, MapColor, TriFunction)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends CustomFireBlock> CobwebEntry<T> registerFireSource(ResourceLocation fireType, TagKey<Block> base, MapColor color, TriFunction<ResourceLocation, TagKey<Block>, BlockBehaviour.Properties, T> constructor) {
@@ -283,11 +288,11 @@ public final class FireManager {
   /**
    * Registers the source block for the specified fire from the given constructor.
    *
-   * @deprecated use {@link FireRegistrar#registerCampfire(ResourceLocation, BiFunction)} instead.
    * @param fireType fire type.
    * @param constructor {@link CustomCampfireBlock} constructor.
    * @param <T> campfire block type.
    * @return {@link CobwebEntry} for the campfire block.
+   * @deprecated use {@link FireRegistrar#registerCampfire(ResourceLocation, BiFunction)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends CustomCampfireBlock> CobwebEntry<T> registerCampfire(ResourceLocation fireType, BiFunction<ResourceLocation, BlockBehaviour.Properties, T> constructor) {
@@ -297,12 +302,12 @@ public final class FireManager {
   /**
    * Registers the source block for the specified fire from the given constructor.
    *
-   * @deprecated use {@link FireRegistrar#registerCampfire(ResourceLocation, boolean, TriFunction)} instead.
    * @param fireType fire type.
    * @param spawnParticles whether to spawn crackling particles.
    * @param constructor {@link CustomCampfireBlock} constructor.
    * @param <T> campfire block type.
    * @return {@link CobwebEntry} for the campfire block.
+   * @deprecated use {@link FireRegistrar#registerCampfire(ResourceLocation, boolean, TriFunction)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends CustomCampfireBlock> CobwebEntry<T> registerCampfire(ResourceLocation fireType, boolean spawnParticles, TriFunction<ResourceLocation, Boolean, BlockBehaviour.Properties, T> constructor) {
@@ -313,11 +318,11 @@ public final class FireManager {
    * Registers the campfire item for the specified fire from the given constructor.<br>
    * Must be called <strong>after</strong> {@link #registerCampfire}.
    *
-   * @deprecated use {@link FireRegistrar#registerCampfireItem(ResourceLocation, BiFunction)} instead.
    * @param fireType fire type.
    * @param constructor {@link BlockItem} constructor.
    * @param <T> item type.
    * @return {@link CobwebEntry} for the campfire item.
+   * @deprecated use {@link FireRegistrar#registerCampfireItem(ResourceLocation, BiFunction)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends BlockItem> CobwebEntry<T> registerCampfireItem(ResourceLocation fireType, BiFunction<Block, Item.Properties, T> constructor) {
@@ -328,12 +333,12 @@ public final class FireManager {
    * Registers the campfire item for the specified fire from the given constructor.<br>
    * Must be called <strong>after</strong> {@link #registerCampfire}.
    *
-   * @deprecated use {@link FireRegistrar#registerCampfireItem(ResourceLocation, BiFunction, Item.Properties)} instead.
    * @param fireType fire type.
    * @param constructor {@link BlockItem} constructor.
    * @param properties item properties.
    * @param <T> item type.
    * @return {@link CobwebEntry} for the campfire item.
+   * @deprecated use {@link FireRegistrar#registerCampfireItem(ResourceLocation, BiFunction, Item.Properties)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends BlockItem> CobwebEntry<T> registerCampfireItem(ResourceLocation fireType, BiFunction<Block, Item.Properties, T> constructor, Item.Properties properties) {
@@ -343,9 +348,9 @@ public final class FireManager {
   /**
    * Registers the particle type for the specified fire.
    *
-   * @deprecated use {@link FireRegistrar#registerParticle(ResourceLocation)} instead.
    * @param fireType fire type.
    * @return {@link CobwebEntry} for the particle type.
+   * @deprecated use {@link FireRegistrar#registerParticle(ResourceLocation)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static CobwebEntry<SimpleParticleType> registerParticle(ResourceLocation fireType) {
@@ -357,11 +362,11 @@ public final class FireManager {
    * Make sure your particle implements {@link ParticleOptions} if you are going to register a custom torch too.<br>
    * If it's not a subclass of {@link SimpleParticleType}, you also need to register a {@link ParticleProvider} for your particle.
    *
-   * @deprecated use {@link FireRegistrar#registerParticle(ResourceLocation, Supplier)} instead.
    * @param fireType fire type.
    * @param supplier {@link SimpleParticleType} supplier.
    * @param <T> particle type.
    * @return {@link CobwebEntry} for the particle type.
+   * @deprecated use {@link FireRegistrar#registerParticle(ResourceLocation, Supplier)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends SimpleParticleType> CobwebEntry<T> registerParticle(ResourceLocation fireType, Supplier<T> supplier) {
@@ -373,9 +378,9 @@ public final class FireManager {
    * Must be called <strong>after</strong> {@link #registerParticle}.<br>
    * Make sure your registered particle implements {@link ParticleOptions}.
    *
-   * @deprecated use {@link FireRegistrar#registerTorch(ResourceLocation)} instead.
    * @param fireType fire type.
    * @return pair of {@link CobwebEntry}s for the torch and wall torch blocks.
+   * @deprecated use {@link FireRegistrar#registerTorch(ResourceLocation)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static Pair<CobwebEntry<CustomTorchBlock>, CobwebEntry<CustomWallTorchBlock>> registerTorch(ResourceLocation fireType) {
@@ -387,13 +392,13 @@ public final class FireManager {
    * Must be called <strong>after</strong> {@link #registerParticle}.<br>
    * Make sure your registered particle implements {@link ParticleOptions}.
    *
-   * @deprecated use {@link FireRegistrar#registerTorch(ResourceLocation, TriFunction, TriFunction)} instead.
    * @param fireType fire type.
    * @param torchSupplier {@link CustomTorchBlock} constructor.
    * @param wallTorchSupplier {@link CustomWallTorchBlock} constructor.
    * @param <T> torch block type.
    * @param <W> wall torch block type.
    * @return pair of {@link CobwebEntry}s for torch and wall torch blocks.
+   * @deprecated use {@link FireRegistrar#registerTorch(ResourceLocation, TriFunction, TriFunction)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends CustomTorchBlock, W extends CustomWallTorchBlock> Pair<CobwebEntry<T>, CobwebEntry<W>> registerTorch(
@@ -408,9 +413,9 @@ public final class FireManager {
    * Registers the torch item for the specified fire.<br>
    * Must be called <strong>after</strong> {@link #registerTorch}.
    *
-   * @deprecated use {@link FireRegistrar#registerTorchItem(ResourceLocation)} instead.
    * @param fireType fire type.
    * @return {@link CobwebEntry} for the torch item.
+   * @deprecated use {@link FireRegistrar#registerTorchItem(ResourceLocation)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static CobwebEntry<StandingAndWallBlockItem> registerTorchItem(ResourceLocation fireType) {
@@ -421,11 +426,11 @@ public final class FireManager {
    * Registers the torch item for the specified fire from the given constructor.<br>
    * Must be called <strong>after</strong> {@link #registerTorch}.
    *
-   * @deprecated use {@link FireRegistrar#registerTorchItem(ResourceLocation, TriFunction)} instead.
    * @param fireType fire type.
    * @param constructor {@link StandingAndWallBlockItem} constructor.
    * @param <T> torch item type.
    * @return {@link CobwebEntry} for the torch item.
+   * @deprecated use {@link FireRegistrar#registerTorchItem(ResourceLocation, TriFunction)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends StandingAndWallBlockItem> CobwebEntry<T> registerTorchItem(ResourceLocation fireType, TriFunction<Block, Block, Item.Properties, T> constructor) {
@@ -436,12 +441,12 @@ public final class FireManager {
    * Registers the torch item for the specified fire from the given constructor and properties.<br>
    * Must be called <strong>after</strong> {@link #registerTorch}.
    *
-   * @deprecated use {@link FireRegistrar#registerTorchItem(ResourceLocation, TriFunction, Item.Properties)} instead.
    * @param fireType fire type.
    * @param constructor {@link StandingAndWallBlockItem} constructor.
    * @param properties item properties.
    * @param <T> torch item type.
    * @return {@link CobwebEntry} for the torch item.
+   * @deprecated use {@link FireRegistrar#registerTorchItem(ResourceLocation, TriFunction, Item.Properties)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends StandingAndWallBlockItem> CobwebEntry<T> registerTorchItem(ResourceLocation fireType, TriFunction<Block, Block, Item.Properties, T> constructor, Item.Properties properties) {
@@ -451,9 +456,9 @@ public final class FireManager {
   /**
    * Registers the lantern block for the specified fire.
    *
-   * @deprecated use {@link FireRegistrar#registerLantern(ResourceLocation)} instead.
    * @param fireType fire type.
    * @return {@link CobwebEntry} for the lantern block.
+   * @deprecated use {@link FireRegistrar#registerLantern(ResourceLocation)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static CobwebEntry<CustomLanternBlock> registerLantern(ResourceLocation fireType) {
@@ -463,11 +468,11 @@ public final class FireManager {
   /**
    * Registers the lantern block for the specified fire from the given constructor.
    *
-   * @deprecated use {@link FireRegistrar#registerLantern(ResourceLocation, BiFunction)} instead.
    * @param fireType fire type.
    * @param constructor {@link CustomLanternBlock} constructor.
    * @param <T> lantern block type.
    * @return {@link CobwebEntry} for the lantern block.
+   * @deprecated use {@link FireRegistrar#registerLantern(ResourceLocation, BiFunction)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends CustomLanternBlock> CobwebEntry<T> registerLantern(ResourceLocation fireType, BiFunction<ResourceLocation, BlockBehaviour.Properties, T> constructor) {
@@ -478,9 +483,9 @@ public final class FireManager {
    * Registers the lantern item for the specified fire.<br>
    * Must be called <strong>after</strong> {@link #registerLantern}.
    *
-   * @deprecated use {@link FireRegistrar#registerLanternItem(ResourceLocation)} instead.
    * @param fireType fire type.
    * @return {@link CobwebEntry} for the lantern block.
+   * @deprecated use {@link FireRegistrar#registerLanternItem(ResourceLocation)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static CobwebEntry<BlockItem> registerLanternItem(ResourceLocation fireType) {
@@ -491,11 +496,11 @@ public final class FireManager {
    * Registers the lantern item for the specified fire from the given constructor.<br>
    * Must be called <strong>after</strong> {@link #registerLantern}.
    *
-   * @deprecated use {@link FireRegistrar#registerLanternItem(ResourceLocation, BiFunction)} instead.
    * @param fireType fire type.
    * @param constructor {@link BlockItem} constructor.
    * @param <T> item type.
    * @return {@link CobwebEntry} for the lantern item.
+   * @deprecated use {@link FireRegistrar#registerLanternItem(ResourceLocation, BiFunction)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends BlockItem> CobwebEntry<T> registerLanternItem(ResourceLocation fireType, BiFunction<Block, Item.Properties, T> constructor) {
@@ -506,12 +511,12 @@ public final class FireManager {
    * Registers the lantern item for the specified fire from the given constructor.<br>
    * Must be called <strong>after</strong> {@link #registerLantern}.
    *
-   * @deprecated use {@link FireRegistrar#registerLanternItem(ResourceLocation, BiFunction, Item.Properties)} instead.
    * @param fireType fire type.
    * @param constructor {@link BlockItem} constructor.
    * @param properties item properties.
    * @param <T> item type.
    * @return {@link CobwebEntry} for the lantern item.
+   * @deprecated use {@link FireRegistrar#registerLanternItem(ResourceLocation, BiFunction, Item.Properties)} instead.
    */
   @Deprecated(forRemoval = true, since = "1.2.0")
   public static <T extends BlockItem> CobwebEntry<T> registerLanternItem(ResourceLocation fireType, BiFunction<Block, Item.Properties, T> constructor, Item.Properties properties) {
@@ -678,9 +683,9 @@ public final class FireManager {
    *
    * @param fireType fire type.
    * @param component component.
-   * @return component value.
    * @param <R> component registry.
    * @param <T> component value type.
+   * @return component value.
    * @throws NullPointerException if the specified fire is registered but doesn't have the specified component.
    */
   @NotNull
@@ -697,9 +702,9 @@ public final class FireManager {
    * @param fireType fire type.
    * @param component component.
    * @param id ID to specify which component value to select.
-   * @return component value.
    * @param <R> component registry.
    * @param <T> component value type.
+   * @return component value.
    * @throws NullPointerException if the specified fire is registered but doesn't have the specified component.
    */
   @NotNull
@@ -713,9 +718,9 @@ public final class FireManager {
    *
    * @param fireType fire type.
    * @param component component.
-   * @return component value.
    * @param <R> component registry.
    * @param <T> component value type.
+   * @return component value.
    * @throws NullPointerException if the specified fire is registered but doesn't have the specified component.
    */
   @NotNull
@@ -765,9 +770,9 @@ public final class FireManager {
    * This list won't necessarily have as many elements as there are registered fires because fires without the specified component are filtered out.
    *
    * @param component component.
-   * @return component value list.
    * @param <R> component registry.
    * @param <T> component value type.
+   * @return component value list.
    */
   public static <R, T extends R> List<List<T>> getComponentListList(Fire.Component<R, T> component) {
     return FIRES.values().stream().map(component::getValues).filter(l -> !(l == null || l.isEmpty())).toList();
@@ -927,6 +932,19 @@ public final class FireManager {
   }
 
   /**
+   * Returns the fire type associated to the specified component.
+   *
+   * @param component component.
+   * @param object fire-related game object.
+   * @param <R> object registry.
+   * @param <T> object type.
+   * @return the object's fire type.
+   */
+  public static <R, T extends R> ResourceLocation getFireType(Fire.Component<R, T> component, T object) {
+    return FireManager.getFireTypes().stream().filter(type -> FireManager.getComponent(type, component) == object).findFirst().orElse(DEFAULT_FIRE_TYPE);
+  }
+
+  /**
    * Set on fire the given entity for the given seconds with the given fire type.
    *
    * @param entity {@link Entity} to set on fire.
@@ -942,13 +960,13 @@ public final class FireManager {
    * This is for internal use only (or for mixin usage). Use {@link #setOnFire(Entity, float, ResourceLocation)} instead.
    *
    * @param entity {@link Entity} to set on fire.
-   * @param seconds amount of seconds the fire should last for.
+   * @param duration amount of time the fire should last for.
    * @param fireType fire type.
    * @param setOnFireFunction how to set the entity on fire.
    */
   @ApiStatus.Internal
-  public static void setOnFire(Entity entity, float seconds, ResourceLocation fireType, BiConsumer<Entity, Float> setOnFireFunction) {
-    setOnFireFunction.accept(entity, seconds);
+  public static void setOnFire(Entity entity, float duration, ResourceLocation fireType, BiConsumer<Entity, Float> setOnFireFunction) {
+    setOnFireFunction.accept(entity, duration);
     ((FireTypeChanger) entity).setFireType(ensure(fireType));
   }
 

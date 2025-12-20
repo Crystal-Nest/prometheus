@@ -1,5 +1,7 @@
 package it.crystalnest.prometheus;
 
+import it.crystalnest.prometheus.api.Fire;
+import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.attachment.AttachmentRegistry;
 import it.crystalnest.prometheus.handler.FireResourceReloadListener;
 import net.fabricmc.api.ModInitializer;
@@ -7,7 +9,10 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
+import net.minecraft.world.level.block.DispenserBlock;
 import org.jetbrains.annotations.ApiStatus;
+
+import java.util.Objects;
 
 /**
  * Mod loader.
@@ -19,6 +24,7 @@ public final class ModLoader implements ModInitializer {
     CommonModLoader.init();
     AttachmentRegistry.register();
     registerResourceLoader();
+    FireManager.getComponentListList(Fire.Component.FIRE_CHARGE_ITEM).stream().filter(Objects::nonNull).forEach(charges -> charges.forEach(DispenserBlock::registerProjectileBehavior));
   }
 
   /**
