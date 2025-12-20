@@ -2,6 +2,7 @@ package it.crystalnest.prometheus.api;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import it.crystalnest.cobweb.api.registry.CobwebEntry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
@@ -288,52 +289,52 @@ public final class Fire {
     /**
      * Source block component.
      */
-    public static final Component<Block, Block> SOURCE_BLOCK = new Component<>(Registries.BLOCK, "_fire");
+    public static final Component<Block, Block> SOURCE_BLOCK = new Component<>(Registries.BLOCK, "_fire", FireRegistrar::registerFireSource);
 
     /**
      * Campfire block component.
      */
-    public static final Component<Block, Block> CAMPFIRE_BLOCK = new Component<>(Registries.BLOCK, "_campfire");
+    public static final Component<Block, Block> CAMPFIRE_BLOCK = new Component<>(Registries.BLOCK, "_campfire", FireRegistrar::registerCampfire);
 
     /**
      * Campfire item component.
      */
-    public static final Component<Item, BlockItem> CAMPFIRE_ITEM = new Component<>(Registries.ITEM, "_campfire");
+    public static final Component<Item, BlockItem> CAMPFIRE_ITEM = new Component<>(Registries.ITEM, "_campfire", FireRegistrar::registerCampfireItem);
 
     /**
      * Lantern block component.
      */
-    public static final Component<Block, Block> LANTERN_BLOCK = new Component<>(Registries.BLOCK, "_lantern");
+    public static final Component<Block, Block> LANTERN_BLOCK = new Component<>(Registries.BLOCK, "_lantern", FireRegistrar::registerLantern);
 
     /**
      * Lantern item component.
      */
-    public static final Component<Item, BlockItem> LANTERN_ITEM = new Component<>(Registries.ITEM, "_lantern");
+    public static final Component<Item, BlockItem> LANTERN_ITEM = new Component<>(Registries.ITEM, "_lantern", FireRegistrar::registerLanternItem);
 
     /**
      * Torch block component.
      */
-    public static final Component<Block, Block> TORCH_BLOCK = new Component<>(Registries.BLOCK, "_torch");
+    public static final Component<Block, Block> TORCH_BLOCK = new Component<>(Registries.BLOCK, "_torch", type -> FireRegistrar.registerTorch(type).getLeft());
 
     /**
      * Torch item component.
      */
-    public static final Component<Item, StandingAndWallBlockItem> TORCH_ITEM = new Component<>(Registries.ITEM, "_torch");
+    public static final Component<Item, StandingAndWallBlockItem> TORCH_ITEM = new Component<>(Registries.ITEM, "_torch", FireRegistrar::registerTorchItem);
 
     /**
      * Wall torch block component.
      */
-    public static final Component<Block, Block> WALL_TORCH_BLOCK = new Component<>(Registries.BLOCK, "_wall_torch");
+    public static final Component<Block, Block> WALL_TORCH_BLOCK = new Component<>(Registries.BLOCK, "_wall_torch", type -> FireRegistrar.registerTorch(type).getRight());
 
     /**
      * Flame particle component.
      */
-    public static final Component<ParticleType<?>, SimpleParticleType> FLAME_PARTICLE = new Component<>(Registries.PARTICLE_TYPE, "_flame");
+    public static final Component<ParticleType<?>, SimpleParticleType> FLAME_PARTICLE = new Component<>(Registries.PARTICLE_TYPE, "_flame", FireRegistrar::registerParticle);
 
     /**
      * Fire charge item component.
      */
-    public static final Component<Item, FireChargeItem> FIRE_CHARGE_ITEM = new Component<>(Registries.ITEM, "_fire_charge");
+    public static final Component<Item, FireChargeItem> FIRE_CHARGE_ITEM = new Component<>(Registries.ITEM, "_fire_charge", FireRegistrar::registerFireCharge);
 
     /**
      * Registry key where the value associated to this component is stored.
@@ -346,12 +347,28 @@ public final class Fire {
     private final String suffix;
 
     /**
+     * Component default registration method.
+     */
+    private final Function<ResourceLocation, CobwebEntry<? extends T>> register;
+
+    /**
      * @param key {@link #key}.
      * @param suffix {@link #suffix}.
      */
-    private Component(ResourceKey<? extends Registry<R>> key, String suffix) {
+    private Component(ResourceKey<? extends Registry<R>> key, String suffix, Function<ResourceLocation, CobwebEntry<? extends T>> register) {
       this.key = key;
       this.suffix = suffix;
+      this.register = register;
+    }
+
+    /**
+     * Component default registration method.
+     *
+     * @param fireType fire type.
+     * @return {@link CobwebEntry} for the component game-object.
+     */
+    public CobwebEntry<? extends T> register(ResourceLocation fireType) {
+      return register.apply(fireType);
     }
 
     /**
