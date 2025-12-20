@@ -22,7 +22,7 @@ public final class ModLoader implements ModInitializer {
   public void onInitialize() {
     CommonModLoader.init();
     registerResourceLoader();
-    FireManager.getComponentListList(Fire.Component.FIRE_CHARGE_ITEM).stream().filter(Objects::nonNull).forEach(charges -> charges.forEach(DispenserBlock::registerProjectileBehavior));
+    FireManager.getComponentListList(Fire.Component.FIRE_CHARGE_ITEM).forEach(charges -> charges.stream().filter(Objects::nonNull).forEach(DispenserBlock::registerProjectileBehavior));
   }
 
   /**
