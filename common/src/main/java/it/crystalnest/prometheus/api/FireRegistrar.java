@@ -621,7 +621,7 @@ public final class FireRegistrar {
    * @param <T> item type.
    */
   public static <T extends FireChargeItem> CobwebEntry<T> registerFireCharge(ResourceLocation fireType, String itemId, Function<Item.Properties, T> constructor) {
-    return CobwebRegistry.ofItems(fireMod(fireType)).registerItem(itemId, constructor);
+    return CobwebRegistry.ofItems(fireMod(fireType)).register(itemId, () -> constructor.apply(new Item.Properties()));
   }
 
   /**

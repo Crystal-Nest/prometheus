@@ -13,7 +13,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,8 +22,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.List;
 
 /**
  * Injects into {@link Entity} to alter Fire behavior for consistency.
@@ -153,20 +150,5 @@ public abstract class EntityMixin implements FireTypeSynched {
   @Inject(method = "load", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V"))
   private void onLoad(CompoundTag tag, CallbackInfo ci) {
     setFireType(FireManager.ensure(ResourceLocation.tryParse(tag.getString(FIRE_TYPE_TAG))));
-  }
-
-  /**
-   * Wraps the call to {@link Entity#setRemainingFireTicks(int)} inside the method {@link Entity#applyEffectsFromBlocks(List)}.<br>
-   * If the entity is a {@link AbstractHurtingProjectile}, makes sure the fire type persists.
-   *
-   * @param instance owner of the wrapped method.
-   * @param remainingFireTicks fire duration in ticks.
-   * @param original original {@link Operation} being wrapped.
-   */
-  @WrapOperation(method = "applyEffectsFromBlocks(Ljava/util/List;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setRemainingFireTicks(I)V"))
-  private void wrapSetRemainingFireTicks(Entity instance, int remainingFireTicks, Operation<Void> original) {
-    if (instance instanceof AbstractHurtingProjectile) {
-      FireManager.setOnFire(instance, remainingFireTicks, ((FireTyped) instance).getFireType(), original::call);
-    }
   }
 }
