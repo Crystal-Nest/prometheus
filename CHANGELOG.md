@@ -9,6 +9,10 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Nothing new.
 
+## [v1.2.1] - 2025/12/20
+
+- 1.21.6 only: Fix crash when spawning fire charge entities.
+
 ## [v1.2.0] - 2025/12/20
 
 - Ported to 1.21.11.
@@ -62,6 +66,7 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 [Unreleased]: https://github.com/crystal-nest/prometheus
 [README]: https://github.com/crystal-nest/prometheus#readme
 
+[v1.2.1]: https://github.com/crystal-nest/prometheus/releases?q=1.2.1
 [v1.2.0]: https://github.com/crystal-nest/prometheus/releases?q=1.2.0
 [v1.1.2]: https://github.com/crystal-nest/prometheus/releases?q=1.1.2
 [v1.1.1]: https://github.com/crystal-nest/prometheus/releases?q=1.1.1
