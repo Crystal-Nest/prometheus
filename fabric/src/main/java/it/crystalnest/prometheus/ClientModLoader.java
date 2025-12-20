@@ -4,6 +4,7 @@ import it.crystalnest.prometheus.api.Fire;
 import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.api.block.CustomCampfireBlock;
 import it.crystalnest.prometheus.api.block.CustomFireBlock;
+import it.crystalnest.prometheus.api.block.CustomLanternBlock;
 import it.crystalnest.prometheus.api.block.CustomTorchBlock;
 import it.crystalnest.prometheus.api.block.CustomWallTorchBlock;
 import it.crystalnest.prometheus.api.client.FireClientManager;
@@ -29,11 +30,12 @@ public final class ClientModLoader implements ClientModInitializer {
   public void onInitializeClient() {
     FireClientManager.registerFires(FireManager.getFires());
     BlockEntityRenderers.register(FireManager.getCustomCampfireEntityType().get(), CampfireRenderer::new);
-    FireManager.getComponentList(Fire.Component.CAMPFIRE_BLOCK).stream().filter(CustomCampfireBlock.class::isInstance).forEach(campfire -> BlockRenderLayerMap.putBlock(campfire, ChunkSectionLayer.CUTOUT));
-    FireManager.getComponentList(Fire.Component.SOURCE_BLOCK).stream().filter(CustomFireBlock.class::isInstance).forEach(source -> BlockRenderLayerMap.putBlock(source, ChunkSectionLayer.CUTOUT));
-    FireManager.getComponentList(Fire.Component.TORCH_BLOCK).stream().filter(CustomTorchBlock.class::isInstance).forEach(torch -> BlockRenderLayerMap.putBlock(torch, ChunkSectionLayer.CUTOUT));
-    FireManager.getComponentList(Fire.Component.WALL_TORCH_BLOCK).stream().filter(CustomWallTorchBlock.class::isInstance).forEach(torch -> BlockRenderLayerMap.putBlock(torch, ChunkSectionLayer.CUTOUT));
-    FireManager.getComponentList(Fire.Component.FLAME_PARTICLE).forEach(flame -> ParticleFactoryRegistry.getInstance().register(flame, FlameParticle.Provider::new));
+    FireManager.getComponentListList(Fire.Component.CAMPFIRE_BLOCK).stream().filter(CustomCampfireBlock.class::isInstance).forEach(campfires -> campfires.forEach(campfire -> BlockRenderLayerMap.putBlock(campfire, ChunkSectionLayer.CUTOUT)));
+    FireManager.getComponentListList(Fire.Component.SOURCE_BLOCK).stream().filter(CustomFireBlock.class::isInstance).forEach(sources -> sources.forEach(source -> BlockRenderLayerMap.putBlock(source, ChunkSectionLayer.CUTOUT)));
+    FireManager.getComponentListList(Fire.Component.LANTERN_BLOCK).stream().filter(CustomLanternBlock.class::isInstance).forEach(lanterns -> lanterns.forEach(lantern -> BlockRenderLayerMap.putBlock(lantern, ChunkSectionLayer.CUTOUT)));
+    FireManager.getComponentListList(Fire.Component.TORCH_BLOCK).stream().filter(CustomTorchBlock.class::isInstance).forEach(torches -> torches.forEach(torch -> BlockRenderLayerMap.putBlock(torch, ChunkSectionLayer.CUTOUT)));
+    FireManager.getComponentListList(Fire.Component.WALL_TORCH_BLOCK).stream().filter(CustomWallTorchBlock.class::isInstance).forEach(torches -> torches.forEach(torch -> BlockRenderLayerMap.putBlock(torch, ChunkSectionLayer.CUTOUT)));
+    FireManager.getComponentListList(Fire.Component.FLAME_PARTICLE).forEach(flames -> flames.forEach(flame -> ParticleFactoryRegistry.getInstance().register(flame, FlameParticle.Provider::new)));
     ClientPlayNetworking.registerGlobalReceiver(RegisterFirePacket.TYPE, (packet, context) -> FirePacketHandler.handle(packet));
     ClientPlayNetworking.registerGlobalReceiver(UnregisterFirePacket.TYPE, (packet, context) -> FirePacketHandler.handle(packet));
   }

@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -24,6 +25,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.List;
 
 /**
  * Injects into {@link Entity} to alter Fire behavior for consistency.
@@ -92,11 +95,11 @@ public abstract class EntityMixin implements FireTypeSynched {
    * Wraps the call to {@link Entity#hurtServer(ServerLevel, DamageSource, float)} inside the method {@link Entity#baseTick()}.<br>
    * Hurts the entity with the correct fire damage and {@link DamageSource}.
    *
-   * @param instance owner of the redirected method.
+   * @param instance owner of the wrapped method.
    * @param damageSource original {@link DamageSource} (normal fire).
    * @param damage original damage (normal fire).
    * @param original original {@link Operation} being wrapped.
-   * @return the result of calling the redirected method.
+   * @return the result of calling the wrapped method.
    */
   @WrapOperation(method = "baseTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
   private boolean wrapHurtServer(Entity instance, ServerLevel level, DamageSource damageSource, float damage, Operation<Boolean> original) {
@@ -107,7 +110,7 @@ public abstract class EntityMixin implements FireTypeSynched {
    * Wraps the call to {@link Entity#igniteForSeconds(float)} inside the method {@link Entity#lavaIgnite()}.<br>
    * Sets the base Fire Type.
    *
-   * @param instance owner of the redirected method.
+   * @param instance owner of the wrapped method.
    * @param seconds seconds to set the entity on fire for.
    * @param original original {@link Operation} being wrapped.
    */
@@ -152,5 +155,20 @@ public abstract class EntityMixin implements FireTypeSynched {
   @Inject(method = "load", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;readAdditionalSaveData(Lnet/minecraft/world/level/storage/ValueInput;)V"))
   private void onLoad(ValueInput input, CallbackInfo ci) {
     setFireType(FireManager.ensure(ResourceLocation.tryParse(input.getStringOr(FIRE_TYPE_TAG, ""))));
+  }
+
+  /**
+   * Wraps the call to {@link Entity#setRemainingFireTicks(int)} inside the method {@link Entity#applyEffectsFromBlocks(List)}.<br>
+   * If the entity is a {@link AbstractHurtingProjectile}, makes sure the fire type persists.
+   *
+   * @param instance owner of the wrapped method.
+   * @param remainingFireTicks fire duration in ticks.
+   * @param original original {@link Operation} being wrapped.
+   */
+  @WrapOperation(method = "applyEffectsFromBlocks(Ljava/util/List;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setRemainingFireTicks(I)V"))
+  private void wrapSetRemainingFireTicks(Entity instance, int remainingFireTicks, Operation<Void> original) {
+    if (instance instanceof AbstractHurtingProjectile) {
+      FireManager.setOnFire(instance, remainingFireTicks, ((FireTyped) instance).getFireType(), original::call);
+    }
   }
 }
