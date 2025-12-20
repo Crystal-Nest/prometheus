@@ -20,6 +20,7 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.FireChargeItem;
@@ -42,14 +43,19 @@ import java.util.function.Supplier;
  */
 public final class FireRegistrar {
   /**
-   * Dynamic data pack to automatically add {@link BlockTags#FIRE} to fire source block.
+   * Dynamic data pack to automatically add {@link BlockTags#FIRE} to fire source blocks.
    */
   private static final DynamicDataPack FIRE_SOURCE_TAGS = DynamicDataPack.named(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "fire_source_tags"));
 
   /**
-   * Dynamic data pack to automatically add {@link BlockTags#CAMPFIRES} to campfire block.
+   * Dynamic data pack to automatically add {@link BlockTags#CAMPFIRES} to campfire blocks.
    */
   private static final DynamicDataPack CAMPFIRE_TAGS = DynamicDataPack.named(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "campfire_tags"));
+
+  /**
+   * Dynamic data pack to automatically add {@link ItemTags#CREEPER_IGNITERS} to fire charge items.
+   */
+  private static final DynamicDataPack FIRE_CHARGE_TAGS = DynamicDataPack.named(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "fire_charge_tags"));
 
   /**
    * Whether this class has already been loaded.
@@ -670,7 +676,9 @@ public final class FireRegistrar {
    * @return {@link CobwebEntry} for the fire charge item.
    */
   public static <T extends FireChargeItem> CobwebEntry<T> registerFireCharge(Identifier fireType, String itemId, Function<Item.Properties, T> constructor) {
-    return CobwebRegistry.ofItems(fireMod(fireType)).registerItem(itemId, constructor);
+    CobwebEntry<T> charge = CobwebRegistry.ofItems(fireMod(fireType)).registerItem(itemId, constructor);
+    FIRE_CHARGE_TAGS.add(() -> DynamicTagBuilder.of(Registries.ITEM, ItemTags.CREEPER_IGNITERS).addElement(charge.get()));
+    return charge;
   }
 
   /**

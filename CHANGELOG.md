@@ -9,6 +9,11 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Nothing new.
 
+## [v1.2.2] - 2025/12/20
+
+- Automatically add fire charge components to the `creeper_igniters` tag.
+- Fixed block fire components not being automatically registered to the cutout render layer.
+
 ## [v1.2.1] - 2025/12/20
 
 - 1.21.6 only: Fix crash when spawning fire charge entities.
@@ -66,6 +71,7 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 [Unreleased]: https://github.com/crystal-nest/prometheus
 [README]: https://github.com/crystal-nest/prometheus#readme
 
+[v1.2.2]: https://github.com/crystal-nest/prometheus/releases?q=1.2.2
 [v1.2.1]: https://github.com/crystal-nest/prometheus/releases?q=1.2.1
 [v1.2.0]: https://github.com/crystal-nest/prometheus/releases?q=1.2.0
 [v1.1.2]: https://github.com/crystal-nest/prometheus/releases?q=1.1.2
