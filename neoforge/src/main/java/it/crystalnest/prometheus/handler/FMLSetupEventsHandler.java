@@ -13,6 +13,7 @@ import net.minecraft.client.particle.FlameParticle;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.CampfireRenderer;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -37,14 +38,13 @@ public final class FMLSetupEventsHandler {
    * @param event {@link FMLClientSetupEvent}.
    */
   @SubscribeEvent
-  @SuppressWarnings("deprecation")
   public static void handle(FMLClientSetupEvent event) {
     FireClientManager.registerFires(FireManager.getFires());
-    FireManager.getComponentListList(Fire.Component.CAMPFIRE_BLOCK).stream().filter(CustomCampfireBlock.class::isInstance).forEach(campfires -> campfires.forEach(campfire -> ItemBlockRenderTypes.setRenderLayer(campfire, RenderType.cutout())));
-    FireManager.getComponentListList(Fire.Component.SOURCE_BLOCK).stream().filter(CustomFireBlock.class::isInstance).forEach(sources -> sources.forEach(source -> ItemBlockRenderTypes.setRenderLayer(source, RenderType.cutout())));
-    FireManager.getComponentListList(Fire.Component.LANTERN_BLOCK).stream().filter(CustomLanternBlock.class::isInstance).forEach(lanterns -> lanterns.forEach(lantern -> ItemBlockRenderTypes.setRenderLayer(lantern, RenderType.cutout())));
-    FireManager.getComponentListList(Fire.Component.TORCH_BLOCK).stream().filter(CustomTorchBlock.class::isInstance).forEach(torches -> torches.forEach(torch -> ItemBlockRenderTypes.setRenderLayer(torch, RenderType.cutout())));
-    FireManager.getComponentListList(Fire.Component.WALL_TORCH_BLOCK).stream().filter(CustomWallTorchBlock.class::isInstance).forEach(torches -> torches.forEach(torch -> ItemBlockRenderTypes.setRenderLayer(torch, RenderType.cutout())));
+    registerCutout(Fire.Component.CAMPFIRE_BLOCK, CustomCampfireBlock.class);
+    registerCutout(Fire.Component.SOURCE_BLOCK, CustomFireBlock.class);
+    registerCutout(Fire.Component.LANTERN_BLOCK, CustomLanternBlock.class);
+    registerCutout(Fire.Component.TORCH_BLOCK, CustomTorchBlock.class);
+    registerCutout(Fire.Component.WALL_TORCH_BLOCK, CustomWallTorchBlock.class);
   }
 
   /**
@@ -54,7 +54,7 @@ public final class FMLSetupEventsHandler {
    */
   @SubscribeEvent
   public static void handle(FMLCommonSetupEvent event) {
-    FireManager.getComponentListList(Fire.Component.FIRE_CHARGE_ITEM).stream().filter(Objects::nonNull).forEach(charges -> charges.forEach(DispenserBlock::registerProjectileBehavior));
+    FireManager.getComponentListList(Fire.Component.FIRE_CHARGE_ITEM).forEach(charges -> charges.stream().filter(Objects::nonNull).forEach(DispenserBlock::registerProjectileBehavior));
   }
 
   /**
@@ -75,5 +75,16 @@ public final class FMLSetupEventsHandler {
   @SubscribeEvent
   public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
     event.registerBlockEntityRenderer(FireManager.getCustomCampfireEntityType().get(), CampfireRenderer::new);
+  }
+
+  /**
+   * Registers the specified component to the {@link RenderType#cutout()} render layer.
+   *
+   * @param component fire component.
+   * @param clazz custom class for instanceof test.
+   */
+  @SuppressWarnings("deprecation")
+  private static void registerCutout(Fire.Component<Block, Block> component, Class<?> clazz) {
+    FireManager.getComponentListList(component).forEach(values -> values.stream().filter(clazz::isInstance).forEach(value -> ItemBlockRenderTypes.setRenderLayer(value, RenderType.cutout())));
   }
 }

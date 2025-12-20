@@ -19,6 +19,7 @@ import net.minecraft.client.particle.FlameParticle;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.blockentity.CampfireRenderer;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -30,13 +31,23 @@ public final class ClientModLoader implements ClientModInitializer {
   public void onInitializeClient() {
     FireClientManager.registerFires(FireManager.getFires());
     BlockEntityRenderers.register(FireManager.getCustomCampfireEntityType().get(), CampfireRenderer::new);
-    FireManager.getComponentListList(Fire.Component.CAMPFIRE_BLOCK).stream().filter(CustomCampfireBlock.class::isInstance).forEach(campfires -> campfires.forEach(campfire -> BlockRenderLayerMap.INSTANCE.putBlock(campfire, RenderType.cutout())));
-    FireManager.getComponentListList(Fire.Component.SOURCE_BLOCK).stream().filter(CustomFireBlock.class::isInstance).forEach(sources -> sources.forEach(source -> BlockRenderLayerMap.INSTANCE.putBlock(source, RenderType.cutout())));
-    FireManager.getComponentListList(Fire.Component.LANTERN_BLOCK).stream().filter(CustomLanternBlock.class::isInstance).forEach(lanterns -> lanterns.forEach(lantern -> BlockRenderLayerMap.INSTANCE.putBlock(lantern, RenderType.cutout())));
-    FireManager.getComponentListList(Fire.Component.TORCH_BLOCK).stream().filter(CustomTorchBlock.class::isInstance).forEach(torches -> torches.forEach(torch -> BlockRenderLayerMap.INSTANCE.putBlock(torch, RenderType.cutout())));
-    FireManager.getComponentListList(Fire.Component.WALL_TORCH_BLOCK).stream().filter(CustomWallTorchBlock.class::isInstance).forEach(torches -> torches.forEach(torch -> BlockRenderLayerMap.INSTANCE.putBlock(torch, RenderType.cutout())));
+    registerCutout(Fire.Component.CAMPFIRE_BLOCK, CustomCampfireBlock.class);
+    registerCutout(Fire.Component.SOURCE_BLOCK, CustomFireBlock.class);
+    registerCutout(Fire.Component.LANTERN_BLOCK, CustomLanternBlock.class);
+    registerCutout(Fire.Component.TORCH_BLOCK, CustomTorchBlock.class);
+    registerCutout(Fire.Component.WALL_TORCH_BLOCK, CustomWallTorchBlock.class);
     FireManager.getComponentListList(Fire.Component.FLAME_PARTICLE).forEach(flames -> flames.forEach(flame -> ParticleFactoryRegistry.getInstance().register(flame, FlameParticle.Provider::new)));
     ClientPlayNetworking.registerGlobalReceiver(RegisterFirePacket.TYPE, (packet, context) -> FirePacketHandler.handle(packet));
     ClientPlayNetworking.registerGlobalReceiver(UnregisterFirePacket.TYPE, (packet, context) -> FirePacketHandler.handle(packet));
+  }
+
+  /**
+   * Registers the specified component to the {@link RenderType#cutout()} render layer.
+   *
+   * @param component fire component.
+   * @param clazz custom class for instanceof test.
+   */
+  private static void registerCutout(Fire.Component<Block, Block> component, Class<?> clazz) {
+    FireManager.getComponentListList(component).forEach(values -> values.stream().filter(clazz::isInstance).forEach(value -> BlockRenderLayerMap.INSTANCE.putBlock(value, RenderType.cutout())));
   }
 }
