@@ -60,6 +60,6 @@ public final class FMLClientSetupEventHandler {
    */
   @SubscribeEvent
   public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-    event.registerBlockEntityRenderer(FireManager.CUSTOM_CAMPFIRE_ENTITY_TYPE.get(), CampfireRenderer::new);
+    event.registerBlockEntityRenderer(FireManager.getCustomCampfireEntityType().get(), CampfireRenderer::new);
   }
 }

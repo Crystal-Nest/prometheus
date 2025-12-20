@@ -28,7 +28,7 @@ public final class ClientModLoader implements ClientModInitializer {
   @Override
   public void onInitializeClient() {
     FireClientManager.registerFires(FireManager.getFires());
-    BlockEntityRenderers.register(FireManager.CUSTOM_CAMPFIRE_ENTITY_TYPE.get(), CampfireRenderer::new);
+    BlockEntityRenderers.register(FireManager.getCustomCampfireEntityType().get(), CampfireRenderer::new);
     FireManager.getComponentList(Fire.Component.CAMPFIRE_BLOCK).stream().filter(CustomCampfireBlock.class::isInstance).forEach(campfire -> BlockRenderLayerMap.putBlock(campfire, ChunkSectionLayer.CUTOUT));
     FireManager.getComponentList(Fire.Component.SOURCE_BLOCK).stream().filter(CustomFireBlock.class::isInstance).forEach(source -> BlockRenderLayerMap.putBlock(source, ChunkSectionLayer.CUTOUT));
     FireManager.getComponentList(Fire.Component.TORCH_BLOCK).stream().filter(CustomTorchBlock.class::isInstance).forEach(torch -> BlockRenderLayerMap.putBlock(torch, ChunkSectionLayer.CUTOUT));
