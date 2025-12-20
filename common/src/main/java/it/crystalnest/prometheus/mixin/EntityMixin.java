@@ -114,7 +114,7 @@ public abstract class EntityMixin implements FireTypeChanger {
   @WrapOperation(method = "applyEffectsFromBlocks(Ljava/util/List;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setRemainingFireTicks(I)V"))
   private void wrapSetRemainingFireTicks(Entity instance, int remainingFireTicks, Operation<Void> original) {
     if (instance instanceof AbstractHurtingProjectile) {
-      FireManager.setOnFire(instance, remainingFireTicks, ((FireTyped) instance).getFireType(), original::call);
+      FireManager.setOnFire(instance, remainingFireTicks, ((FireTyped) instance).getFireType(), (entity, duration) -> original.call(entity, Math.round(duration)));
     }
   }
 }
