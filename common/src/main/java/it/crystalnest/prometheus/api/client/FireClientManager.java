@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +23,7 @@ public final class FireClientManager {
   /**
    * {@link ConcurrentHashMap} of all registered {@link FireClient Fires}.
    */
-  private static final ConcurrentHashMap<ResourceLocation, FireClient> FIRES = new ConcurrentHashMap<>();
+  private static final ConcurrentHashMap<Identifier, FireClient> FIRES = new ConcurrentHashMap<>();
 
   private FireClientManager() {}
 
@@ -37,7 +37,7 @@ public final class FireClientManager {
   @Nullable
   private static synchronized FireClient registerFire(FireClient fire) {
     if (FIRES.putIfAbsent(fire.getFireType(), fire) != null) {
-      ResourceLocation fireType = fire.getFireType();
+      Identifier fireType = fire.getFireType();
       Constants.LOGGER.error("FireClient [{}] was already registered with the following value: {}", fireType, FIRES.get(fireType));
       return null;
     }
@@ -61,8 +61,8 @@ public final class FireClientManager {
    * @param fires {@link Fire fires} to register.
    * @return an {@link Map} with the outcome of each registration attempt.
    */
-  public static synchronized Map<ResourceLocation, @Nullable FireClient> registerFires(List<Fire> fires) {
-    HashMap<ResourceLocation, @Nullable FireClient> outcomes = new HashMap<>();
+  public static synchronized Map<Identifier, @Nullable FireClient> registerFires(List<Fire> fires) {
+    HashMap<Identifier, @Nullable FireClient> outcomes = new HashMap<>();
     for (Fire fire : fires) {
       outcomes.put(fire.getFireType(), registerFire(fire));
     }
@@ -75,7 +75,7 @@ public final class FireClientManager {
    * @param fires {@link Fire fires} to derive {@link FireClient} to register.
    * @return an {@link Map} with the outcome of each registration attempt.
    */
-  public static synchronized Map<ResourceLocation, @Nullable FireClient> registerFires(Fire... fires) {
+  public static synchronized Map<Identifier, @Nullable FireClient> registerFires(Fire... fires) {
     return registerFires(List.of(fires));
   }
 
@@ -89,7 +89,7 @@ public final class FireClientManager {
   @Nullable
   @ApiStatus.Internal
   @SuppressWarnings("UnusedReturnValue")
-  public static synchronized FireClient unregisterFire(ResourceLocation fireType) {
+  public static synchronized FireClient unregisterFire(Identifier fireType) {
     return FIRES.remove(fireType);
   }
 
@@ -100,7 +100,7 @@ public final class FireClientManager {
    * @param fireType fire type.
    * @return the {@link FireClient#material0} of the {@link FireClient}.
    */
-  public static Material getMaterial0(ResourceLocation fireType) {
+  public static Material getMaterial0(Identifier fireType) {
     if (FireManager.isRegisteredType(fireType) && FIRES.containsKey(fireType)) {
       return FIRES.get(fireType).getMaterial0();
     }
@@ -114,7 +114,7 @@ public final class FireClientManager {
    * @param fireType fire type.
    * @return the {@link FireClient#material1} of the {@link FireClient}.
    */
-  public static Material getMaterial1(ResourceLocation fireType) {
+  public static Material getMaterial1(Identifier fireType) {
     if (FireManager.isRegisteredType(fireType) && FIRES.containsKey(fireType)) {
       return FIRES.get(fireType).getMaterial1();
     }
@@ -128,7 +128,7 @@ public final class FireClientManager {
    * @param fireType fire type.
    * @return the sprite 0 of the {@link FireClient}.
    */
-  public static TextureAtlasSprite getSprite0(ResourceLocation fireType) {
+  public static TextureAtlasSprite getSprite0(Identifier fireType) {
     return Minecraft.getInstance().getAtlasManager().get(FireManager.isRegisteredType(fireType) && FIRES.containsKey(fireType) ? FIRES.get(fireType).getMaterial0() : ModelBakery.FIRE_0);
   }
 
@@ -139,7 +139,7 @@ public final class FireClientManager {
    * @param fireType fire type.
    * @return the sprite 1 of the {@link FireClient} registered with the given {@code fireType}.
    */
-  public static TextureAtlasSprite getSprite1(ResourceLocation fireType) {
+  public static TextureAtlasSprite getSprite1(Identifier fireType) {
     return Minecraft.getInstance().getAtlasManager().get(FireManager.isRegisteredType(fireType) && FIRES.containsKey(fireType) ? FIRES.get(fireType).getMaterial1() : ModelBakery.FIRE_1);
   }
 }

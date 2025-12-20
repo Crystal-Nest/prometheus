@@ -4,7 +4,7 @@ import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.api.type.FireTyped;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
@@ -22,7 +22,7 @@ public class CustomTorchBlock extends TorchBlock implements FireTyped {
   /**
    * Fire type.
    */
-  private final ResourceLocation fireType;
+  private final Identifier fireType;
 
   /**
    * Particle type.
@@ -34,7 +34,7 @@ public class CustomTorchBlock extends TorchBlock implements FireTyped {
    * @param type particle type.
    * @param properties block properties.
    */
-  public CustomTorchBlock(ResourceLocation fireType, Supplier<SimpleParticleType> type, Properties properties) {
+  public CustomTorchBlock(Identifier fireType, Supplier<SimpleParticleType> type, Properties properties) {
     this(fireType, type, true, properties);
   }
 
@@ -44,7 +44,7 @@ public class CustomTorchBlock extends TorchBlock implements FireTyped {
    * @param addDefaultProperties whether to add default block properties.
    * @param properties block properties.
    */
-  public CustomTorchBlock(ResourceLocation fireType, Supplier<SimpleParticleType> type, boolean addDefaultProperties, Properties properties) {
+  public CustomTorchBlock(Identifier fireType, Supplier<SimpleParticleType> type, boolean addDefaultProperties, Properties properties) {
     // noinspection DataFlowIssue
     super(null, (addDefaultProperties ? addDefaultProperties(properties) : properties).lightLevel(FireManager.lightLevel(fireType)));
     this.fireType = fireType;
@@ -68,7 +68,7 @@ public class CustomTorchBlock extends TorchBlock implements FireTyped {
   }
 
   @Override
-  public ResourceLocation getFireType() {
+  public Identifier getFireType() {
     return fireType;
   }
 }

@@ -9,11 +9,10 @@ import it.crystalnest.prometheus.api.type.FireTyped;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ScheduledTickAccess;
@@ -46,7 +45,7 @@ public class CustomFireBlock extends BaseFireBlock implements FireTyped {
    * {@link Codec}.
    */
   public static final MapCodec<CustomFireBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-    ResourceLocation.CODEC.fieldOf("fire_type").forGetter(block -> block.fireType),
+    Identifier.CODEC.fieldOf("fire_type").forGetter(block -> block.fireType),
     TagKey.codec(Registries.BLOCK).fieldOf("base").forGetter(block -> block.base),
     propertiesCodec()
   ).apply(instance, CustomFireBlock::new));
@@ -54,7 +53,7 @@ public class CustomFireBlock extends BaseFireBlock implements FireTyped {
   /**
    * Fire type.
    */
-  private final ResourceLocation fireType;
+  private final Identifier fireType;
 
   /**
    * Tag for blocks on which this fire can burn.
@@ -66,7 +65,7 @@ public class CustomFireBlock extends BaseFireBlock implements FireTyped {
    * @param base {@link CustomFireBlock#base}.
    * @param properties block properties.
    */
-  public CustomFireBlock(ResourceLocation fireType, TagKey<Block> base, Properties properties) {
+  public CustomFireBlock(Identifier fireType, TagKey<Block> base, Properties properties) {
     this(fireType, base, true, properties);
   }
 
@@ -76,7 +75,7 @@ public class CustomFireBlock extends BaseFireBlock implements FireTyped {
    * @param addDefaultProperties whether to add default block properties.
    * @param properties block properties.
    */
-  public CustomFireBlock(ResourceLocation fireType, TagKey<Block> base, boolean addDefaultProperties, Properties properties) {
+  public CustomFireBlock(Identifier fireType, TagKey<Block> base, boolean addDefaultProperties, Properties properties) {
     super((addDefaultProperties ? addDefaultProperties(properties) : properties).lightLevel(FireManager.lightLevel(fireType)), FireManager.getProperty(fireType, Fire::getDamage));
     registerDefaultState(stateDefinition.any().setValue(AGE, 0));
     this.fireType = fireType;
@@ -94,7 +93,7 @@ public class CustomFireBlock extends BaseFireBlock implements FireTyped {
   }
 
   @Override
-  protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+  protected void createBlockStateDefinition(StateDefinition.Builder<Block, @NotNull BlockState> builder) {
     builder.add(AGE);
   }
 
@@ -117,7 +116,7 @@ public class CustomFireBlock extends BaseFireBlock implements FireTyped {
   public void tick(@NotNull BlockState state, @NotNull ServerLevel level, @NotNull BlockPos pos, @NotNull RandomSource rand) {
     super.tick(state, level, pos, rand);
     scheduleTick(level, pos);
-    if (level.getGameRules().getBoolean(GameRules.RULE_DOFIRETICK)) {
+    if (level.canSpreadFireAround(pos)) {
       int age = state.getValue(AGE);
       if (
         !state.canSurvive(level, pos) ||
@@ -148,7 +147,7 @@ public class CustomFireBlock extends BaseFireBlock implements FireTyped {
   }
 
   @Override
-  public ResourceLocation getFireType() {
+  public Identifier getFireType() {
     return fireType;
   }
 

@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.feature.FlameFeatureRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.AtlasManager;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.joml.Quaternionf;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,7 +38,7 @@ public abstract class FlameFeatureRendererMixin {
    */
   @WrapOperation(method = "renderFlame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/model/AtlasManager;get(Lnet/minecraft/client/resources/model/Material;)Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;", ordinal = 0))
   private TextureAtlasSprite wrapSprite0(AtlasManager instance, Material material, Operation<TextureAtlasSprite> original, PoseStack.Pose pose, MultiBufferSource bufferSource, EntityRenderState renderState, Quaternionf rotation, AtlasManager atlasManager) {
-    ResourceLocation fireType = ((FireTyped) renderState).getFireType();
+    Identifier fireType = ((FireTyped) renderState).getFireType();
     if (FireManager.isRegisteredType(fireType)) {
       return FireClientManager.getSprite0(fireType);
     }
@@ -61,7 +61,7 @@ public abstract class FlameFeatureRendererMixin {
    */
   @WrapOperation(method = "renderFlame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/model/AtlasManager;get(Lnet/minecraft/client/resources/model/Material;)Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;", ordinal = 1))
   private TextureAtlasSprite wrapSprite1(AtlasManager instance, Material material, Operation<TextureAtlasSprite> original, PoseStack.Pose pose, MultiBufferSource bufferSource, EntityRenderState renderState, Quaternionf rotation, AtlasManager atlasManager) {
-    ResourceLocation fireType = ((FireTyped) renderState).getFireType();
+    Identifier fireType = ((FireTyped) renderState).getFireType();
     if (FireManager.isRegisteredType(fireType)) {
       return FireClientManager.getSprite1(fireType);
     }

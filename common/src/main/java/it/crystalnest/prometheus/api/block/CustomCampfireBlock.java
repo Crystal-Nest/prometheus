@@ -8,7 +8,7 @@ import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.api.block.entity.CustomCampfireBlockEntity;
 import it.crystalnest.prometheus.api.type.FireTyped;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
@@ -36,7 +36,7 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
    * Codec.
    */
   public static final MapCodec<CampfireBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-    ResourceLocation.CODEC.fieldOf("fire_type").forGetter(block -> ((FireTyped) block).getFireType()),
+    Identifier.CODEC.fieldOf("fire_type").forGetter(block -> ((FireTyped) block).getFireType()),
     Codec.BOOL.fieldOf("spawn_particles").forGetter(block -> block.spawnParticles),
     propertiesCodec()
   ).apply(instance, CustomCampfireBlock::new));
@@ -44,14 +44,14 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
   /**
    * Fire type.
    */
-  private final ResourceLocation fireType;
+  private final Identifier fireType;
 
   /**
    * @param fireType fire type.
    * @param spawnParticles whether to spawn crackling particles.
    * @param properties block properties.
    */
-  public CustomCampfireBlock(ResourceLocation fireType, boolean spawnParticles, Properties properties) {
+  public CustomCampfireBlock(Identifier fireType, boolean spawnParticles, Properties properties) {
     this(fireType, spawnParticles, true, properties);
   }
 
@@ -61,7 +61,7 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
    * @param addDefaultProperties whether to add default block properties.
    * @param properties block properties.
    */
-  public CustomCampfireBlock(ResourceLocation fireType, boolean spawnParticles, boolean addDefaultProperties, Properties properties) {
+  public CustomCampfireBlock(Identifier fireType, boolean spawnParticles, boolean addDefaultProperties, Properties properties) {
     super(spawnParticles, Math.round(FireManager.getProperty(fireType, Fire::getDamage)), (addDefaultProperties ? addDefaultProperties(properties) : properties).lightLevel(state -> state.getValue(BlockStateProperties.LIT) ? FireManager.light(fireType) : 0));
     this.fireType = fireType;
   }
@@ -82,7 +82,7 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
    *
    * @return {@link BlockEntityType}.
    */
-  protected BlockEntityType<CustomCampfireBlockEntity> getBlockEntityType() {
+  protected BlockEntityType<@NotNull CustomCampfireBlockEntity> getBlockEntityType() {
     return FireManager.getCustomCampfireEntityType().get();
   }
 
@@ -92,7 +92,7 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
    *
    * @return {@link CampfireBlockEntity#particleTick(Level, BlockPos, BlockState, CampfireBlockEntity)} custom override.
    */
-  protected BlockEntityTicker<CampfireBlockEntity> particleTick() {
+  protected BlockEntityTicker<@NotNull CampfireBlockEntity> particleTick() {
     return CustomCampfireBlockEntity::particleTick;
   }
 
@@ -104,7 +104,7 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
    * @param cachedCheck {@link RecipeManager.CachedCheck} for fast retrieval of recipes.
    * @return {@link CampfireBlockEntity#cookTick(ServerLevel, BlockPos, BlockState, CampfireBlockEntity, RecipeManager.CachedCheck)} custom override.
    */
-  protected <T extends Recipe<SingleRecipeInput>> BlockEntityTicker<CampfireBlockEntity> cookTick(RecipeManager.CachedCheck<SingleRecipeInput, T> cachedCheck) {
+  protected <T extends Recipe<@NotNull SingleRecipeInput>> BlockEntityTicker<@NotNull CampfireBlockEntity> cookTick(RecipeManager.CachedCheck<@NotNull SingleRecipeInput, @NotNull T> cachedCheck) {
     return (level, pos, state, blockEntity) -> CustomCampfireBlockEntity.cookTickGeneric((ServerLevel) level, pos, state, blockEntity, cachedCheck);
   }
 
@@ -114,7 +114,7 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
    *
    * @return {@link CampfireBlockEntity#cooldownTick(Level, BlockPos, BlockState, CampfireBlockEntity)} custom override.
    */
-  protected BlockEntityTicker<CampfireBlockEntity> cooldownTick() {
+  protected BlockEntityTicker<@NotNull CampfireBlockEntity> cooldownTick() {
     return CustomCampfireBlockEntity::cooldownTick;
   }
 
@@ -124,7 +124,7 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
    *
    * @return cooking recipe type.
    */
-  protected RecipeType<? extends Recipe<SingleRecipeInput>> recipeType() {
+  protected RecipeType<? extends Recipe<@NotNull SingleRecipeInput>> recipeType() {
     return RecipeType.CAMPFIRE_COOKING;
   }
 
@@ -143,7 +143,7 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
    * @return new block entity.
    */
   @Override
-  public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
+  public @NotNull BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
     return new CustomCampfireBlockEntity(pos, state);
   }
 
@@ -160,7 +160,7 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
   @Nullable
   @Override
   public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, @NotNull BlockState state, @NotNull BlockEntityType<T> blockEntityType) {
-    BlockEntityType<CustomCampfireBlockEntity> customBlockEntityType = getBlockEntityType();
+    BlockEntityType<@NotNull CustomCampfireBlockEntity> customBlockEntityType = getBlockEntityType();
     if (level.isClientSide()) {
       return state.getValue(LIT) ? createTickerHelper(blockEntityType, customBlockEntityType, particleTick()) : null;
     } else {
@@ -169,7 +169,7 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
   }
 
   @Override
-  public ResourceLocation getFireType() {
+  public Identifier getFireType() {
     return fireType;
   }
 }

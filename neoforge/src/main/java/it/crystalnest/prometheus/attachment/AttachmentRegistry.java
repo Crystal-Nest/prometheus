@@ -2,7 +2,7 @@ package it.crystalnest.prometheus.attachment;
 
 import it.crystalnest.prometheus.Constants;
 import it.crystalnest.prometheus.api.FireManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -24,12 +24,12 @@ public final class AttachmentRegistry {
   /**
    * Fire type entity data attachment type.
    */
-  public static final Supplier<AttachmentType<ResourceLocation>> FIRE_TYPE = ATTACHMENT_TYPES.register(
+  public static final Supplier<AttachmentType<Identifier>> FIRE_TYPE = ATTACHMENT_TYPES.register(
     "fire_type",
     () -> AttachmentType
       .builder(() -> FireManager.DEFAULT_FIRE_TYPE)
-      .serialize(ResourceLocation.CODEC.fieldOf("fire_type"))
-      .sync(ResourceLocation.STREAM_CODEC)
+      .serialize(Identifier.CODEC.fieldOf("fire_type"))
+      .sync(Identifier.STREAM_CODEC)
       .build()
   );
 

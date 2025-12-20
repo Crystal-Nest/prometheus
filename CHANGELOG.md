@@ -11,6 +11,7 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 ## [v1.2.0] - 2025/12/20
 
+- Ported to 1.21.11.
 - Fixed `CustomCampfireBlockEntity`, preventing crashes when placing campfires.
 - Fixed `CustomFireBlock` to "survive" only when on a sturdy block face.
 - Fire Components can now support multiple values.

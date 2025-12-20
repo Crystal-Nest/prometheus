@@ -5,7 +5,7 @@ import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.api.type.FireTyped;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -24,7 +24,7 @@ public class CustomWallTorchBlock extends WallTorchBlock implements FireTyped {
   /**
    * Fire type.
    */
-  private final ResourceLocation fireType;
+  private final Identifier fireType;
 
   /**
    * Particle type.
@@ -36,7 +36,7 @@ public class CustomWallTorchBlock extends WallTorchBlock implements FireTyped {
    * @param type particle type.
    * @param properties block properties.
    */
-  public CustomWallTorchBlock(ResourceLocation fireType, Supplier<SimpleParticleType> type, Properties properties) {
+  public CustomWallTorchBlock(Identifier fireType, Supplier<SimpleParticleType> type, Properties properties) {
     this(fireType, type, true, properties);
   }
 
@@ -46,7 +46,7 @@ public class CustomWallTorchBlock extends WallTorchBlock implements FireTyped {
    * @param addDefaultProperties whether to add default block properties.
    * @param properties block properties.
    */
-  public CustomWallTorchBlock(ResourceLocation fireType, Supplier<SimpleParticleType> type, boolean addDefaultProperties, Properties properties) {
+  public CustomWallTorchBlock(Identifier fireType, Supplier<SimpleParticleType> type, boolean addDefaultProperties, Properties properties) {
     // noinspection DataFlowIssue
     super(
       null,
@@ -65,7 +65,7 @@ public class CustomWallTorchBlock extends WallTorchBlock implements FireTyped {
    * @param addDefaultProperties whether to add default block properties.
    * @param properties block properties.
    */
-  public CustomWallTorchBlock(ResourceLocation fireType, Supplier<SimpleParticleType> type, String torchId, boolean addDefaultProperties, Properties properties) {
+  public CustomWallTorchBlock(Identifier fireType, Supplier<SimpleParticleType> type, String torchId, boolean addDefaultProperties, Properties properties) {
     // noinspection DataFlowIssue
     super(
       null,
@@ -90,12 +90,12 @@ public class CustomWallTorchBlock extends WallTorchBlock implements FireTyped {
 
   /**
    * Returns the required {@link Fire.Component#TORCH_BLOCK}.<br>
-   * Use {@link #getTorchBlock(ResourceLocation, String)} to select a specific torch out of the (possibly) many ones associated with this fire.
+   * Use {@link #getTorchBlock(Identifier, String)} to select a specific torch out of the (possibly) many ones associated with this fire.
    *
    * @param fireType fire type.
    * @return related {@link Fire.Component#TORCH_BLOCK}.
    */
-  public static Block getTorchBlock(ResourceLocation fireType) {
+  public static Block getTorchBlock(Identifier fireType) {
     return FireManager.getRequiredComponent(fireType, Fire.Component.TORCH_BLOCK);
   }
 
@@ -106,7 +106,7 @@ public class CustomWallTorchBlock extends WallTorchBlock implements FireTyped {
    * @param torchId block ID of the corresponding torch block.
    * @return related {@link Fire.Component#TORCH_BLOCK}.
    */
-  public static Block getTorchBlock(ResourceLocation fireType, String torchId) {
+  public static Block getTorchBlock(Identifier fireType, String torchId) {
     return FireManager.getRequiredComponent(fireType, Fire.Component.TORCH_BLOCK, torchId);
   }
 
@@ -117,7 +117,7 @@ public class CustomWallTorchBlock extends WallTorchBlock implements FireTyped {
   }
 
   @Override
-  public ResourceLocation getFireType() {
+  public Identifier getFireType() {
     return fireType;
   }
 }

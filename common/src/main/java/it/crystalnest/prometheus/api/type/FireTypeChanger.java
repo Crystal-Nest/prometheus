@@ -1,6 +1,6 @@
 package it.crystalnest.prometheus.api.type;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Type sensitive to the fire type it has (burns or burn).<br>
@@ -13,5 +13,5 @@ public interface FireTypeChanger extends FireTyped {
    *
    * @param fireType fire type.
    */
-  void setFireType(ResourceLocation fireType);
+  void setFireType(Identifier fireType);
 }

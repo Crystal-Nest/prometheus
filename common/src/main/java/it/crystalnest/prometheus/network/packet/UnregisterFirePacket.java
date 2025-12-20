@@ -5,7 +5,7 @@ import it.crystalnest.prometheus.api.Fire;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -13,14 +13,14 @@ import org.jetbrains.annotations.NotNull;
  *
  * @param fireType fire reference.
  */
-public record UnregisterFirePacket(ResourceLocation fireType) implements CustomPacketPayload {
+public record UnregisterFirePacket(Identifier fireType) implements CustomPacketPayload {
   /**
    * Packet type.
    */
-  public static final Type<UnregisterFirePacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "unregister_fire"));
+  public static final Type<@NotNull UnregisterFirePacket> TYPE = new Type<>(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "unregister_fire"));
 
   public static final StreamCodec<FriendlyByteBuf, UnregisterFirePacket> CODEC = StreamCodec.composite(
-    ResourceLocation.STREAM_CODEC,
+    Identifier.STREAM_CODEC,
     UnregisterFirePacket::fireType,
     UnregisterFirePacket::new
   );

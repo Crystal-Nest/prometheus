@@ -3,7 +3,7 @@ package it.crystalnest.prometheus.api.enchantment;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.crystalnest.prometheus.api.FireManager;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.enchantment.EnchantedItemInUse;
@@ -18,13 +18,13 @@ import org.jetbrains.annotations.NotNull;
  * @param duration fire duration.
  * @param fireType fire type.
  */
-public record Ignite(LevelBasedValue duration, ResourceLocation fireType) implements EnchantmentEntityEffect {
+public record Ignite(LevelBasedValue duration, Identifier fireType) implements EnchantmentEntityEffect {
   /**
    * Ignite codec.
    */
   public static final MapCodec<Ignite> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
     LevelBasedValue.CODEC.fieldOf("duration").forGetter(Ignite::duration),
-    ResourceLocation.CODEC.fieldOf("fire_type").forGetter(Ignite::fireType)
+    Identifier.CODEC.fieldOf("fire_type").forGetter(Ignite::fireType)
   ).apply(instance, Ignite::new));
 
   @Override

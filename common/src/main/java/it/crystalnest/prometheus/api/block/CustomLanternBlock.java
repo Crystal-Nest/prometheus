@@ -2,7 +2,7 @@ package it.crystalnest.prometheus.api.block;
 
 import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.api.type.FireTyped;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.LanternBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.MapColor;
@@ -15,13 +15,13 @@ public class CustomLanternBlock extends LanternBlock implements FireTyped {
   /**
    * Fire type.
    */
-  private final ResourceLocation fireType;
+  private final Identifier fireType;
 
   /**
    * @param fireType fire type.
    * @param properties block properties.
    */
-  public CustomLanternBlock(ResourceLocation fireType, Properties properties) {
+  public CustomLanternBlock(Identifier fireType, Properties properties) {
     this(fireType, true, properties);
   }
 
@@ -30,7 +30,7 @@ public class CustomLanternBlock extends LanternBlock implements FireTyped {
    * @param addDefaultProperties whether to add default block properties.
    * @param properties block properties.
    */
-  public CustomLanternBlock(ResourceLocation fireType, boolean addDefaultProperties, Properties properties) {
+  public CustomLanternBlock(Identifier fireType, boolean addDefaultProperties, Properties properties) {
     super((addDefaultProperties ? addDefaultProperties(properties) : properties).lightLevel(FireManager.lightLevel(fireType)));
     this.fireType = fireType;
   }
@@ -46,7 +46,7 @@ public class CustomLanternBlock extends LanternBlock implements FireTyped {
   }
 
   @Override
-  public ResourceLocation getFireType() {
+  public Identifier getFireType() {
     return fireType;
   }
 }

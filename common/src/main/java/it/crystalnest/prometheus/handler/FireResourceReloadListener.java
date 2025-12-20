@@ -8,7 +8,7 @@ import it.crystalnest.prometheus.api.Fire;
 import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.platform.Services;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -29,12 +29,12 @@ public final class FireResourceReloadListener extends SimpleJsonResourceReloadLi
   /**
    * Current ddfires to unregister (previous registered ddfires).
    */
-  private static final ArrayList<ResourceLocation> ddfiresUnregister = new ArrayList<>();
+  private static final ArrayList<Identifier> ddfiresUnregister = new ArrayList<>();
 
   /**
    * Current registered ddfires.
    */
-  private static final ArrayList<ResourceLocation> ddfiresRegister = new ArrayList<>();
+  private static final ArrayList<Identifier> ddfiresRegister = new ArrayList<>();
 
   public FireResourceReloadListener() {
     super(DDFires.CODEC, FileToIdConverter.json("fires"));
@@ -46,10 +46,10 @@ public final class FireResourceReloadListener extends SimpleJsonResourceReloadLi
    * @param player {@link ServerPlayer} to which the data is being sent.
    */
   public static void handle(@Nullable ServerPlayer player) {
-    for (ResourceLocation fireType : ddfiresUnregister) {
+    for (Identifier fireType : ddfiresUnregister) {
       Services.NETWORK.sendToClient(player, fireType);
     }
-    for (ResourceLocation fireType : ddfiresRegister) {
+    for (Identifier fireType : ddfiresRegister) {
       Services.NETWORK.sendToClient(player, FireManager.getFire(fireType));
     }
   }
@@ -58,7 +58,7 @@ public final class FireResourceReloadListener extends SimpleJsonResourceReloadLi
    * Unregisters all DDFires.
    */
   private static void unregisterFires() {
-    for (ResourceLocation fireType : ddfiresRegister) {
+    for (Identifier fireType : ddfiresRegister) {
       if (FireManager.unregisterFire(fireType) != null) {
         ddfiresUnregister.add(fireType);
       }
@@ -72,7 +72,7 @@ public final class FireResourceReloadListener extends SimpleJsonResourceReloadLi
    * @param fireType fire type.
    * @param fire fire.
    */
-  private static void registerFire(ResourceLocation fireType, Fire fire) {
+  private static void registerFire(Identifier fireType, Fire fire) {
     if (FireManager.registerFire(fire) != null) {
       ddfiresRegister.add(fireType);
     } else {
@@ -81,13 +81,13 @@ public final class FireResourceReloadListener extends SimpleJsonResourceReloadLi
   }
 
   @Override
-  protected void apply(@NotNull Map<ResourceLocation, DDFires> resourceLocationDDFiresMap, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profilerFiller) {
+  protected void apply(@NotNull Map<Identifier, DDFires> IdentifierDDFiresMap, @NotNull ResourceManager resourceManager, @NotNull ProfilerFiller profilerFiller) {
     unregisterFires();
-    for (final Map.Entry<ResourceLocation, DDFires> entry : resourceLocationDDFiresMap.entrySet()) {
+    for (final Map.Entry<Identifier, DDFires> entry : IdentifierDDFiresMap.entrySet()) {
       DDFires fires = entry.getValue();
       if (Services.PLATFORM.isModLoaded(fires.mod)) {
         for (DDFire fire : fires.fires) {
-          ResourceLocation fireType = ResourceLocation.fromNamespaceAndPath(fires.mod, fire.fire);
+          Identifier fireType = Identifier.fromNamespaceAndPath(fires.mod, fire.fire);
           Fire.Builder builder = FireManager.fireBuilder(fireType)
             .setDamage(fire.damage.orElse(Fire.Builder.DEFAULT_DAMAGE))
             .setInvertHealAndHarm(fire.invertHealAndHarm.orElse(Fire.Builder.DEFAULT_INVERT_HEAL_AND_HARM))
@@ -112,12 +112,12 @@ public final class FireResourceReloadListener extends SimpleJsonResourceReloadLi
    * @param references component optional value.
    * @param component {@link Fire.Component} to set.
    */
-  private void removeOrSet(Fire.Builder builder, Optional<List<ResourceLocation>> references, Fire.Component<?, ?> component) {
+  private void removeOrSet(Fire.Builder builder, Optional<List<Identifier>> references, Fire.Component<?, ?> component) {
     references.ifPresent(list -> {
-      if (list.isEmpty() || (list.getFirst().getPath().equalsIgnoreCase("remove") && (list.getFirst().getNamespace().equalsIgnoreCase(ResourceLocation.DEFAULT_NAMESPACE) || list.getFirst().getNamespace().equalsIgnoreCase(Constants.MOD_ID)))) {
+      if (list.isEmpty() || (list.getFirst().getPath().equalsIgnoreCase("remove") && (list.getFirst().getNamespace().equalsIgnoreCase(Identifier.DEFAULT_NAMESPACE) || list.getFirst().getNamespace().equalsIgnoreCase(Constants.MOD_ID)))) {
         builder.removeComponent(component);
       } else {
-        builder.setComponent(component, list.toArray(ResourceLocation[]::new));
+        builder.setComponent(component, list.toArray(Identifier[]::new));
       }
     });
   }
@@ -138,11 +138,11 @@ public final class FireResourceReloadListener extends SimpleJsonResourceReloadLi
     String fire,
     Optional<Float> damage,
     Optional<Boolean> invertHealAndHarm,
-    Optional<List<ResourceLocation>> sources,
-    Optional<List<ResourceLocation>> campfires,
-    Optional<List<ResourceLocation>> lanterns,
-    Optional<List<ResourceLocation>> torches,
-    Optional<List<ResourceLocation>> wallTorches
+    Optional<List<Identifier>> sources,
+    Optional<List<Identifier>> campfires,
+    Optional<List<Identifier>> lanterns,
+    Optional<List<Identifier>> torches,
+    Optional<List<Identifier>> wallTorches
   ) {
     /**
      * Codec.
@@ -151,11 +151,11 @@ public final class FireResourceReloadListener extends SimpleJsonResourceReloadLi
       Codec.STRING.fieldOf("fire").forGetter(ddFire -> ddFire.fire),
       Codec.FLOAT.optionalFieldOf("damage").forGetter(ddFire -> ddFire.damage),
       Codec.BOOL.optionalFieldOf("invertHealAndHarm").forGetter(ddFire -> ddFire.invertHealAndHarm),
-      Codec.either(ResourceLocation.CODEC.listOf(), ResourceLocation.CODEC).xmap(field -> field.map(Function.identity(), List::of), Either::left).optionalFieldOf("source").forGetter(ddFire -> ddFire.sources),
-      Codec.either(ResourceLocation.CODEC.listOf(), ResourceLocation.CODEC).xmap(field -> field.map(Function.identity(), List::of), Either::left).optionalFieldOf("campfire").forGetter(ddFire -> ddFire.campfires),
-      Codec.either(ResourceLocation.CODEC.listOf(), ResourceLocation.CODEC).xmap(field -> field.map(Function.identity(), List::of), Either::left).optionalFieldOf("lantern").forGetter(ddFire -> ddFire.lanterns),
-      Codec.either(ResourceLocation.CODEC.listOf(), ResourceLocation.CODEC).xmap(field -> field.map(Function.identity(), List::of), Either::left).optionalFieldOf("torch").forGetter(ddFire -> ddFire.torches),
-      Codec.either(ResourceLocation.CODEC.listOf(), ResourceLocation.CODEC).xmap(field -> field.map(Function.identity(), List::of), Either::left).optionalFieldOf("wallTorch").forGetter(ddFire -> ddFire.wallTorches)
+      Codec.either(Identifier.CODEC.listOf(), Identifier.CODEC).xmap(field -> field.map(Function.identity(), List::of), Either::left).optionalFieldOf("source").forGetter(ddFire -> ddFire.sources),
+      Codec.either(Identifier.CODEC.listOf(), Identifier.CODEC).xmap(field -> field.map(Function.identity(), List::of), Either::left).optionalFieldOf("campfire").forGetter(ddFire -> ddFire.campfires),
+      Codec.either(Identifier.CODEC.listOf(), Identifier.CODEC).xmap(field -> field.map(Function.identity(), List::of), Either::left).optionalFieldOf("lantern").forGetter(ddFire -> ddFire.lanterns),
+      Codec.either(Identifier.CODEC.listOf(), Identifier.CODEC).xmap(field -> field.map(Function.identity(), List::of), Either::left).optionalFieldOf("torch").forGetter(ddFire -> ddFire.torches),
+      Codec.either(Identifier.CODEC.listOf(), Identifier.CODEC).xmap(field -> field.map(Function.identity(), List::of), Either::left).optionalFieldOf("wallTorch").forGetter(ddFire -> ddFire.wallTorches)
     ).apply(instance, DDFire::new));
   }
 

@@ -1,7 +1,7 @@
 package it.crystalnest.prometheus.platform.services;
 
 import it.crystalnest.prometheus.api.Fire;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,5 +28,5 @@ public interface NetworkHelper {
    * @param player player to send the packet to.
    * @param fireType fire reference.
    */
-  void sendToClient(@Nullable ServerPlayer player, ResourceLocation fireType);
+  void sendToClient(@Nullable ServerPlayer player, Identifier fireType);
 }

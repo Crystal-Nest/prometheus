@@ -1,6 +1,6 @@
 package it.crystalnest.prometheus.platform.services;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 
 /**
@@ -13,7 +13,7 @@ public interface AttachmentHelper {
    * @param entity entity.
    * @return entity's fire type.
    */
-  ResourceLocation getFireType(Entity entity);
+  Identifier getFireType(Entity entity);
 
   /**
    * Sets the fire type attached to the given entity.
@@ -21,5 +21,5 @@ public interface AttachmentHelper {
    * @param entity entity.
    * @param fireType fire type.
    */
-  void setFireType(Entity entity, ResourceLocation fireType);
+  void setFireType(Entity entity, Identifier fireType);
 }

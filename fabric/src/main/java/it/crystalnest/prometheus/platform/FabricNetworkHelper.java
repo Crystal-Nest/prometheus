@@ -6,7 +6,7 @@ import it.crystalnest.prometheus.network.packet.UnregisterFirePacket;
 import it.crystalnest.prometheus.platform.services.NetworkHelper;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 /**
@@ -25,7 +25,7 @@ public final class FabricNetworkHelper implements NetworkHelper {
   }
 
   @Override
-  public void sendToClient(ServerPlayer player, ResourceLocation fireType) {
+  public void sendToClient(ServerPlayer player, Identifier fireType) {
     ServerPlayNetworking.send(player, new UnregisterFirePacket(fireType));
   }
 }

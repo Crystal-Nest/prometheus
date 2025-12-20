@@ -2,7 +2,7 @@
 
 ---
 
-![Minecraft](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/minecraft/minecraft.svg "Minecraft")[![1.21.10](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/minecraft/1-21-10.svg "1.21.10")](https://modrinth.com/mod/prometheus-api/versions?g=1.21.10)![Separator](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/separator.svg)[![1.21.8](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/minecraft/1-21-8.svg "1.21.8")](https://modrinth.com/mod/prometheus-api/versions?g=1.21.8)![Separator](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/separator.svg)[![1.21.7](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/minecraft/1-21-7.svg "1.21.7")](https://modrinth.com/mod/prometheus-api/versions?g=1.21.7)![Separator](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/separator.svg)[![1.21.6](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/minecraft/1-21-6.svg "1.21.6")](https://modrinth.com/mod/prometheus-api/versions?g=1.21.6)![Separator](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/separator.svg)[![1.21.1](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/minecraft/1-21-1.svg "1.21.1")](https://modrinth.com/mod/prometheus-api/versions?g=1.21.1)![Separator](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/separator.svg)[![1.21](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/minecraft/1-21.svg "1.21")](https://modrinth.com/mod/prometheus-api/versions?g=1.21)
+![Minecraft](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/minecraft/minecraft.svg "Minecraft")[![1.21.11](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/minecraft/1-21-11.svg "1.21.11")](https://modrinth.com/mod/prometheus-api/versions?g=1.21.11)![Separator](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/separator.svg)[![1.21.10](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/minecraft/1-21-10.svg "1.21.10")](https://modrinth.com/mod/prometheus-api/versions?g=1.21.10)![Separator](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/separator.svg)[![1.21.8](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/minecraft/1-21-8.svg "1.21.8")](https://modrinth.com/mod/prometheus-api/versions?g=1.21.8)![Separator](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/separator.svg)[![1.21.7](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/minecraft/1-21-7.svg "1.21.7")](https://modrinth.com/mod/prometheus-api/versions?g=1.21.7)![Separator](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/separator.svg)[![1.21.6](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/minecraft/1-21-6.svg "1.21.6")](https://modrinth.com/mod/prometheus-api/versions?g=1.21.6)![Separator](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/separator.svg)[![1.21.1](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/minecraft/1-21-1.svg "1.21.1")](https://modrinth.com/mod/prometheus-api/versions?g=1.21.1)![Separator](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/separator.svg)[![1.21](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/minecraft/1-21.svg "1.21")](https://modrinth.com/mod/prometheus-api/versions?g=1.21)
 
 ![Loader](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/loader/loader.svg "Loader")[![NeoForge](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/loader/neoforge.svg "NeoForge")](https://modrinth.com/mod/prometheus-api/versions?l=neoforge)![Separator](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/separator.svg)[![Fabric](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/loader/fabric.svg "Fabric")](https://modrinth.com/mod/prometheus-api/versions?l=fabric)
 
@@ -16,7 +16,7 @@
 
 This mod provides an **easy-to-use API** for modders who wish to introduce their own custom fire types, seamlessly integrating consistent behavior.
 
-It's what powers [Soul Fire'd](https://modrinth.com/mod/soul-fire-d) and allows integration with many other mods!
+It's what powers [Soul Fire'd](https://modrinth.com/mod/soul-fire-d) and [Copper Fire](https://modrinth.com/mod/copper-fire), and allows integration with many other mods!
 
 > ⚠️ **Important**: Prometheus must be installed on **both client and server**, as it introduces substantial gameplay changes, not just visuals.
 
@@ -24,7 +24,7 @@ It's what powers [Soul Fire'd](https://modrinth.com/mod/soul-fire-d) and allows 
 
 ### 🛠️ **Comprehensive API for Custom Fires**
 
-Modders and datapack creators can easily add their own custom fires (or implement another mod's fire), automatically ensuring **automatic consistent behavior** and custom enchantments.  
+Modders and datapack creators can easily add their own custom fires (or implement another mod's fire), automatically ensuring **automatic consistent behavior** and custom enchantments.
 
 Learn how to integrate custom fire types and utilize the provided API through detailed documentation:
 
@@ -44,7 +44,7 @@ Once your custom fire is registered with Prometheus API, you will automatically 
   ![Damage](https://raw.githubusercontent.com/crystal-nest/mod-fancy-assets/main/prometheus/damage.gif)
 
 - ⚙️ **Custom Fire properties**  
-  You can set the light level, whether rain douses your fire, and associate your torches, campfires, lanterns, and more!  
+  You can set the light level, whether rain douses your fire, and associate your torches, campfires, lanterns, and more!
 
 - 🎯 **Custom Fire mechanics**  
   For instance, but not limited to, zombies and arrows burning from custom fires set their targets on the correct kind of fire!  
@@ -65,6 +65,7 @@ Mods fully integrated with Prometheus:
 | Mod                                                                   | Loader |
 |:----------------------------------------------------------------------|:------:|
 | [Soul Fire'd](https://modrinth.com/mod/soul-fire-d)                   |  All   |
+| [Copper Fire](https://modrinth.com/mod/copper-fire)                   |  All   |
 | [Torch hit!](https://modrinth.com/mod/torch-hit)                      |  All   |
 | [Danger Close](https://modrinth.com/mod/danger-close)                 |  All   |
 | [Camp Fires Cook Mobs](https://modrinth.com/mod/camp-fires-cook-mobs) |  All   |
@@ -73,9 +74,9 @@ Want your mod listed here? Submit an issue [here](https://github.com/Crystal-Nes
 
 ## 🔗 **Dependencies**
 
-| Mod                                                                     |         Loader         |   Requirement    |
-|:------------------------------------------------------------------------|:----------------------:|:----------------:|
-| [Cobweb](https://modrinth.com/mod/cobweb)                               |          All           |     Required     |
+| Mod                                       | Loader | Requirement |
+|:------------------------------------------|:------:|:-----------:|
+| [Cobweb](https://modrinth.com/mod/cobweb) |  All   |  Required   |
 
 ## **License and right of use**
 

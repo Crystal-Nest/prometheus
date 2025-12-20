@@ -2,7 +2,7 @@ package it.crystalnest.prometheus.mixin;
 
 import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.api.type.FireTypeChanger;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.TorchBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -16,15 +16,15 @@ public abstract class TorchBlockMixin implements FireTypeChanger {
    * Fire Type.
    */
   @Unique
-  private ResourceLocation fireType;
+  private Identifier fireType;
 
   @Override
-  public ResourceLocation getFireType() {
+  public Identifier getFireType() {
     return fireType;
   }
 
   @Override
-  public void setFireType(ResourceLocation fireType) {
+  public void setFireType(Identifier fireType) {
     this.fireType = FireManager.ensure(fireType);
   }
 }

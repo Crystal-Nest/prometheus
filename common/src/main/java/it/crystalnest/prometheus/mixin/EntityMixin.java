@@ -8,11 +8,11 @@ import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.api.type.FireTypeChanger;
 import it.crystalnest.prometheus.api.type.FireTyped;
 import it.crystalnest.prometheus.platform.Services;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
+import net.minecraft.world.entity.projectile.hurtingprojectile.AbstractHurtingProjectile;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -50,12 +50,12 @@ public abstract class EntityMixin implements FireTypeChanger {
   public abstract boolean fireImmune();
 
   @Override
-  public ResourceLocation getFireType() {
+  public Identifier getFireType() {
     return Services.ATTACHMENT.getFireType((Entity) (Object) this);
   }
 
   @Override
-  public void setFireType(ResourceLocation fireType) {
+  public void setFireType(Identifier fireType) {
     if (!this.fireImmune()) {
       Services.ATTACHMENT.setFireType((Entity) (Object) this, fireType);
     }

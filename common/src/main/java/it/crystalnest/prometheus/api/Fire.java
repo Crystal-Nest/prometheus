@@ -10,8 +10,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.BlockItem;
@@ -41,35 +41,35 @@ public final class Fire {
   public static final StreamCodec<FriendlyByteBuf, Fire> STREAM_CODEC = new StreamCodec<>() {
     @Override
     public void encode(FriendlyByteBuf buffer, Fire fire) {
-      buffer.writeResourceLocation(fire.getFireType());
+      buffer.writeIdentifier(fire.getFireType());
       buffer.writeFloat(fire.getDamage());
       buffer.writeBoolean(fire.invertHealAndHarm());
-      @Nullable ResourceLocation source = fire.getComponent(Component.SOURCE_BLOCK);
+      @Nullable Identifier source = fire.getComponent(Component.SOURCE_BLOCK);
       buffer.writeBoolean(source != null);
       if (source != null) {
-        buffer.writeResourceLocation(source);
+        buffer.writeIdentifier(source);
       }
-      @Nullable ResourceLocation campfire = fire.getComponent(Component.CAMPFIRE_BLOCK);
+      @Nullable Identifier campfire = fire.getComponent(Component.CAMPFIRE_BLOCK);
       buffer.writeBoolean(campfire != null);
       if (campfire != null) {
-        buffer.writeResourceLocation(campfire);
+        buffer.writeIdentifier(campfire);
       }
     }
 
     @NotNull
     @Override
     public Fire decode(FriendlyByteBuf buffer) {
-      Builder builder = FireManager.fireBuilder(buffer.readResourceLocation())
+      Builder builder = FireManager.fireBuilder(buffer.readIdentifier())
         .setDamage(buffer.readFloat())
         .setInvertHealAndHarm(buffer.readBoolean())
         .removeComponents(Component.CAMPFIRE_ITEM, Component.LANTERN_BLOCK, Component.LANTERN_ITEM, Component.TORCH_BLOCK, Component.TORCH_ITEM, Component.WALL_TORCH_BLOCK, Component.FLAME_PARTICLE);
       if (buffer.readBoolean()) {
-        builder.setComponent(Component.SOURCE_BLOCK, buffer.readResourceLocation());
+        builder.setComponent(Component.SOURCE_BLOCK, buffer.readIdentifier());
       } else {
         builder.removeComponent(Component.SOURCE_BLOCK);
       }
       if (buffer.readBoolean()) {
-        builder.setComponent(Component.CAMPFIRE_BLOCK, buffer.readResourceLocation());
+        builder.setComponent(Component.CAMPFIRE_BLOCK, buffer.readIdentifier());
       } else {
         builder.removeComponent(Component.CAMPFIRE_BLOCK);
       }
@@ -78,9 +78,9 @@ public final class Fire {
   };
 
   /**
-   * {@link ResourceLocation} to uniquely identify this Fire.
+   * {@link Identifier} to uniquely identify this Fire.
    */
-  private final ResourceLocation fireType;
+  private final Identifier fireType;
 
   /**
    * Emitted light level by fire related blocks such as fire source, campfire, torch, and lantern.
@@ -127,7 +127,7 @@ public final class Fire {
   /**
    * {@link ImmutableMap} of {@link Component}s associated with their IDs for this fire.
    */
-  private final ImmutableMap<Component<?, ?>, ImmutableList<ResourceLocation>> components;
+  private final ImmutableMap<Component<?, ?>, ImmutableList<Identifier>> components;
 
   /**
    * @param fireType {@link #fireType}.
@@ -141,7 +141,7 @@ public final class Fire {
    * @param components {@link #components}.
    */
   Fire(
-    ResourceLocation fireType,
+    Identifier fireType,
     int light,
     float damage,
     boolean invertHealAndHarm,
@@ -150,7 +150,7 @@ public final class Fire {
     Function<Entity, DamageSource> inFireGetter,
     Function<Entity, DamageSource> onFireGetter,
     Predicate<Entity> behavior,
-    Map<Component<?, ?>, List<ResourceLocation>> components
+    Map<Component<?, ?>, List<Identifier>> components
   ) {
     this.fireType = fireType;
     this.light = light;
@@ -169,7 +169,7 @@ public final class Fire {
    *
    * @return this {@link #fireType}.
    */
-  public ResourceLocation getFireType() {
+  public Identifier getFireType() {
     return fireType;
   }
 
@@ -249,28 +249,28 @@ public final class Fire {
   }
 
   /**
-   * Returns {@link ResourceLocation} associated with specified {@link Component}.<p>
+   * Returns {@link Identifier} associated with specified {@link Component}.<p>
    * Might be {@code null} if this fire doesn't have the specified component.<br>
    * There might be multiple values for the same component; to retrieve them all use {@link #getComponentList(Component)} instead.
    *
    * @param component {@link Component}.
-   * @return the {@link ResourceLocation} associated with specified {@link Component}.
+   * @return the {@link Identifier} associated with specified {@link Component}.
    */
   @Nullable
-  public ResourceLocation getComponent(Component<?, ?> component) {
-    ImmutableList<ResourceLocation> values = components.get(component);
+  public Identifier getComponent(Component<?, ?> component) {
+    ImmutableList<Identifier> values = components.get(component);
     return values == null || values.isEmpty() ? null : values.getFirst();
   }
 
   /**
-   * Returns all the {@link ResourceLocation}s associated with specified {@link Component}.<p>
+   * Returns all the {@link Identifier}s associated with specified {@link Component}.<p>
    * Might be {@code null} if this fire doesn't have the specified component.
    *
    * @param component {@link Component}.
-   * @return all the {@link ResourceLocation}s associated with specified {@link Component}.
+   * @return all the {@link Identifier}s associated with specified {@link Component}.
    */
   @Nullable
-  public List<ResourceLocation> getComponentList(Component<?, ?> component) {
+  public List<Identifier> getComponentList(Component<?, ?> component) {
     return components.get(component);
   }
 
@@ -280,7 +280,7 @@ public final class Fire {
   }
 
   /**
-   * Fire component to associate a component to a {@link ResourceLocation} and easy retrieve the value registered with it.
+   * Fire component to associate a component to a {@link Identifier} and easy retrieve the value registered with it.
    *
    * @param <R> {@link Registry} type.
    * @param <T> value type.
@@ -342,20 +342,20 @@ public final class Fire {
     private final ResourceKey<? extends Registry<R>> key;
 
     /**
-     * Component default suffix for the associated {@link ResourceLocation}.
+     * Component default suffix for the associated {@link Identifier}.
      */
     private final String suffix;
 
     /**
      * Component default registration method.
      */
-    private final Function<ResourceLocation, CobwebEntry<? extends T>> register;
+    private final Function<Identifier, CobwebEntry<? extends T>> register;
 
     /**
      * @param key {@link #key}.
      * @param suffix {@link #suffix}.
      */
-    private Component(ResourceKey<? extends Registry<R>> key, String suffix, Function<ResourceLocation, CobwebEntry<? extends T>> register) {
+    private Component(ResourceKey<? extends Registry<R>> key, String suffix, Function<Identifier, CobwebEntry<? extends T>> register) {
       this.key = key;
       this.suffix = suffix;
       this.register = register;
@@ -367,7 +367,7 @@ public final class Fire {
      * @param fireType fire type.
      * @return {@link CobwebEntry} for the component game-object.
      */
-    public CobwebEntry<? extends T> register(ResourceLocation fireType) {
+    public CobwebEntry<? extends T> register(Identifier fireType) {
       return register.apply(fireType);
     }
 
@@ -379,7 +379,7 @@ public final class Fire {
     @NotNull
     @SuppressWarnings("unchecked")
     Registry<R> getRegistry() {
-      return (Registry<R>) BuiltInRegistries.REGISTRY.get(key.location()).orElseThrow().value();
+      return (Registry<R>) BuiltInRegistries.REGISTRY.get(key.identifier()).orElseThrow().value();
     }
 
     /**
@@ -391,7 +391,7 @@ public final class Fire {
      */
     @Nullable
     @SuppressWarnings("unchecked")
-    T getValue(ResourceLocation id) {
+    T getValue(Identifier id) {
       return (T) getRegistry().getOptional(id).orElse(null);
     }
 
@@ -416,7 +416,7 @@ public final class Fire {
      */
     @Nullable
     List<T> getValues(Fire fire) {
-      List<ResourceLocation> list = fire.getComponentList(this);
+      List<Identifier> list = fire.getComponentList(this);
       return list == null ? null : list.stream().map(this::getValue).toList();
     }
 
@@ -427,7 +427,7 @@ public final class Fire {
      * @return the value associated to this component.
      */
     @SuppressWarnings("unchecked")
-    Optional<T> getOptionalValue(ResourceLocation id) {
+    Optional<T> getOptionalValue(Identifier id) {
       return (Optional<T>) getRegistry().getOptional(id);
     }
 
@@ -448,7 +448,7 @@ public final class Fire {
      * @return the value associated to this component.
      */
     List<Optional<T>> getOptionalValues(Fire fire) {
-      List<ResourceLocation> list = fire.getComponentList(this);
+      List<Identifier> list = fire.getComponentList(this);
       return list == null ? List.of() : list.stream().map(this::getOptionalValue).toList();
     }
 
@@ -459,8 +459,8 @@ public final class Fire {
      * @param fireId fire ID.
      * @return the default {@link Map#entry(Object, Object) Map.entry} for this component.
      */
-    Map.Entry<Component<R, T>, List<ResourceLocation>> getEntry(String modId, String fireId) {
-      return Map.entry(this, List.of(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(modId, fireId + suffix)));
+    Map.Entry<Component<R, T>, List<Identifier>> getEntry(String modId, String fireId) {
+      return Map.entry(this, List.of(net.minecraft.resources.Identifier.fromNamespaceAndPath(modId, fireId + suffix)));
     }
   }
 
@@ -573,9 +573,9 @@ public final class Fire {
 
     /**
      * {@link Fire} instance {@link Fire#components components}.<br>
-     * Optional, defaults to a map with every component, each associated to the default {@link ResourceLocation} made by {@link #modId} and {@link #fireId} with the component default {@link Component#suffix suffix}.
+     * Optional, defaults to a map with every component, each associated to the default {@link Identifier} made by {@link #modId} and {@link #fireId} with the component default {@link Component#suffix suffix}.
      */
-    private Map<Component<?, ?>, List<ResourceLocation>> components;
+    private Map<Component<?, ?>, List<Identifier>> components;
 
     /**
      * @param modId {@link #modId}.
@@ -586,9 +586,9 @@ public final class Fire {
     }
 
     /**
-     * @param fireType {@link ResourceLocation} to set both {@link #modId} and {@link #fireId}.
+     * @param fireType {@link Identifier} to set both {@link #modId} and {@link #fireId}.
      */
-    Builder(ResourceLocation fireType) {
+    Builder(Identifier fireType) {
       reset(fireType);
     }
 
@@ -719,10 +719,10 @@ public final class Fire {
      * It's strongly recommended that you use all the default values for each component. Use this only when you don't have control over the values.
      *
      * @param component component.
-     * @param id {@link ResourceLocation}.
+     * @param id {@link Identifier}.
      * @return this Builder to either set other properties or {@link #build()}.
      */
-    public Builder setComponent(Component<?, ?> component, ResourceLocation id) {
+    public Builder setComponent(Component<?, ?> component, Identifier id) {
       this.components.put(component, new ArrayList<>(List.of(id)));
       return this;
     }
@@ -732,10 +732,10 @@ public final class Fire {
      * It's strongly recommended that you use all the default values for each component. Use this only when you have multiple values for a single component.
      *
      * @param component component.
-     * @param ids {@link ResourceLocation}s.
+     * @param ids {@link Identifier}s.
      * @return this Builder to either set other properties or {@link #build()}.
      */
-    public Builder setComponent(Component<?, ?> component, ResourceLocation... ids) {
+    public Builder setComponent(Component<?, ?> component, Identifier... ids) {
       this.components.put(component, new ArrayList<>(List.of(ids)));
       return this;
     }
@@ -745,10 +745,10 @@ public final class Fire {
      * It's strongly recommended that you use all the default values for each component. Use this only when you have multiple values for a single component.
      *
      * @param component component.
-     * @param ids {@link ResourceLocation}s.
+     * @param ids {@link Identifier}s.
      * @return this Builder to either set other properties or {@link #build()}.
      */
-    public Builder addToComponent(Component<?, ?> component, ResourceLocation... ids) {
+    public Builder addToComponent(Component<?, ?> component, Identifier... ids) {
       this.components.computeIfAbsent(component, k -> new ArrayList<>()).addAll(List.of(ids));
       return this;
     }
@@ -803,11 +803,11 @@ public final class Fire {
      * Resets the state of the Builder.<br>
      * Used to avoid getting new Builders from the {@link FireManager manager} and instead use the same instance to build different {@link Fire Fires}.
      *
-     * @param fireType {@link ResourceLocation} of the new {@link Fire} to build.
+     * @param fireType {@link Identifier} of the new {@link Fire} to build.
      * @return this Builder, reset.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Builder reset(ResourceLocation fireType) {
+    public Builder reset(Identifier fireType) {
       return reset(fireType.getNamespace(), fireType.getPath());
     }
 

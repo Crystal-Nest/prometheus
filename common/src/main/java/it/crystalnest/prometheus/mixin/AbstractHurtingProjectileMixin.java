@@ -5,7 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.api.type.FireTyped;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
+import net.minecraft.world.entity.projectile.hurtingprojectile.AbstractHurtingProjectile;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -22,7 +22,7 @@ public abstract class AbstractHurtingProjectileMixin implements FireTyped {
    * @param seconds seconds to set the entity on fire for.
    * @param original original {@link Operation} being wrapped.
    */
-  @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/projectile/AbstractHurtingProjectile;igniteForSeconds(F)V"))
+  @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/projectile/hurtingprojectile/AbstractHurtingProjectile;igniteForSeconds(F)V"))
   private void wrapIgniteForSeconds(AbstractHurtingProjectile instance, float seconds, Operation<Void> original) {
     FireManager.setOnFire(instance, seconds, getFireType(), original::call);
   }

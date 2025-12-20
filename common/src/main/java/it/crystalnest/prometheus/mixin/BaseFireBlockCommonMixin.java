@@ -6,7 +6,7 @@ import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.api.block.CustomFireBlock;
 import it.crystalnest.prometheus.api.type.FireTypeChanger;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.BaseFireBlock;
 import net.minecraft.world.level.block.Block;
@@ -24,7 +24,7 @@ public abstract class BaseFireBlockCommonMixin implements FireTypeChanger {
    * Fire Type.
    */
   @Unique
-  private ResourceLocation fireType;
+  private Identifier fireType;
 
   /**
    * Modifies the return value of {@link BaseFireBlock#getState(BlockGetter, BlockPos)}.<br>
@@ -52,12 +52,12 @@ public abstract class BaseFireBlockCommonMixin implements FireTypeChanger {
   }
 
   @Override
-  public ResourceLocation getFireType() {
+  public Identifier getFireType() {
     return fireType;
   }
 
   @Override
-  public void setFireType(ResourceLocation fireType) {
+  public void setFireType(Identifier fireType) {
     this.fireType = FireManager.ensure(fireType);
   }
 }

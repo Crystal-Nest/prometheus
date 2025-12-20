@@ -6,7 +6,7 @@ import it.crystalnest.prometheus.api.Fire;
 import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.api.type.FireTypeChanger;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.InsideBlockEffectApplier;
@@ -27,15 +27,15 @@ public abstract class CampfireBlockMixin implements FireTypeChanger {
    * Fire Type.
    */
   @Unique
-  private ResourceLocation fireType;
+  private Identifier fireType;
 
   @Override
-  public ResourceLocation getFireType() {
+  public Identifier getFireType() {
     return fireType;
   }
 
   @Override
-  public void setFireType(ResourceLocation fireType) {
+  public void setFireType(Identifier fireType) {
     this.fireType = FireManager.ensure(fireType);
   }
 

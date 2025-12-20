@@ -6,7 +6,7 @@ import it.crystalnest.prometheus.network.handler.FirePacketHandler;
 import it.crystalnest.prometheus.network.packet.RegisterFirePacket;
 import it.crystalnest.prometheus.network.packet.UnregisterFirePacket;
 import it.crystalnest.prometheus.platform.services.NetworkHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -38,7 +38,7 @@ public final class NeoForgeNetworkHelper implements NetworkHelper {
   }
 
   @Override
-  public void sendToClient(@Nullable ServerPlayer player, ResourceLocation fireType) {
+  public void sendToClient(@Nullable ServerPlayer player, Identifier fireType) {
     if (player == null) {
       PacketDistributor.sendToAllPlayers(new UnregisterFirePacket(fireType));
     } else {

@@ -3,16 +3,16 @@ package it.crystalnest.prometheus.api.client;
 import it.crystalnest.prometheus.api.FireManager;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.Material;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Fire, client side only.
  */
 public final class FireClient {
   /**
-   * {@link ResourceLocation} to uniquely identify this Fire.
+   * {@link Identifier} to uniquely identify this Fire.
    */
-  private final ResourceLocation fireType;
+  private final Identifier fireType;
 
   /**
    * Fire {@link Material} for the sprite 0.<br>
@@ -30,13 +30,13 @@ public final class FireClient {
    * @param fireType {@link #fireType}.
    */
   @SuppressWarnings("deprecation")
-  FireClient(ResourceLocation fireType) {
+  FireClient(Identifier fireType) {
     this.fireType = fireType;
     String modId = fireType.getNamespace();
     String fireId = fireType.getPath();
     String joiner = FireManager.DEFAULT_FIRE_TYPE.equals(fireType) ? "" : "_";
-    this.material0 = new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.fromNamespaceAndPath(modId, "block/" + fireId + joiner + "fire_0"));
-    this.material1 = new Material(TextureAtlas.LOCATION_BLOCKS, ResourceLocation.fromNamespaceAndPath(modId, "block/" + fireId + joiner + "fire_1"));
+    this.material0 = new Material(TextureAtlas.LOCATION_BLOCKS, Identifier.fromNamespaceAndPath(modId, "block/" + fireId + joiner + "fire_0"));
+    this.material1 = new Material(TextureAtlas.LOCATION_BLOCKS, Identifier.fromNamespaceAndPath(modId, "block/" + fireId + joiner + "fire_1"));
   }
 
   /**
@@ -44,7 +44,7 @@ public final class FireClient {
    *
    * @return this {@link #fireType}.
    */
-  public ResourceLocation getFireType() {
+  public Identifier getFireType() {
     return fireType;
   }
 

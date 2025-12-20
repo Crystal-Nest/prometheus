@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.ScreenEffectRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.MaterialSet;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -34,7 +34,7 @@ public abstract class ScreenEffectRendererMixin {
    */
   @WrapOperation(method = "renderScreenEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/model/MaterialSet;get(Lnet/minecraft/client/resources/model/Material;)Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;"))
   private TextureAtlasSprite wrapSprite(MaterialSet instance, Material material, Operation<TextureAtlasSprite> original) {
-    ResourceLocation fireType = ((FireTyped) Objects.requireNonNull(Minecraft.getInstance().player)).getFireType();
+    Identifier fireType = ((FireTyped) Objects.requireNonNull(Minecraft.getInstance().player)).getFireType();
     if (FireManager.isRegisteredType(fireType)) {
       return FireClientManager.getSprite1(fireType);
     }
