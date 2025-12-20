@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.FireChargeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.StandingAndWallBlockItem;
 import net.minecraft.world.level.block.Block;
@@ -328,6 +329,11 @@ public final class Fire {
      * Flame particle component.
      */
     public static final Component<ParticleType<?>, SimpleParticleType> FLAME_PARTICLE = new Component<>(Registries.PARTICLE_TYPE, "_flame");
+
+    /**
+     * Fire charge item component.
+     */
+    public static final Component<Item, FireChargeItem> FIRE_CHARGE_ITEM = new Component<>(Registries.ITEM, "_fire_charge");
 
     /**
      * Registry key where the value associated to this component is stored.
@@ -746,7 +752,8 @@ public final class Fire {
         Component.TORCH_BLOCK.getEntry(modId, fireId),
         Component.TORCH_ITEM.getEntry(modId, fireId),
         Component.WALL_TORCH_BLOCK.getEntry(modId, fireId),
-        Component.FLAME_PARTICLE.getEntry(modId, fireId)
+        Component.FLAME_PARTICLE.getEntry(modId, fireId),
+        Component.FIRE_CHARGE_ITEM.getEntry(modId, fireId)
       ));
       return this;
     }

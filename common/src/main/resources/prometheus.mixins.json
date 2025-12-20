@@ -6,10 +6,13 @@
   "compatibilityLevel": "JAVA_${java_version}",
   "mixins": [
     "AbstractArrowMixin",
+    "AbstractHurtingProjectileMixin",
     "BaseFireBlockMixin",
     "CampfireBlockMixin",
     "EntityMixin",
+    "FireChargeItemMixin",
     "LanternBlockMixin",
+    "SmallFireballMixin",
     "SynchedEntityDataBuilderMixin",
     "TorchBlockMixin",
     "ZombieMixin"
@@ -23,4 +26,3 @@
     "defaultRequire": 1
   }
 }
-
