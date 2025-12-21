@@ -392,7 +392,7 @@ public final class Fire {
     @Nullable
     @SuppressWarnings("unchecked")
     T getValue(ResourceLocation id) {
-      return (T) getRegistry().get(id);
+      return (T) getRegistry().getOptional(id).orElse(null);
     }
 
     /**
