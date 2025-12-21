@@ -5,6 +5,7 @@ import it.crystalnest.cobweb.api.pack.dynamic.DynamicTagBuilder;
 import it.crystalnest.cobweb.api.registry.CobwebEntry;
 import it.crystalnest.cobweb.api.registry.CobwebRegister;
 import it.crystalnest.cobweb.api.registry.CobwebRegistry;
+import it.crystalnest.cobweb.platform.model.Platform;
 import it.crystalnest.prometheus.Constants;
 import it.crystalnest.prometheus.QuadriFunction;
 import it.crystalnest.prometheus.api.block.CustomCampfireBlock;
@@ -12,6 +13,7 @@ import it.crystalnest.prometheus.api.block.CustomFireBlock;
 import it.crystalnest.prometheus.api.block.CustomLanternBlock;
 import it.crystalnest.prometheus.api.block.CustomTorchBlock;
 import it.crystalnest.prometheus.api.block.CustomWallTorchBlock;
+import it.crystalnest.prometheus.platform.Services;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -28,6 +30,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.StandingAndWallBlockItem;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import org.apache.commons.lang3.function.TriFunction;
@@ -76,6 +79,7 @@ public final class FireRegistrar {
     LOADED = true;
     FIRE_SOURCE_TAGS.register();
     CAMPFIRE_TAGS.register();
+    FIRE_CHARGE_TAGS.register();
   }
 
   private FireRegistrar() {}
@@ -673,6 +677,9 @@ public final class FireRegistrar {
   public static <T extends FireChargeItem> CobwebEntry<T> registerFireCharge(ResourceLocation fireType, String itemId, Function<Item.Properties, T> constructor) {
     CobwebEntry<T> charge = CobwebRegistry.ofItems(fireMod(fireType)).registerItem(itemId, constructor);
     FIRE_CHARGE_TAGS.add(() -> DynamicTagBuilder.of(Registries.ITEM, ItemTags.CREEPER_IGNITERS).addElement(charge.get()));
+    if (Services.PLATFORM.getPlatformName() == Platform.FABRIC) {
+      DispenserBlock.registerProjectileBehavior(charge.get());
+    }
     return charge;
   }
 
