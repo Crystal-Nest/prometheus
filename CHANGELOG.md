@@ -9,6 +9,10 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Nothing new.
 
+## [v1.2.4] - 2025/12/21
+
+- 1.21/1.21.1 only: fix crash on NeoForge (`Fire#getValue(ResourceLocaiton)` now properly return `null` if there is no value).
+
 ## [v1.2.3] - 2025/12/21
 
 - Fixed fire charges randomly not having projectile behavior on Fabric.
@@ -77,6 +81,7 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 [Unreleased]: https://github.com/crystal-nest/prometheus
 [README]: https://github.com/crystal-nest/prometheus#readme
 
+[v1.2.4]: https://github.com/crystal-nest/prometheus/releases?q=1.2.4
 [v1.2.3]: https://github.com/crystal-nest/prometheus/releases?q=1.2.3
 [v1.2.2]: https://github.com/crystal-nest/prometheus/releases?q=1.2.2
 [v1.2.1]: https://github.com/crystal-nest/prometheus/releases?q=1.2.1
