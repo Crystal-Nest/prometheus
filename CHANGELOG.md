@@ -9,6 +9,12 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Nothing new.
 
+## [v1.2.3] - 2025/12/21
+
+- Fixed fire charges randomly not having projectile behavior on Fabric.
+- Fixed fire charges reverting to normal fire when going through water.
+- Fixed automatically adding fire charge components to the `creeper_igniters` tag.
+
 ## [v1.2.2] - 2025/12/20
 
 - Automatically add fire charge components to the `creeper_igniters` tag.
@@ -71,6 +77,7 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 [Unreleased]: https://github.com/crystal-nest/prometheus
 [README]: https://github.com/crystal-nest/prometheus#readme
 
+[v1.2.3]: https://github.com/crystal-nest/prometheus/releases?q=1.2.3
 [v1.2.2]: https://github.com/crystal-nest/prometheus/releases?q=1.2.2
 [v1.2.1]: https://github.com/crystal-nest/prometheus/releases?q=1.2.1
 [v1.2.0]: https://github.com/crystal-nest/prometheus/releases?q=1.2.0
