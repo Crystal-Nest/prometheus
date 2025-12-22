@@ -15,6 +15,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
+import java.util.Collection;
+
 /**
  * Injects into {@link BaseFireBlock} to alter Fire behavior for consistency.
  */
@@ -36,7 +38,7 @@ public abstract class BaseFireBlockCommonMixin implements FireTypeChanger {
    */
   @ModifyReturnValue(method = "getState", at = @At(value = "RETURN"))
   private static BlockState modifyGetState(BlockState original, BlockGetter level, BlockPos pos) {
-    return FireManager.getComponentList(Fire.Component.SOURCE_BLOCK).stream().filter(source -> canSurvive(source, level.getBlockState(pos.below()))).findFirst().map(Block::defaultBlockState).orElse(original);
+    return FireManager.getComponentListList(Fire.Component.SOURCE_BLOCK).stream().flatMap(Collection::stream).filter(source -> canSurvive(source, level.getBlockState(pos.below()))).findFirst().map(Block::defaultBlockState).orElse(original);
   }
 
   /**
@@ -58,6 +60,6 @@ public abstract class BaseFireBlockCommonMixin implements FireTypeChanger {
 
   @Override
   public void setFireType(ResourceLocation fireType) {
-    this.fireType = FireManager.ensure(fireType);
+    this.fireType = fireType;
   }
 }

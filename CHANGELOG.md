@@ -9,8 +9,33 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Nothing new.
 
+## [v1.2.5] - 2025/12/21
+
+- Fixed fire component blocks not having the correct fire type (revert of previous change).
+- Fixed some code not being update to support multiple-value Fire Components.
+
+## [v1.2.4] - 2025/12/21
+
+- 1.21/1.21.1 only: fixed crash on NeoForge (`Fire#getValue(ResourceLocaiton)` now properly return `null` if there is no value).
+
+## [v1.2.3] - 2025/12/21
+
+- Fixed fire charges randomly not having projectile behavior on Fabric.
+- Fixed fire charges reverting to normal fire when going through water.
+- Fixed automatically adding fire charge components to the `creeper_igniters` tag.
+
+## [v1.2.2] - 2025/12/20
+
+- Automatically add fire charge components to the `creeper_igniters` tag.
+- Fixed block fire components not being automatically registered to the cutout render layer.
+
+## [v1.2.1] - 2025/12/20
+
+- 1.21.6+ only: Fix crash when spawning fire charge entities.
+
 ## [v1.2.0] - 2025/12/20
 
+- Ported to 1.21.11.
 - Fixed `CustomCampfireBlockEntity`, preventing crashes when placing campfires.
 - Fixed `CustomFireBlock` to "survive" only when on a sturdy block face.
 - Fire Components can now support multiple values.
@@ -61,6 +86,11 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 [Unreleased]: https://github.com/crystal-nest/prometheus
 [README]: https://github.com/crystal-nest/prometheus#readme
 
+[v1.2.5]: https://github.com/crystal-nest/prometheus/releases?q=1.2.5
+[v1.2.4]: https://github.com/crystal-nest/prometheus/releases?q=1.2.4
+[v1.2.3]: https://github.com/crystal-nest/prometheus/releases?q=1.2.3
+[v1.2.2]: https://github.com/crystal-nest/prometheus/releases?q=1.2.2
+[v1.2.1]: https://github.com/crystal-nest/prometheus/releases?q=1.2.1
 [v1.2.0]: https://github.com/crystal-nest/prometheus/releases?q=1.2.0
 [v1.1.2]: https://github.com/crystal-nest/prometheus/releases?q=1.1.2
 [v1.1.1]: https://github.com/crystal-nest/prometheus/releases?q=1.1.1
