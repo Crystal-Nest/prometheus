@@ -36,7 +36,7 @@ public abstract class CampfireBlockMixin implements FireTypeChanger {
 
   @Override
   public void setFireType(Identifier fireType) {
-    this.fireType = FireManager.ensure(fireType);
+    this.fireType = fireType;
   }
 
   /**
