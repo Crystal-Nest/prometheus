@@ -1,6 +1,5 @@
 package it.crystalnest.prometheus.mixin;
 
-import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.api.type.FireTypeChanger;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.LanternBlock;
@@ -25,6 +24,6 @@ public abstract class LanternBlockMixin implements FireTypeChanger {
 
   @Override
   public void setFireType(ResourceLocation fireType) {
-    this.fireType = FireManager.ensure(fireType);
+    this.fireType = fireType;
   }
 }

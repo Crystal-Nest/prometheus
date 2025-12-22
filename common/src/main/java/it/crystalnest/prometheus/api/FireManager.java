@@ -936,7 +936,10 @@ public final class FireManager {
    * @return the object's fire type.
    */
   public static <R, T extends R> ResourceLocation getFireType(Fire.Component<R, T> component, T object) {
-    return FireManager.getFireTypes().stream().filter(type -> FireManager.getComponent(type, component) == object).findFirst().orElse(DEFAULT_FIRE_TYPE);
+    return FireManager.getFireTypes().stream().filter(type -> {
+      List<T> list = FireManager.getComponentList(type, component);
+      return list != null && list.contains(object);
+    }).findFirst().orElse(DEFAULT_FIRE_TYPE);
   }
 
   /**
