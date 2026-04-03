@@ -182,6 +182,6 @@ public class CustomFireBlock extends BaseFireBlock implements FireTyped {
    * @param pos position.
    */
   protected void scheduleTick(Level level, BlockPos pos) {
-    level.scheduleTick(pos, this, 30 + level.random.nextInt(10));
+    level.scheduleTick(pos, this, 30 + level.getRandom().nextInt(10));
   }
 }

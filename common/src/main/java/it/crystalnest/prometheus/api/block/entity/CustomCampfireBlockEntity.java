@@ -35,10 +35,10 @@ public class CustomCampfireBlockEntity extends CampfireBlockEntity {
    * @param pos campfire block position.
    * @param state campfire block state.
    * @param campfire campfire block entity.
-   * @param check recipe cached check.
+   * @param recipeCache recipe cached check.
    * @param <T> recipe type.
    */
-  public static <T extends Recipe<SingleRecipeInput>> void cookTickGeneric(ServerLevel level, BlockPos pos, BlockState state, CampfireBlockEntity campfire, RecipeManager.CachedCheck<SingleRecipeInput, T> check) {
+  public static <T extends Recipe<SingleRecipeInput>> void cookTickGeneric(ServerLevel level, BlockPos pos, BlockState state, CampfireBlockEntity campfire, RecipeManager.CachedCheck<SingleRecipeInput, T> recipeCache) {
     boolean flag = false;
     for (int i = 0; i < campfire.getItems().size(); ++i) {
       ItemStack ingredient = campfire.getItems().get(i);
@@ -46,7 +46,7 @@ public class CustomCampfireBlockEntity extends CampfireBlockEntity {
         flag = true;
         if (++campfire.cookingProgress[i] >= campfire.cookingTime[i]) {
           SingleRecipeInput recipe = new SingleRecipeInput(ingredient);
-          ItemStack result = check.getRecipeFor(recipe, level).map(holder -> holder.value().assemble(recipe, level.registryAccess())).orElse(ingredient);
+          ItemStack result = recipeCache.getRecipeFor(recipe, level).map(holder -> holder.value().assemble(recipe)).orElse(ingredient);
           if (result.isItemEnabled(level.enabledFeatures())) {
             Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), result);
             campfire.getItems().set(i, ItemStack.EMPTY);

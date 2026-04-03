@@ -3,17 +3,9 @@ package it.crystalnest.prometheus.handler;
 import it.crystalnest.prometheus.Constants;
 import it.crystalnest.prometheus.api.Fire;
 import it.crystalnest.prometheus.api.FireManager;
-import it.crystalnest.prometheus.api.block.CustomCampfireBlock;
-import it.crystalnest.prometheus.api.block.CustomFireBlock;
-import it.crystalnest.prometheus.api.block.CustomLanternBlock;
-import it.crystalnest.prometheus.api.block.CustomTorchBlock;
-import it.crystalnest.prometheus.api.block.CustomWallTorchBlock;
 import it.crystalnest.prometheus.api.client.FireClientManager;
 import net.minecraft.client.particle.FlameParticle;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.blockentity.CampfireRenderer;
-import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -40,11 +32,6 @@ public final class FMLSetupEventsHandler {
   @SubscribeEvent
   public static void handle(FMLClientSetupEvent event) {
     FireClientManager.registerFires(FireManager.getFires());
-    registerCutout(Fire.Component.CAMPFIRE_BLOCK, CustomCampfireBlock.class);
-    registerCutout(Fire.Component.SOURCE_BLOCK, CustomFireBlock.class);
-    registerCutout(Fire.Component.LANTERN_BLOCK, CustomLanternBlock.class);
-    registerCutout(Fire.Component.TORCH_BLOCK, CustomTorchBlock.class);
-    registerCutout(Fire.Component.WALL_TORCH_BLOCK, CustomWallTorchBlock.class);
   }
 
   /**
@@ -75,16 +62,5 @@ public final class FMLSetupEventsHandler {
   @SubscribeEvent
   public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
     event.registerBlockEntityRenderer(FireManager.getCustomCampfireEntityType().get(), CampfireRenderer::new);
-  }
-
-  /**
-   * Registers the specified component to the {@link ChunkSectionLayer#CUTOUT} render layer.
-   *
-   * @param component fire component.
-   * @param clazz custom class for instanceof test.
-   */
-  @SuppressWarnings("deprecation")
-  private static void registerCutout(Fire.Component<Block, Block> component, Class<?> clazz) {
-    FireManager.getComponentListList(component).forEach(values -> values.stream().filter(clazz::isInstance).forEach(value -> ItemBlockRenderTypes.setRenderLayer(value, ChunkSectionLayer.CUTOUT)));
   }
 }

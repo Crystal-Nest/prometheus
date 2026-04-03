@@ -15,8 +15,8 @@ import net.minecraft.server.level.ServerPlayer;
 public final class FabricNetworkHelper implements NetworkHelper {
   @Override
   public void register() {
-    PayloadTypeRegistry.playS2C().register(RegisterFirePacket.TYPE, RegisterFirePacket.CODEC);
-    PayloadTypeRegistry.playS2C().register(UnregisterFirePacket.TYPE, UnregisterFirePacket.CODEC);
+    PayloadTypeRegistry.clientboundPlay().register(RegisterFirePacket.TYPE, RegisterFirePacket.CODEC);
+    PayloadTypeRegistry.clientboundPlay().register(UnregisterFirePacket.TYPE, UnregisterFirePacket.CODEC);
   }
 
   @Override

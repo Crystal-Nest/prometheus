@@ -1,4 +1,4 @@
-accessWidener v2 named
+accessWidener v2 official
 accessible field net/minecraft/world/level/block/CampfireBlock spawnParticles Z
 mutable field net/minecraft/world/level/block/TorchBlock flameParticle Lnet/minecraft/core/particles/SimpleParticleType;
 accessible method net/minecraft/core/particles/SimpleParticleType <init> (Z)V

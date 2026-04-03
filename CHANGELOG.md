@@ -9,6 +9,10 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Nothing new.
 
+## [v1.2.5] - 2026/04/dd
+
+- Ported to 26.1.x.
+
 ## [v1.2.5] - 2025/12/21
 
 - Fixed fire component blocks not having the correct fire type (revert of previous change).
