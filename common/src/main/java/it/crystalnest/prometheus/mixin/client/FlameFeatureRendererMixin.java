@@ -59,7 +59,7 @@ public abstract class FlameFeatureRendererMixin {
    * @param atlasManager {@link AtlasManager}.
    * @return {@link TextureAtlasSprite} to assign.
    */
-  @WrapOperation(method = "renderFlame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/model/sprite/AtlasManager;get(Lnet/minecraft/client/resources/model/sprite/SpriteId;)Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;", ordinal = 0))
+  @WrapOperation(method = "renderFlame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/model/sprite/AtlasManager;get(Lnet/minecraft/client/resources/model/sprite/SpriteId;)Lnet/minecraft/client/renderer/texture/TextureAtlasSprite;", ordinal = 1))
   private TextureAtlasSprite wrapSprite1(AtlasManager instance, SpriteId sprite, Operation<TextureAtlasSprite> original, PoseStack.Pose pose, MultiBufferSource bufferSource, EntityRenderState state, Quaternionf rotation, AtlasManager atlasManager) {
     Identifier fireType = ((FireTyped) state).getFireType();
     if (FireManager.isRegisteredType(fireType)) {
