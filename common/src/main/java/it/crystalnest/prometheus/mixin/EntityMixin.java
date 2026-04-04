@@ -81,24 +81,24 @@ public abstract class EntityMixin implements FireTypeChanger {
    * Sets the base Fire Type.
    *
    * @param instance owner of the wrapped method.
-   * @param seconds seconds to set the entity on fire for.
+   * @param numberOfSeconds seconds to set the entity on fire for.
    * @param original original {@link Operation} being wrapped.
    */
   @WrapOperation(method = "lavaIgnite", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;igniteForSeconds(F)V"))
-  private void wrapIgniteForSeconds(Entity instance, float seconds, Operation<Void> original) {
-    FireManager.setOnFire(instance, seconds, FireManager.DEFAULT_FIRE_TYPE, original::call);
+  private void wrapIgniteForSeconds(Entity instance, float numberOfSeconds, Operation<Void> original) {
+    FireManager.setOnFire(instance, numberOfSeconds, FireManager.DEFAULT_FIRE_TYPE, original::call);
   }
 
   /**
    * Injects at the start of the method {@link Entity#setRemainingFireTicks(int)}.<br>
    * Resets the Fire Type when this entity stops burning or catches fire from a new fire source.
    *
-   * @param ticks ticks this entity should burn for.
+   * @param remainingTicks ticks this entity should burn for.
    * @param ci {@link CallbackInfo}.
    */
   @Inject(method = "setRemainingFireTicks", at = @At(value = "HEAD"))
-  private void onSetRemainingFireTicks(int ticks, CallbackInfo ci) {
-    if (!level.isClientSide() && ticks >= getRemainingFireTicks()) {
+  private void onSetRemainingFireTicks(int remainingTicks, CallbackInfo ci) {
+    if (!level.isClientSide() && remainingTicks >= getRemainingFireTicks()) {
       setFireType(FireManager.DEFAULT_FIRE_TYPE);
     }
   }
@@ -108,13 +108,13 @@ public abstract class EntityMixin implements FireTypeChanger {
    * If the entity is a {@link AbstractHurtingProjectile}, makes sure the fire type persists.
    *
    * @param instance owner of the wrapped method.
-   * @param remainingFireTicks fire duration in ticks.
+   * @param remainingTicks fire duration in ticks.
    * @param original original {@link Operation} being wrapped.
    */
   @WrapOperation(method = "applyEffectsFromBlocks(Ljava/util/List;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setRemainingFireTicks(I)V"))
-  private void wrapSetRemainingFireTicks(Entity instance, int remainingFireTicks, Operation<Void> original) {
+  private void wrapSetRemainingFireTicks(Entity instance, int remainingTicks, Operation<Void> original) {
     if (instance instanceof AbstractHurtingProjectile) {
-      FireManager.setOnFire(instance, remainingFireTicks, ((FireTyped) instance).getFireType(), (entity, duration) -> original.call(entity, Math.round(duration)));
+      FireManager.setOnFire(instance, remainingTicks, ((FireTyped) instance).getFireType(), (entity, duration) -> original.call(entity, Math.round(duration)));
     }
   }
 }

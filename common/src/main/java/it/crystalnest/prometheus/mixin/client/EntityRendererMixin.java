@@ -20,12 +20,12 @@ public abstract class EntityRendererMixin {
    * Saves the entity's fire type into the render state.
    *
    * @param entity entity to render.
-   * @param reusedState {@link EntityRenderState}.
-   * @param partialTick partial tick.
+   * @param state {@link EntityRenderState}.
+   * @param partialTicks partial ticks.
    * @param ci {@link CallbackInfo}.
    */
   @Inject(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;displayFireAnimation()Z", shift = At.Shift.AFTER))
-  private void onExtractRenderState(Entity entity, EntityRenderState reusedState, float partialTick, CallbackInfo ci) {
-    ((FireTypeChanger) reusedState).setFireType(((FireTyped) entity).getFireType());
+  private void onExtractRenderState(Entity entity, EntityRenderState state, float partialTicks, CallbackInfo ci) {
+    ((FireTypeChanger) state).setFireType(((FireTyped) entity).getFireType());
   }
 }
