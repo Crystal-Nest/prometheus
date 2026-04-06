@@ -88,7 +88,7 @@ public final class FireRegistrar {
    * Registers the default values for every specified fire component.<p>
    * <b>Note</b>:
    * <ul>
-   *   <li>Order is important: first particle, then blocks, than items.</li>
+   *   <li>Order is important: first particle, then blocks, then items.</li>
    *   <li>Do not specify the same component more than once.</li>
    *   <li>Specify only one of {@link Fire.Component#TORCH_BLOCK} or {@link Fire.Component#WALL_TORCH_BLOCK}: they share the same default registration method.</li>
    * </ul>
