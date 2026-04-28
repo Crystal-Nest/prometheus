@@ -47,7 +47,7 @@ repositories {
 }
 
 dependencies {
-  implementation "it.crystalnest:cobweb-$name:$minecraft_version-$cobweb_version"
+  api "it.crystalnest:cobweb-$name:$minecraft_version-$cobweb_version"
 }
 
 sourcesJar {
