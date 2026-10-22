@@ -9,6 +9,11 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Nothing new.
 
+## [v1.2.5] - 2026/10/22
+
+- Ported to 1.21.1.
+- Fixed custom campfires crashing when placed due to Minecraft 1.21.1's block entity validation.
+
 ## [v1.2.5] - 2026/04/06
 
 - Ported to 26.1.x.
