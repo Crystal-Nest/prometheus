@@ -1,0 +1,4 @@
+{
+  "datapack.prometheus.fire_tags": "Prometheus 火焰标签",
+  "datapack.prometheus.fire_tags.description": "为火源、营火和火焰弹添加标签。"
+}

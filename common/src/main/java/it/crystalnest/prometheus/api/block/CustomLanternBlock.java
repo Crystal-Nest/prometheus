@@ -42,7 +42,7 @@ public class CustomLanternBlock extends LanternBlock implements FireTyped {
    * @return combination of initial and default properties.
    */
   private static Properties addDefaultProperties(Properties properties) {
-    return properties.mapColor(MapColor.METAL).forceSolidOn().requiresCorrectToolForDrops().strength(3.5F).sound(SoundType.LANTERN).noOcclusion().pushReaction(PushReaction.DESTROY);
+    return properties.mapColor(MapColor.METAL).forceSolidOn().requiresCorrectToolForDrops().strength(3.5F).sound(SoundType.LANTERN).noOcclusion().pushReaction(PushReaction.POPPED);
   }
 
   @Override

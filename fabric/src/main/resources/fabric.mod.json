@@ -8,7 +8,7 @@
     "${mod_authors}"
   ],
   "contact": {
-    "homepage": "https://modrinth.com/mod/${mod_id_kebab}",
+    "homepage": "https://modrinth.com/mod/${mod_id_kebab}-api",
     "issues": "https://github.com/${github_user}/${mod_id_kebab}/issues",
     "sources": "https://github.com/${github_user}/${mod_id_kebab}/tree/${minecraft_version}"
   },

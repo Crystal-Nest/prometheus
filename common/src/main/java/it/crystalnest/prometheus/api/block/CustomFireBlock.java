@@ -1,14 +1,10 @@
 package it.crystalnest.prometheus.api.block;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.crystalnest.prometheus.api.Fire;
 import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.api.type.FireTyped;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
@@ -40,15 +36,6 @@ public class CustomFireBlock extends BaseFireBlock implements FireTyped {
    * Fire age property.
    */
   public static final IntegerProperty AGE = FireBlock.AGE;
-
-  /**
-   * {@link Codec}.
-   */
-  public static final MapCodec<CustomFireBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-    Identifier.CODEC.fieldOf("fire_type").forGetter(block -> block.fireType),
-    TagKey.codec(Registries.BLOCK).fieldOf("base").forGetter(block -> block.base),
-    propertiesCodec()
-  ).apply(instance, CustomFireBlock::new));
 
   /**
    * Fire type.
@@ -89,7 +76,7 @@ public class CustomFireBlock extends BaseFireBlock implements FireTyped {
    * @return combination of initial and default properties.
    */
   private static Properties addDefaultProperties(Properties properties) {
-    return properties.replaceable().noCollision().instabreak().sound(SoundType.WOOL).pushReaction(PushReaction.DESTROY);
+    return properties.replaceable().noCollision().instabreak().sound(SoundType.WOOL).pushReaction(PushReaction.POPPED);
   }
 
   @Override
@@ -127,12 +114,6 @@ public class CustomFireBlock extends BaseFireBlock implements FireTyped {
         level.setBlock(pos, state.setValue(AGE, age + 1), UPDATE_INVISIBLE);
       }
     }
-  }
-
-  @NotNull
-  @Override
-  public MapCodec<? extends BaseFireBlock> codec() {
-    return CODEC;
   }
 
   @Override

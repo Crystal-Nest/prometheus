@@ -1,8 +1,5 @@
 package it.crystalnest.prometheus.api.block;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.crystalnest.prometheus.api.Fire;
 import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.api.block.entity.CustomCampfireBlockEntity;
@@ -32,15 +29,6 @@ import org.jetbrains.annotations.Nullable;
  * Custom campfire block.
  */
 public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
-  /**
-   * Codec.
-   */
-  public static final MapCodec<CampfireBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-    Identifier.CODEC.fieldOf("fire_type").forGetter(block -> ((FireTyped) block).getFireType()),
-    Codec.BOOL.fieldOf("spawn_particles").forGetter(block -> block.spawnParticles),
-    propertiesCodec()
-  ).apply(instance, CustomCampfireBlock::new));
-
   /**
    * Fire type.
    */
@@ -126,12 +114,6 @@ public class CustomCampfireBlock extends CampfireBlock implements FireTyped {
    */
   protected RecipeType<? extends Recipe<@NotNull SingleRecipeInput>> recipeType() {
     return RecipeType.CAMPFIRE_COOKING;
-  }
-
-  @NotNull
-  @Override
-  public MapCodec<CampfireBlock> codec() {
-    return CODEC;
   }
 
   /**

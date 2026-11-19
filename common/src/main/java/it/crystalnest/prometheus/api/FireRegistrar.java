@@ -1,7 +1,11 @@
 package it.crystalnest.prometheus.api;
 
-import it.crystalnest.cobweb.api.pack.dynamic.DynamicDataPack;
-import it.crystalnest.cobweb.api.pack.dynamic.DynamicTagBuilder;
+import it.crystalnest.cobweb.api.pack.DataPack;
+import it.crystalnest.cobweb.api.pack.generation.input.Inputs;
+import it.crystalnest.cobweb.api.pack.generation.output.Output;
+import it.crystalnest.cobweb.api.pack.generation.output.Outputs;
+import it.crystalnest.cobweb.api.pack.query.PackActivation;
+import it.crystalnest.cobweb.api.platform.PlatformQueries;
 import it.crystalnest.cobweb.api.registry.CobwebEntry;
 import it.crystalnest.cobweb.api.registry.CobwebRegister;
 import it.crystalnest.cobweb.api.registry.CobwebRegistry;
@@ -13,16 +17,17 @@ import it.crystalnest.prometheus.api.block.CustomFireBlock;
 import it.crystalnest.prometheus.api.block.CustomLanternBlock;
 import it.crystalnest.prometheus.api.block.CustomTorchBlock;
 import it.crystalnest.prometheus.api.block.CustomWallTorchBlock;
-import it.crystalnest.prometheus.platform.Services;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagEntry;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.FireChargeItem;
@@ -46,19 +51,19 @@ import java.util.function.Supplier;
  */
 public final class FireRegistrar {
   /**
-   * Dynamic data pack to automatically add {@link BlockTags#FIRE} to fire source blocks.
+   * Path of the data pack containing generated fire tags.
    */
-  private static final DynamicDataPack FIRE_SOURCE_TAGS = DynamicDataPack.named(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "fire_source_tags"));
+  private static final String TAG_PACK_PATH = "fire_tags";
 
   /**
-   * Dynamic data pack to automatically add {@link BlockTags#CAMPFIRES} to campfire blocks.
+   * Generated data pack containing the tags for registered fire components.
    */
-  private static final DynamicDataPack CAMPFIRE_TAGS = DynamicDataPack.named(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "campfire_tags"));
-
-  /**
-   * Dynamic data pack to automatically add {@link ItemTags#CREEPER_IGNITERS} to fire charge items.
-   */
-  private static final DynamicDataPack FIRE_CHARGE_TAGS = DynamicDataPack.named(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "fire_charge_tags"));
+  private static final DataPack TAGS = DataPack.registrar(Identifier.fromNamespaceAndPath(Constants.MOD_ID, TAG_PACK_PATH))
+    .description(Component.translatable("datapack." + Constants.MOD_ID + "." + TAG_PACK_PATH + ".description"))
+    .currentFormat()
+    .namespaces(Identifier.DEFAULT_NAMESPACE)
+    .activation(PackActivation.ALWAYS_ACTIVE)
+    .register();
 
   /**
    * Whether this class has already been loaded.
@@ -79,9 +84,6 @@ public final class FireRegistrar {
       throw new IllegalStateException("FireManager was already loaded");
     }
     LOADED = true;
-    FIRE_SOURCE_TAGS.register();
-    CAMPFIRE_TAGS.register();
-    FIRE_CHARGE_TAGS.register();
   }
 
   /**
@@ -193,7 +195,8 @@ public final class FireRegistrar {
    */
   public static <T extends CustomFireBlock> CobwebEntry<T> registerFireSource(Identifier fireType, String blockId, MapColor color, BiFunction<Identifier, BlockBehaviour.Properties, T> constructor) {
     CobwebEntry<T> source = CobwebRegistry.ofBlocks(fireMod(fireType)).registerBlock(blockId, properties -> constructor.apply(fireType, properties.mapColor(color)));
-    FIRE_SOURCE_TAGS.add(() -> DynamicTagBuilder.of(Registries.BLOCK, BlockTags.FIRE).addElement(source.get()));
+    Identifier sourceId = source.key().identifier();
+    TAGS.onGenerate(Inputs.NONE, Outputs.of(Output.TAGS), (context, output) -> output.tags(Registries.BLOCK).add(BlockTags.FIRE.location(), TagEntry.element(sourceId))).cache(BlockTags.FIRE.location() + "/" + sourceId);
     return source;
   }
 
@@ -269,7 +272,8 @@ public final class FireRegistrar {
    */
   public static <T extends CustomCampfireBlock> CobwebEntry<T> registerCampfire(Identifier fireType, String blockId, BiFunction<Identifier, BlockBehaviour.Properties, T> constructor) {
     CobwebEntry<T> campfire = CobwebRegistry.ofBlocks(fireMod(fireType)).registerBlock(blockId, properties -> constructor.apply(fireType, properties));
-    CAMPFIRE_TAGS.add(() -> DynamicTagBuilder.of(Registries.BLOCK, BlockTags.CAMPFIRES).addElement(campfire.get()));
+    Identifier campfireId = campfire.key().identifier();
+    TAGS.onGenerate(Inputs.NONE, Outputs.of(Output.TAGS), (context, output) -> output.tags(Registries.BLOCK).add(BlockTags.CAMPFIRES.location(), TagEntry.element(campfireId))).cache(BlockTags.CAMPFIRES.location() + "/" + campfireId);
     return campfire;
   }
 
@@ -681,8 +685,9 @@ public final class FireRegistrar {
    */
   public static <T extends FireChargeItem> CobwebEntry<T> registerFireCharge(Identifier fireType, String itemId, Function<Item.Properties, T> constructor) {
     CobwebEntry<T> charge = CobwebRegistry.ofItems(fireMod(fireType)).registerItem(itemId, constructor);
-    FIRE_CHARGE_TAGS.add(() -> DynamicTagBuilder.of(Registries.ITEM, ItemTags.CREEPER_IGNITERS).addElement(charge.get()));
-    if (Services.PLATFORM.getPlatformName() == Platform.FABRIC) {
+    Identifier chargeId = charge.key().identifier();
+    TAGS.onGenerate(Inputs.NONE, Outputs.of(Output.TAGS), (context, output) -> output.tags(Registries.ITEM).add(ItemTags.CREEPER_IGNITERS.location(), TagEntry.element(chargeId))).cache(ItemTags.CREEPER_IGNITERS.location() + "/" + chargeId);
+    if (PlatformQueries.loader() == Platform.FABRIC) {
       DispenserBlock.registerProjectileBehavior(charge.get());
     }
     return charge;

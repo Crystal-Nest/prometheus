@@ -1,8 +1,4 @@
 {
-  "prometheus:fire_source_tags": "화재 핵심 화재 소스",
-  "prometheus_dynamic_fire_source_tags": "불의 근원을 올바른 태그로 표시합니다.",
-  "prometheus:campfire_tags": "화재 코어 캠프파이어",
-  "prometheus_dynamic_campfire_tags": "모닥불을 올바른 태그로 표시합니다.",
-  "prometheus:fire_charge_tags": "화재 코어 화염구",
-  "prometheus_dynamic_fire_charge_tags": "화염구를 올바른 태그로 표시합니다."
+  "datapack.prometheus.fire_tags": "Prometheus 불 태그",
+  "datapack.prometheus.fire_tags.description": "불, 모닥불, 화염구의 태그를 추가합니다."
 }

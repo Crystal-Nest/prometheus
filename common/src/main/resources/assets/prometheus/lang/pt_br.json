@@ -1,0 +1,4 @@
+{
+  "datapack.prometheus.fire_tags": "Tags de fogo do Prometheus",
+  "datapack.prometheus.fire_tags.description": "Adiciona tags para fontes de fogo, fogueiras e bolas de fogo."
+}

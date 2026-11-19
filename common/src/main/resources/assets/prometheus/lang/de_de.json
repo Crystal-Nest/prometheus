@@ -1,0 +1,4 @@
+{
+  "datapack.prometheus.fire_tags": "Feuer-Tags von Prometheus",
+  "datapack.prometheus.fire_tags.description": "Fügt Tags für Feuerquellen, Lagerfeuer und Feuerkugeln hinzu."
+}

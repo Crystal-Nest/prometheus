@@ -1,8 +1,4 @@
 {
-  "prometheus:fire_source_tags": "Sources de feu de Prometheus",
-  "prometheus_dynamic_fire_source_tags": "Attribue aux sources de feu le tag correcte",
-  "prometheus:campfire_tags": "Feux de camp de Prometheus",
-  "prometheus_dynamic_campfire_tags": "Attribue aux feux de camp le tag correcte",
-  "prometheus:fire_charge_tags": "Boules de feu de Prometheus",
-  "prometheus_dynamic_fire_charge_tags": "Attribue aux boules de feu le tag correcte"
+  "datapack.prometheus.fire_tags": "Tags des feux de Prometheus",
+  "datapack.prometheus.fire_tags.description": "Ajoute les tags des sources de feu, des feux de camp et des boules de feu."
 }

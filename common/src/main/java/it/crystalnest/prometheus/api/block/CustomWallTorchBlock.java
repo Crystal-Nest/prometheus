@@ -85,7 +85,7 @@ public class CustomWallTorchBlock extends WallTorchBlock implements FireTyped {
    * @return combination of initial and default properties.
    */
   private static Properties addDefaultProperties(Properties properties) {
-    return properties.noCollision().instabreak().sound(SoundType.WOOD).pushReaction(PushReaction.DESTROY);
+    return properties.noCollision().instabreak().sound(SoundType.WOOD).pushReaction(PushReaction.POPPED);
   }
 
   /**

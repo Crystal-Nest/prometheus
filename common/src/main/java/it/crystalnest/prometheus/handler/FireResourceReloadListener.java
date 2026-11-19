@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.crystalnest.prometheus.Constants;
+import it.crystalnest.cobweb.api.platform.PlatformQueries;
 import it.crystalnest.prometheus.api.Fire;
 import it.crystalnest.prometheus.api.FireManager;
 import it.crystalnest.prometheus.platform.Services;
@@ -85,7 +86,7 @@ public final class FireResourceReloadListener extends SimpleJsonResourceReloadLi
     unregisterFires();
     for (final Map.Entry<Identifier, DDFires> entry : IdentifierDDFiresMap.entrySet()) {
       DDFires fires = entry.getValue();
-      if (Services.PLATFORM.isModLoaded(fires.mod)) {
+      if (PlatformQueries.isModLoaded(fires.mod)) {
         for (DDFire fire : fires.fires) {
           Identifier fireType = Identifier.fromNamespaceAndPath(fires.mod, fire.fire);
           Fire.Builder builder = FireManager.fireBuilder(fireType)

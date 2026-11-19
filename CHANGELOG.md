@@ -9,6 +9,15 @@ and this project adheres to [Crystal Nest Semantic Versioning](https://crystalne
 
 - Nothing new.
 
+## [v1.2.5] - 2026/11/dd
+
+- Ported to 26.3.
+- Updated to Cobweb 2.0.0.
+- Merged generated fire tags into a single data pack with cached generation.
+- Removed block codecs following their removal from Minecraft.
+- Fixed Modrinth project links and the NeoForge update feed.
+- Added German, Pirate English, Japanese, Polish, Brazilian Portuguese, and Simplified Chinese translations.
+
 ## [v1.2.5] - 2026/10/22
 
 - Ported to 1.21.1.
